@@ -31,7 +31,7 @@ export default function AboutSection() {
             
             <h3 className="text-2xl font-bold text-gold-600 mb-4">Our Mission</h3>
             <p className="text-gray-700 mb-6">
-              Our mission is to provide a place of spiritual nourishment, fellowship, and support where everyone can experience God's love and grace. We strive to equip believers with the tools they need to live out their faith every day.
+              Our mission is to provide a place of spiritual nourishment, fellowship, and support where everyone can experience God&apos;s love and grace. We strive to equip believers with the tools they need to live out their faith every day.
             </p>
             
             <div className="flex flex-wrap gap-4 mt-8">
