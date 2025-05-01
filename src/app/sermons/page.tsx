@@ -16,20 +16,20 @@ export default function Sermons() {
   const [currentPage, setCurrentPage] = useState(1)
   const sermonsPerPage = 10
 
-  interface Sermon {
-    id: string;
-    title: string;
-    date: string;
-    description: string;
-    series?: string;
-    popular: boolean;
-    preacher: {
-      name: string;
-      image?: string;
-    };
-    duration?: string;
-    imageUrl?: string;
-  }
+  // interface Sermon {
+  //   id: string;
+  //   title: string;
+  //   date: string;
+  //   description: string;
+  //   series?: string;
+  //   popular: boolean;
+  //   preacher: {
+  //     name: string;
+  //     image?: string;
+  //   };
+  //   duration?: string;
+  //   imageUrl?: string;
+  // }
 
   
 
