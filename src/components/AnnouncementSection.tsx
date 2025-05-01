@@ -1,6 +1,7 @@
 // components/AnnouncementSection.tsx
 import React from 'react'
 import { Announcement } from '../types'
+import Image from 'next/image'
 
 type AnnouncementSectionProps = {
   announcements: Announcement[]
@@ -24,10 +25,12 @@ export default function AnnouncementSection({ announcements }: AnnouncementSecti
             >
               {announcement.image && (
                 <div className="relative h-48 w-full">
-                  <img 
+                  <Image 
                     src={announcement.image} 
                     alt={announcement.title} 
                     className="w-full h-full object-cover"
+                    width={1200}
+                    height={800}
                   />
                 </div>
               )}

@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
 import { Sermon } from '../types'
+import Image from 'next/image'
+
+
 
 type SermonCardProps = {
   sermon: Sermon
@@ -15,10 +18,12 @@ export default function SermonCard({ sermon }: SermonCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative h-48">
-        <img 
+        <Image  
           src={sermon.thumbnail} 
           alt={sermon.title} 
           className="w-full h-full object-cover"
+          width={1200}
+          height={800}
         />
         {isHovered && (
           <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 transition-opacity duration-300">
@@ -60,10 +65,12 @@ export default function SermonCard({ sermon }: SermonCardProps) {
         <p className="text-gray-600 mb-4 line-clamp-3 flex-1">{sermon.description}</p>
         
         <div className="flex items-center text-sm">
-          <img 
+          <Image 
             src={sermon.preacher.image} 
             alt={sermon.preacher.name} 
             className="w-8 h-8 rounded-full mr-2 object-cover"
+            width={1200}
+            height={800}
           />
           <span className="text-gray-700">{sermon.preacher.name}</span>
         </div>
