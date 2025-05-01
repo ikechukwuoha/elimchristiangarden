@@ -71,14 +71,14 @@ export default function Home() {
     {
       title: "Sunday Worship Service",
       date: "Every Sunday",
-      time: "10:00 AM",
+      time: "9:00 AM",
       location: "Main Sanctuary"
     },
     {
-      title: "Bible Study",
-      date: "Every Wednesday",
-      time: "7:00 PM",
-      location: "Fellowship Hall"
+      title: "Weekend Prayers",
+      date: "Every Saturday",
+      time: "7:00 AM",
+      location: "Main Sanctuary"
     },
     {
       title: "Youth Night",
@@ -218,9 +218,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Sunday Services</h3>
               <p className="text-gray-700">
-                Main Service: 10:00 AM<br />
-                Children&apos;s Church: 10:00 AM<br />
-                Evening Prayer: 6:00 PM
+                Main Service: 8:30 AM<br />
               </p>
             </div>
             
@@ -228,11 +226,9 @@ export default function Home() {
               <div className="bg-blue-100 p-4 rounded-full inline-flex mb-6 shadow-md">
                 <Book className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Mid-Week Bible Study</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Weekend Prayers</h3>
               <p className="text-gray-700">
-                Wednesday: 7:00 PM<br />
-                Prayer Meeting: 6:30 PM<br />
-                Fellowship Hall
+                Saturdays: 7:00 AM<br />
               </p>
             </div>
             
@@ -240,11 +236,9 @@ export default function Home() {
               <div className="bg-yellow-100 p-4 rounded-full inline-flex mb-6 shadow-md">
                 <Users className="h-8 w-8 text-yellow-600" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Youth & Young Adults</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">New Month Special Program</h3>
               <p className="text-gray-700">
-                Youth Night: Friday 6:30 PM<br />
-                Young Adults: Sunday 1:00 PM<br />
-                Youth Center
+                First of Every Month: Friday 5:30 PM<br />
               </p>
             </div>
           </div>
@@ -462,7 +456,7 @@ export default function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-green-700">Testimonials</h2>
+            <h2 className="text-3xl font-bold text-green-700">Testimonies</h2>
             <div className="w-24 h-1 bg-yellow-500 mx-auto mt-4 mb-6"></div>
             <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
               Hear from members of our church family
