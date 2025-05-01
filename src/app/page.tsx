@@ -28,8 +28,8 @@ export default function Home() {
   const carouselItems = [
     {
       image: "/images/church-main.jpg",
-      title: "Welcome to Elim Christian Garden International",
-      description: "A place Where God waters life for fruitfulness",
+      title: "Elim Christian Garden International",
+      description: "Watering Lives for Fruitfulness",
       buttonText: "Learn More",
       buttonLink: "/about"
     },
