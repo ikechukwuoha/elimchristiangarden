@@ -25,5 +25,6 @@ export interface Announcement {
     preacher: Preacher;
     series?: string;
     popular?: boolean;
+    bibleReferences: string
     
   }
