@@ -22,9 +22,13 @@ export interface Announcement {
     date: string;
     audioUrl: string;
     thumbnail: string;
-    preacher: Preacher;
-    series?: string;
+    preacher: {
+      id: number;
+      name: string;
+      image: string;
+      title: string;
+    };
+    series: string;
     popular?: boolean;
-    bibleReferences: string
-    
+    bibleReferences?: string[]; 
   }

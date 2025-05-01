@@ -1,5 +1,8 @@
 import { Announcement } from '../../types';
 
+// data/sermons.ts
+import { Sermon } from '../../types';
+
 export const announcements: Announcement[] = [
   {
     id: 1,
@@ -27,8 +30,7 @@ export const announcements: Announcement[] = [
   }
 ];
 
-// data/sermons.ts
-import { Sermon } from '../../types';
+
 
 export const sermons: Sermon[] = [
   {
