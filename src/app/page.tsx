@@ -6,8 +6,12 @@ import {
   ChevronRight, 
   Calendar, 
   Clock, 
+  User,
   MapPin, 
-  Music, 
+  Shield,
+  Armchair,
+  Music,
+  Flower2, 
   Book, 
   Heart, 
   Users, 
@@ -18,9 +22,6 @@ import Link from 'next/link'
 import Layout from '../components/Layout'
 import Image from 'next/image'
 import { PlayIcon, ArrowRightIcon, BackwardIcon, ForwardIcon } from '@heroicons/react/24/solid';
-
-
-
 
 export default function Home() {
   // Carousel state
@@ -130,6 +131,7 @@ export default function Home() {
       link: "/ministries/outreach"
     }
   ];
+  console.log(ministries);
 
   return (
     <Layout>
@@ -401,55 +403,123 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ministries Overview */}
-      <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50">
+      {/* Horizontal Scrollable Ministries Section */}
+      <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-yellow-600">Our Ministries</h2>
             <div className="w-24 h-1 bg-green-500 mx-auto mt-4 mb-6"></div>
             <p className="mt-4 text-lg text-gray-700 max-w-3xl mx-auto">
-              There are many ways to get involved and grow in your faith at Elim Christian Garden
+              Discover ways to connect and grow with ministries for every season of life
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-10">
-            {ministries.map((ministry, index) => (
-              <div key={index} className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/20 z-10 group-hover:from-black/90 group-hover:to-black/30 transition-colors"></div>
-                <Image
-                  src={ministry.image} 
-                  alt={ministry.title} 
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="w-full h-80 object-cover object-center group-hover:scale-110 transition-transform duration-700" 
-                />
-                <div className="absolute bottom-0 left-0 right-0 p-8 z-20 transform translate-y-0 group-hover:translate-y-0 transition-transform duration-500">
-                  <div className="bg-white/90 backdrop-blur-sm p-3 rounded-full inline-flex mb-4 shadow-lg">
-                    {ministry.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">{ministry.title}</h3>
-                  <p className="text-white/90 mb-6 max-h-0 group-hover:max-h-24 opacity-0 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
-                    {ministry.description}
-                  </p>
-                  <Link 
-                    href={ministry.link} 
-                    className="text-white font-medium bg-green-600/90 hover:bg-green-700 py-2 px-4 rounded-full inline-flex items-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500"
-                  >
-                    Learn More
-                    <ArrowRight className="ml-2 w-4 h-4" />
+
+          {/* Scrollable Cards Container */}
+          <div className="relative">
+            {/* Scrollable Content */}
+            <div className="flex pb-8 space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory hide-scrollbar">
+              {[
+                {
+                  title: "Couples Ministry",
+                  description: "Strengthening marriages through biblical principles",
+                  icon: <Heart className="w-6 h-6 text-pink-500" />,
+                  color: "bg-pink-100",
+                  link: "/ministries/couples"
+                },
+                {
+                  title: "Singles Fellowship",
+                  description: "Building community for unmarried adults",
+                  icon: <User className="w-6 h-6 text-blue-500" />,
+                  color: "bg-blue-100",
+                  link: "/ministries/singles"
+                },
+                {
+                  title: "Tehilla Ministries",
+                  description: "Worship and creative arts ministry",
+                  icon: <Music className="w-6 h-6 text-purple-500" />,
+                  color: "bg-purple-100",
+                  link: "/ministries/tehilla"
+                },
+                {
+                  title: "Protocol Team",
+                  description: "Serving with excellence in church operations",
+                  icon: <Shield className="w-6 h-6 text-green-500" />,
+                  color: "bg-green-100",
+                  link: "/ministries/protocol"
+                },
+                {
+                  title: "Youth Ministry",
+                  description: "Engaging the next generation",
+                  icon: <Users className="w-6 h-6 text-red-500" />,
+                  color: "bg-red-100",
+                  link: "/ministries/youth"
+                },
+                {
+                  title: "Men's Fellowship",
+                  description: "Equipping men for godly leadership",
+                  icon: <Armchair className="w-6 h-6 text-indigo-500" />,
+                  color: "bg-indigo-100",
+                  link: "/ministries/men"
+                },
+                {
+                  title: "Women's Ministry",
+                  description: "Empowering women in faith and purpose",
+                  icon: <Flower2 className="w-6 h-6 text-rose-500" />,
+                  color: "bg-rose-100",
+                  link: "/ministries/women"
+                }
+              ].map((ministry, index) => (
+                <div 
+                  key={index}
+                  className="flex-shrink-0 w-72 snap-center"
+                >
+                  <Link href={ministry.link}>
+                    <div className={`${ministry.color} rounded-2xl p-6 h-full flex flex-col hover:shadow-lg transition-all duration-300`}>
+                      <div className="mb-4 p-3 bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm">
+                        {ministry.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-2">{ministry.title}</h3>
+                      <p className="text-gray-600 mb-4 flex-grow">{ministry.description}</p>
+                      <div className="flex items-center text-blue-600 font-medium">
+                        Learn more
+                        <ArrowRight className="ml-2 w-4 h-4" />
+                      </div>
+                    </div>
                   </Link>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Scroll Arrows (Optional) */}
+            <button 
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 z-10 hidden md:block"
+              onClick={() => {
+                const container = document.querySelector('.hide-scrollbar');
+                container?.scrollBy({ left: -300, behavior: 'smooth' });
+              }}
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-700" />
+            </button>
+            <button 
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-100 z-10 hidden md:block"
+              onClick={() => {
+                const container = document.querySelector('.hide-scrollbar');
+                container?.scrollBy({ left: 300, behavior: 'smooth' });
+              }}
+            >
+              <ChevronRight className="w-5 h-5 text-gray-700" />
+            </button>
           </div>
-          
+
           <div className="text-center mt-12">
             <Link href="/ministries" className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-8 rounded-full transition-colors shadow-lg hover:shadow-xl inline-flex items-center">
-              Explore All Ministries
+              View All Ministries
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </div>
         </div>
+
+        {/* Note: Moved the inline style to globals.css */}
       </section>
 
       {/* Testimonials */}
@@ -485,43 +555,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter */}
-      {/* <section className="py-20 bg-gradient-to-br from-green-50 to-blue-50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-100 rounded-full -mr-48 -mt-48 opacity-70"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full -ml-48 -mb-48 opacity-70"></div>
-        
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-blue-600 mb-2">Stay Connected</h2>
-              <div className="w-24 h-1 bg-yellow-500 mx-auto mt-4 mb-6"></div>
-              <p className="text-gray-700 text-lg">
-                Subscribe to our newsletter for updates, announcements, and spiritual encouragement
-              </p>
-            </div>
-            
-            <form className="flex flex-col md:flex-row gap-4">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-grow px-4 py-3 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full transition-colors shadow-lg hover:shadow-xl transform hover:scale-105 duration-300"
-              >
-                Subscribe
-              </button>
-            </form>
-            
-            <p className="text-sm text-gray-600 mt-4 text-center">
-              We respect your privacy. Unsubscribe at any time.
-            </p>
-          </div>
-        </div>
-      </section> */}
-
       {/* Call to Action */}
       <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-10"></div>
@@ -540,46 +573,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* Add styles for animations */}
-      <style jsx global>{`
-        @keyframes slowZoom {
-          from { transform: scale(1); }
-          to { transform: scale(1.1); }
-        }
-        
-        .bg-pattern {
-          background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"%3E%3C/path%3E%3C/svg%3E");
-        }
-        
-        body {
-          overflow-x: hidden;
-        }
-        
-        /* Custom scrollbar to hide but maintain functionality */
-        ::-webkit-scrollbar {
-          width: 0px;
-          background: transparent;
-        }
-        
-        /* Optional smooth scroll behavior */
-        html {
-          scroll-behavior: smooth;
-        }
-        
-        /* Animation for elements */
-        .hover-float:hover {
-          transform: translateY(-5px);
-        }
-        
-        /* Gradient text for special headings */
-        .gradient-text {
-          background-clip: text;
-          -webkit-background-clip: text;
-          color: transparent;
-          background-image: linear-gradient(90deg, #15803d, #1d4ed8);
-        }
-      `}</style>
     </main>
     </Layout>
   )
