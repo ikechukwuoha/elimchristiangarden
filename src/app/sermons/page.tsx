@@ -36,7 +36,7 @@ export default function Sermons() {
   // Get unique series for filter dropdown
   const seriesList = useMemo(() => 
     Array.from(new Set(sermons.map(sermon => sermon.series))).filter(Boolean).sort(),
-    [sermons]
+    []
   )
 
   // Filter sermons based on search term and filter
@@ -53,7 +53,7 @@ export default function Sermons() {
       // Filter by series
       return matchesSearch && sermon.series === filter
     })
-  }, [searchTerm, filter, sermons])
+  }, [searchTerm, filter])
 
   // Get current sermons for pagination
   const indexOfLastSermon = currentPage * sermonsPerPage
