@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Target the main element specifically */
+main {
+  overflow-x: hidden;
+}
+
+/* Remove or modify this */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
