@@ -322,7 +322,6 @@
 //   )
 // }
 
-
 'use client';
 
 import React from 'react'
@@ -337,7 +336,8 @@ import { Play, Download, Share2, Bookmark, Clock, Calendar, ChevronLeft, User, T
 export default function SermonDetail() {
   const router = useRouter();
   const params = useParams();
-  const id = params.id as string; // Type assertion if using TypeScript
+  // Fix: Add null check or use optional chaining with a fallback
+  const id = params?.id as string || '';
   
   const sermon = sermons.find(sermon => sermon.id === id);
 
