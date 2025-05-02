@@ -5,13 +5,9 @@ import {
   ChevronLeft, 
   ChevronRight, 
   Calendar, 
-  Clock, 
-  User,
-  MapPin, 
-  Shield,
-  Armchair,
+  ClockIcon,
+  CalendarIcon,
   Music,
-  Flower2, 
   Book, 
   Heart, 
   Users, 
@@ -66,34 +62,6 @@ export default function Home() {
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev === 0 ? carouselItems.length - 1 : prev - 1));
   };
-
-  // Upcoming events data
-  const upcomingEvents = [
-    {
-      title: "Sunday Worship Service",
-      date: "Every Sunday",
-      time: "9:00 AM",
-      location: "Main Sanctuary"
-    },
-    {
-      title: "Weekend Prayers",
-      date: "Every Saturday",
-      time: "7:00 AM",
-      location: "Main Sanctuary"
-    },
-    {
-      title: "Youth Night",
-      date: "Every Friday",
-      time: "6:30 PM",
-      location: "Youth Center"
-    },
-    {
-      title: "Community Outreach",
-      date: "May 15, 2025",
-      time: "9:00 AM",
-      location: "Community Center"
-    }
-  ];
 
   // Testimonials data
   const testimonials = [
@@ -297,112 +265,96 @@ export default function Home() {
       </section>
 
       {/* Latest Sermon with Parallax */}
-      <section className="py-24 bg-fixed bg-center bg-cover relative" style={{ backgroundImage: `url('/images/sermon-bg.jpg')` }}>
-        <div className="absolute inset-0 bg-blue-900/80 backdrop-blur-sm"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold mb-2 text-white">Latest Message</h2>
-              <div className="w-24 h-1 bg-yellow-500 mt-4 mb-6"></div>
-              <h3 className="text-2xl font-semibold mb-3 text-white">&ldquo;Growing in Faith Through Challenges&rdquo;</h3>
-              <p className="text-white/90 mb-6 text-lg">
-                Pastor James Wilson shares how we can find spiritual growth during life&apos;s most difficult seasons. 
-                Learn practical ways to trust God and find His purpose even in challenging circumstances.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <a href="#" className="bg-white text-blue-700 hover:bg-gray-100 font-semibold py-3 px-6 rounded-full inline-flex items-center transition-colors shadow-lg hover:shadow-xl">
-                  <PlayIcon className="mr-2 h-5 w-5" />
-                  Listen Now
-                </a>
-                <a href="#" className="border-2 border-white hover:bg-white/10 text-white font-semibold py-3 px-6 rounded-full inline-flex items-center transition-colors">
-                  All Messages
-                  <ArrowRightIcon className="ml-2 h-5 w-5" />
-                </a>
-              </div>
+      <section className="relative py-28 bg-fixed bg-center bg-cover" style={{ backgroundImage: `url('/images/sermon-bg.jpg')` }}>
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/95 to-purple-900/90 backdrop-blur-sm"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left Content */}
+          <div className="space-y-6 animate-fade-in-up">
+            <div className="inline-flex items-center gap-3 text-white/80 uppercase tracking-wide font-medium">
+              <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Latest Sermon
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 shadow-2xl">
-              <div className="flex items-center gap-6 mb-6">
-                <div className="relative w-32 h-32 shrink-0">
+            <h2 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 leading-tight">
+              Growing Through Life&apos;s Challenges
+            </h2>
+            <div className="h-1.5 w-24 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full"></div>
+            <p className="text-xl text-white/90 leading-relaxed">
+              Join Rev. Dr. Emmanuel Olowononi in exploring how adversity becomes our greatest spiritual teacher. Discover practical tools for maintaining faith and finding purpose in life&apos;s storms.
+            </p>
+            <div className="flex flex-wrap gap-4 mt-8">
+              <a href="#" className="group relative bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center">
+                <PlayIcon className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+                Play Now
+              </a>
+              <a href="#" className="group border-2 border-white/20 hover:border-white/40 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/5 inline-flex items-center">
+                Browse All
+                <ArrowRightIcon className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
+              </a>
+            </div>
+          </div>
+
+          {/* Media Player */}
+          <div className="animate-fade-in-up delay-100">
+            <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300">
+              <div className="flex items-center gap-6 mb-8">
+                <div className="relative w-32 h-32 shrink-0 group">
                   <Image 
                     src="/images/album-cover.jpg"
                     alt="Sermon Album Cover"
                     fill
-                    className="rounded-lg object-cover"
+                    className="rounded-xl object-cover transform group-hover:scale-105 transition-transform"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-xl"></div>
+                  <PlayIcon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-white mb-2">Growing in Faith</h4>
-                  <p className="text-white/80">Pastor James Wilson</p>
-                  <p className="text-sm text-white/60 mt-1">45:30 • April 15, 2024</p>
+                  <h4 className="text-2xl font-bold text-white mb-2">Growing in Faith</h4>
+                  <p className="text-emerald-400/90 font-medium">James Wilson</p>
+                  <div className="flex items-center gap-2 mt-2 text-white/60">
+                    <ClockIcon className="w-4 h-4" />
+                    <span className="text-sm">45:30</span>
+                    <span className="mx-1">•</span>
+                    <CalendarIcon className="w-4 h-4" />
+                    <span className="text-sm">April 15, 2024</span>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="relative bg-white/20 rounded-full h-2">
-                  <div className="absolute left-0 top-0 bg-yellow-500 h-2 w-1/3 rounded-full"></div>
+
+              {/* Player Controls */}
+              <div className="space-y-6">
+                <div className="relative group">
+                  <div className="h-2 bg-white/10 rounded-full">
+                    <div className="h-2 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full w-1/3 relative">
+                      <div className="absolute right-0 -top-1 w-3 h-3 bg-white rounded-full shadow-lg"></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-white/60 text-sm mt-2">
+                    <span>2:15</span>
+                    <span>-45:30</span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-white">
-                  <span className="text-sm">2:15</span>
-                  <span className="text-sm">47:45</span>
-                </div>
-                <div className="flex items-center justify-center gap-4">
-                  <button className="text-white hover:text-yellow-500 transition-colors">
-                    <BackwardIcon className="h-8 w-8" />
+
+                <div className="flex items-center justify-center gap-6">
+                  <button className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-3">
+                    <BackwardIcon className="w-7 h-7" />
                   </button>
-                  <button className="bg-yellow-500 text-white rounded-full p-4 hover:bg-yellow-600 transition-colors">
-                    <PlayIcon className="h-8 w-8" />
+                  <button className="bg-gradient-to-r from-emerald-500 to-cyan-600 text-white p-5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-transform">
+                    <PlayIcon className="w-8 h-8" />
                   </button>
-                  <button className="text-white hover:text-yellow-500 transition-colors">
-                    <ForwardIcon className="h-8 w-8" />
+                  <button className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-3">
+                    <ForwardIcon className="w-7 h-7" />
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Upcoming Events */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-600">Upcoming Events</h2>
-            <div className="w-24 h-1 bg-yellow-500 mx-auto mt-4 mb-6"></div>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              Join us for these special gatherings and opportunities to connect
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {upcomingEvents.map((event, index) => (
-              <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-gray-100">
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-3">{event.title}</h3>
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <Calendar className="h-5 w-5 mr-2 text-green-600" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700 mb-2">
-                    <Clock className="h-5 w-5 mr-2 text-blue-600" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <MapPin className="h-5 w-5 mr-2 text-yellow-600" />
-                    <span>{event.location}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link href="/events" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-full transition-colors shadow-lg hover:shadow-xl inline-flex items-center">
-              View All Events
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
+      </div>
+    </section>
       {/* Horizontal Scrollable Ministries Section */}
       <section className="py-16 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -420,69 +372,70 @@ export default function Home() {
             <div className="flex pb-8 space-x-6 overflow-x-auto scroll-smooth snap-x snap-mandatory hide-scrollbar">
               {[
                 {
-                  title: "Couples Ministry",
+                  title: "Couples Fellowship",
                   description: "Strengthening marriages through biblical principles",
-                  icon: <Heart className="w-6 h-6 text-pink-500" />,
-                  color: "bg-pink-100",
+                  image: "/images/couplesfellowship.jpeg",
                   link: "/ministries/couples"
                 },
                 {
                   title: "Singles Fellowship",
                   description: "Building community for unmarried adults",
-                  icon: <User className="w-6 h-6 text-blue-500" />,
-                  color: "bg-blue-100",
+                  image: "/images/singles.jpg",
                   link: "/ministries/singles"
                 },
                 {
                   title: "Tehilla Ministries",
                   description: "Worship and creative arts ministry",
-                  icon: <Music className="w-6 h-6 text-purple-500" />,
-                  color: "bg-purple-100",
+                  image: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=800",
                   link: "/ministries/tehilla"
                 },
                 {
                   title: "Protocol Team",
                   description: "Serving with excellence in church operations",
-                  icon: <Shield className="w-6 h-6 text-green-500" />,
-                  color: "bg-green-100",
+                  image: "/images/community.jpg",
                   link: "/ministries/protocol"
                 },
                 {
-                  title: "Youth Ministry",
+                  title: "Teenagers and Children",
                   description: "Engaging the next generation",
-                  icon: <Users className="w-6 h-6 text-red-500" />,
-                  color: "bg-red-100",
+                  image: "/images/teenagerandchildren.jpg",
                   link: "/ministries/youth"
                 },
                 {
-                  title: "Men's Fellowship",
+                  title: "Brothers Fellowship",
                   description: "Equipping men for godly leadership",
-                  icon: <Armchair className="w-6 h-6 text-indigo-500" />,
-                  color: "bg-indigo-100",
+                  image: "https://media.thegospelcoalition.org/wp-content/uploads/2021/09/31131452/ministerial-fellowship.jpg",
                   link: "/ministries/men"
                 },
                 {
-                  title: "Women's Ministry",
+                  title: "Sisters Fellowship",
                   description: "Empowering women in faith and purpose",
-                  icon: <Flower2 className="w-6 h-6 text-rose-500" />,
-                  color: "bg-rose-100",
+                  image: "https://images.unsplash.com/photo-1558403194-611308249627?auto=format&fit=crop&w=800",
                   link: "/ministries/women"
                 }
               ].map((ministry, index) => (
                 <div 
                   key={index}
-                  className="flex-shrink-0 w-72 snap-center"
+                  className="flex-shrink-0 w-72 snap-center relative group"
                 >
                   <Link href={ministry.link}>
-                    <div className={`${ministry.color} rounded-2xl p-6 h-full flex flex-col hover:shadow-lg transition-all duration-300`}>
-                      <div className="mb-4 p-3 bg-white rounded-full w-12 h-12 flex items-center justify-center shadow-sm">
-                        {ministry.icon}
+                    <div className="relative h-96 rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
+                      {/* Image Background with Gradient Overlay */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${ministry.image})` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">{ministry.title}</h3>
-                      <p className="text-gray-600 mb-4 flex-grow">{ministry.description}</p>
-                      <div className="flex items-center text-blue-600 font-medium">
-                        Learn more
-                        <ArrowRight className="ml-2 w-4 h-4" />
+                      
+                      {/* Card Content */}
+                      <div className="relative h-full flex flex-col justify-end p-6 text-white">
+                        <h3 className="text-xl font-bold mb-2">{ministry.title}</h3>
+                        <p className="text-gray-200 mb-4">{ministry.description}</p>
+                        <div className="flex items-center font-medium text-yellow-400">
+                          Learn more
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </div>
                       </div>
                     </div>
                   </Link>
@@ -518,8 +471,6 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
-        {/* Note: Moved the inline style to globals.css */}
       </section>
 
       {/* Testimonials */}
