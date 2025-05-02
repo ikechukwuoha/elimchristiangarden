@@ -7,6 +7,11 @@ import {
   Calendar, 
   ClockIcon,
   CalendarIcon,
+  Clock,
+  Bell,
+  MapPin,
+  Headphones,
+  Bookmark,
   Music,
   Book, 
   Heart, 
@@ -22,6 +27,7 @@ import { PlayIcon, ArrowRightIcon, BackwardIcon, ForwardIcon } from '@heroicons/
 export default function Home() {
   // Carousel state
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [hoverCard, setHoverCard] = useState('');
   const carouselItems = [
     {
       image: "/images/church-main.jpg",
@@ -171,56 +177,242 @@ export default function Home() {
       </section>
 
       {/* Service Times - Brought up for immediate visibility */}
-      <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-green-700">Join Us for Worship</h2>
-            <div className="w-24 h-1 bg-yellow-500 mx-auto mt-4 mb-6"></div>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto">
-              We welcome you to join our vibrant community in-person or online
-            </p>
+      <section className="py-24 relative overflow-hidden">
+      {/* Enhanced Background with decorative elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-indigo-50 opacity-90"></div>
+      <div className="absolute inset-0 bg-cover bg-center opacity-10"
+        style={{ backgroundImage: `url('/api/placeholder/1920/800')` }}></div>
+      
+      {/* Enhanced decorative elements */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-300 rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/3"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-400 rounded-full filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/3"></div>
+      <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-blue-300 rounded-full filter blur-3xl opacity-10"></div>
+      <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-purple-300 rounded-full filter blur-3xl opacity-10"></div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-20">
+          <div className="inline-flex items-center justify-center space-x-2 bg-green-100 text-green-800 px-5 py-2 rounded-full text-sm font-medium mb-5 shadow-sm">
+            <Bell className="w-4 h-4" />
+            <span>Come together in faith</span>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-4 border-green-500">
-              <div className="bg-green-100 p-4 rounded-full inline-flex mb-6 shadow-md">
-                <Calendar className="h-8 w-8 text-green-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Sunday Services</h3>
-              <p className="text-gray-700">
-                Main Service: 8:30 AM<br />
-              </p>
-            </div>
+          <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-blue-600">
+              Join Us for Worship
+            </span>
+          </h2>
+          
+          <div className="h-2 w-40 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full mx-auto mt-5 mb-8"></div>
+          
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            We welcome you to join our vibrant community in-person or online.
+            Experience the joy of fellowship and spiritual growth together.
+          </p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-10 lg:gap-12">
+          {/* Enhanced Sunday Services Card */}
+          <div 
+            className={`bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden transition-all duration-500 ${
+              hoverCard === 'sunday' ? 'transform -translate-y-3 shadow-2xl border-green-200' : 'transform hover:-translate-y-2 hover:shadow-lg'
+            }`}
+            onMouseEnter={() => setHoverCard('sunday')}
+            onMouseLeave={() => setHoverCard("")}
+          >
+            {/* Card decoration */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-green-600 rounded-t-xl"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-green-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-70"></div>
             
-            <div className="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-4 border-blue-500">
-              <div className="bg-blue-100 p-4 rounded-full inline-flex mb-6 shadow-md">
-                <Book className="h-8 w-8 text-blue-600" />
+            <div className="relative">
+              <div className="bg-gradient-to-br from-green-500 to-green-600 p-5 rounded-2xl inline-flex items-center justify-center mb-7 shadow-lg text-white">
+                <Calendar className="h-8 w-8" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Weekend Prayers</h3>
-              <p className="text-gray-700">
-                Saturdays: 7:00 AM<br />
-              </p>
-            </div>
-            
-            <div className="bg-white p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300 border-t-4 border-yellow-500">
-              <div className="bg-yellow-100 p-4 rounded-full inline-flex mb-6 shadow-md">
-                <Users className="h-8 w-8 text-yellow-600" />
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-5">Sunday Services</h3>
+              
+              <div className="space-y-4 mb-7">
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-green-100 rounded-full text-green-600 mt-0.5">
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Main Service</p>
+                    <p className="text-gray-600">8:30 AM - 10:30 AM</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-green-100 rounded-full text-green-600 mt-0.5">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Location</p>
+                    <p className="text-gray-600">Main Sanctuary</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-green-100 rounded-full text-green-600 mt-0.5">
+                    <Music className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Worship Style</p>
+                    <p className="text-gray-600">Contemporary & Traditional</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">New Month Special Program</h3>
-              <p className="text-gray-700">
-                First of Every Month: Friday 5:30 PM<br />
-              </p>
+              
+              <div className="pt-5 border-t border-gray-100">
+                <a href="/sunday-services" className="inline-flex items-center text-green-600 font-medium hover:text-green-700 transition-colors group">
+                  Learn more 
+                  <ChevronRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
             </div>
           </div>
           
-          <div className="text-center mt-12">
-            <Link href="/services" className="bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-full transition-colors shadow-lg hover:shadow-xl inline-flex items-center">
-              View All Services
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+          {/* Enhanced Weekend Prayers Card */}
+          <div 
+            className={`bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden transition-all duration-500 ${
+              hoverCard === 'weekend' ? 'transform -translate-y-3 shadow-2xl border-blue-200' : 'transform hover:-translate-y-2 hover:shadow-lg'
+            }`}
+            onMouseEnter={() => setHoverCard('weekend')}
+            onMouseLeave={() => setHoverCard("")}
+          >
+            {/* Card decoration */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-t-xl"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-70"></div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-5 rounded-2xl inline-flex items-center justify-center mb-7 shadow-lg text-white">
+                <Book className="h-8 w-8" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-5">Weekend Prayers</h3>
+              
+              <div className="space-y-4 mb-7">
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-blue-100 rounded-full text-blue-600 mt-0.5">
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Saturday Morning</p>
+                    <p className="text-gray-600">7:00 AM - 8:30 AM</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-blue-100 rounded-full text-blue-600 mt-0.5">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Location</p>
+                    <p className="text-gray-600">Prayer Chapel</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-blue-100 rounded-full text-blue-600 mt-0.5">
+                    <Bookmark className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Format</p>
+                    <p className="text-gray-600">Prayer & Scripture Reading</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="pt-5 border-t border-gray-100">
+                <a href="/weekend-prayers" className="inline-flex items-center text-blue-600 font-medium hover:text-blue-700 transition-colors group">
+                  Learn more 
+                  <ChevronRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          {/* Enhanced New Month Special Program Card */}
+          <div 
+            className={`bg-white p-8 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden transition-all duration-500 ${
+              hoverCard === 'monthly' ? 'transform -translate-y-3 shadow-2xl border-yellow-200' : 'transform hover:-translate-y-2 hover:shadow-lg'
+            }`}
+            onMouseEnter={() => setHoverCard('monthly')}
+            onMouseLeave={() => setHoverCard("")}
+          >
+            {/* Card decoration */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-t-xl"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-yellow-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-70"></div>
+            
+            <div className="relative">
+              <div className="bg-gradient-to-br from-yellow-500 to-amber-600 p-5 rounded-2xl inline-flex items-center justify-center mb-7 shadow-lg text-white">
+                <Users className="h-8 w-8" />
+              </div>
+              
+              <h3 className="text-2xl font-bold text-gray-800 mb-5">New Month Special</h3>
+              
+              <div className="space-y-4 mb-7">
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-yellow-100 rounded-full text-yellow-600 mt-0.5">
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">First Friday Monthly</p>
+                    <p className="text-gray-600">5:30 PM - 7:00 PM</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-yellow-100 rounded-full text-yellow-600 mt-0.5">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Location</p>
+                    <p className="text-gray-600">Main Sanctuary</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-4">
+                  <div className="p-1.5 bg-yellow-100 rounded-full text-yellow-600 mt-0.5">
+                    <Headphones className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Special Features</p>
+                    <p className="text-gray-600">Worship Band & Testimonies</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="pt-5 border-t border-gray-100">
+                <a href="/monthly-program" className="inline-flex items-center text-yellow-600 font-medium hover:text-yellow-700 transition-colors group">
+                  Learn more 
+                  <ChevronRight className="ml-1 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+        
+        <div className="mt-20 text-center">
+          <div className="inline-flex flex-col items-center">
+            <a 
+              href="/services" 
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-blue-600 rounded-full blur-md opacity-80 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-4 px-10 rounded-full transition-colors shadow-lg hover:shadow-xl inline-flex items-center">
+                View All Services
+                <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </a>
+            
+            <div className="mt-6 flex items-center space-x-1 text-gray-600 text-sm">
+              <Heart className="h-4 w-4 mr-1 text-red-400" />
+              <span>Join our community of faith</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
       {/* Welcome Message */}
       <section className="py-20 bg-white">
