@@ -397,26 +397,6 @@ const prevPage = () => currentPage > 1 && setCurrentPage(currentPage - 1);
         </div>
       </div>
 
-      {/* Newsletter CTA Section */}
-      <div className="bg-blue-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-xl shadow-md p-8 md:p-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Never Miss a Sermon</h2>
-            <p className="text-gray-600 mb-6">Subscribe to our newsletter and get the latest sermons delivered to your inbox every week.</p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-md whitespace-nowrap">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <style jsx global>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
