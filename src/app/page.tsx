@@ -444,17 +444,10 @@ export default function Home() {
                   Join Rev. Dr. Emmanuel Olowononi in exploring how adversity becomes our greatest spiritual teacher. Discover practical tools for maintaining faith and finding purpose in life&apos;s storms.
                 </p>
                 <div className="flex flex-wrap gap-3 md:gap-4 mt-6 md:mt-8">
-                  <button 
-                    onClick={togglePlay}
-                    className="group relative bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center text-sm md:text-base"
-                  >
-                    {isPlaying ? (
-                      <PauseIcon className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:scale-110 transition-transform" />
-                    ) : (
-                      <PlayIcon className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:scale-110 transition-transform" />
-                    )}
-                    {isPlaying ? 'Pause' : 'Play Now'}
-                  </button>
+                  <a href="#" className="group relative bg-gradient-to-r from-emerald-500 to-cyan-600 hover:from-emerald-600 hover:to-cyan-700 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center text-sm md:text-base">
+                    <PlayIcon className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3 group-hover:scale-110 transition-transform" />
+                    Play Now
+                  </a>
                   <a href="#" className="group border-2 border-white/20 hover:border-white/40 text-white px-6 py-3 md:px-8 md:py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/5 inline-flex items-center text-sm md:text-base">
                     Browse All
                     <ArrowRightIcon className="w-4 h-4 md:w-5 md:h-5 ml-2 md:ml-3 group-hover:translate-x-1 transition-transform" />
@@ -474,68 +467,43 @@ export default function Home() {
                         className="rounded-lg md:rounded-xl object-cover transform group-hover:scale-105 transition-transform"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-lg md:rounded-xl"></div>
-                      <button 
-                        onClick={togglePlay}
-                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 md:w-8 md:h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        {isPlaying ? (
-                          <PauseIcon className="w-full h-full" />
-                        ) : (
-                          <PlayIcon className="w-full h-full" />
-                        )}
-                      </button>
+                      <PlayIcon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 md:w-8 md:h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div>
-                      <h4 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">{sermon.title}</h4>
-                      <p className="text-emerald-400/90 font-medium text-sm md:text-base">{sermon.speaker}</p>
+                      <h4 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2">Growing in Faith</h4>
+                      <p className="text-emerald-400/90 font-medium text-sm md:text-base">James Wilson</p>
                       <div className="flex items-center gap-1 md:gap-2 mt-1 md:mt-2 text-white/60 text-xs md:text-sm">
                         <ClockIcon className="w-3 h-3 md:w-4 md:h-4" />
-                        <span>{formatTime(duration || sermon.duration)}</span>
+                        <span>45:30</span>
                         <span className="mx-1">•</span>
                         <CalendarIcon className="w-3 h-3 md:w-4 md:h-4" />
-                        <span>{sermon.date}</span>
+                        <span>April 15, 2024</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Player Controls */}
                   <div className="space-y-4 md:space-y-6">
-                    <div className="relative group" onClick={handleSeek}>
-                      <div className="h-1.5 md:h-2 bg-white/10 rounded-full cursor-pointer">
-                        <div 
-                          className="h-1.5 md:h-2 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full relative"
-                          style={{ width: `${(currentTime / duration) * 100}%` }}
-                        >
+                    <div className="relative group">
+                      <div className="h-1.5 md:h-2 bg-white/10 rounded-full">
+                        <div className="h-1.5 md:h-2 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full w-1/3 relative">
                           <div className="absolute right-0 -top-0.5 md:-top-1 w-2 h-2 md:w-3 md:h-3 bg-white rounded-full shadow-lg"></div>
                         </div>
                       </div>
                       <div className="flex justify-between text-white/60 text-xs md:text-sm mt-1 md:mt-2">
-                        <span>{formatTime(currentTime)}</span>
-                        <span>-{formatTime(duration - currentTime)}</span>
+                        <span>2:15</span>
+                        <span>-45:30</span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-center gap-4 md:gap-6">
-                      <button 
-                        onClick={() => skip(-15)}
-                        className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-2 md:p-3"
-                      >
+                      <button className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-2 md:p-3">
                         <BackwardIcon className="w-5 h-5 md:w-7 md:h-7" />
                       </button>
-                      <button 
-                        onClick={togglePlay}
-                        className="bg-gradient-to-r from-emerald-500 to-cyan-600 text-white p-3 md:p-5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-transform"
-                      >
-                        {isPlaying ? (
-                          <PauseIcon className="w-5 h-5 md:w-8 md:h-8" />
-                        ) : (
-                          <PlayIcon className="w-5 h-5 md:w-8 md:h-8" />
-                        )}
+                      <button className="bg-gradient-to-r from-emerald-500 to-cyan-600 text-white p-3 md:p-5 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-transform">
+                        <PlayIcon className="w-5 h-5 md:w-8 md:h-8" />
                       </button>
-                      <button 
-                        onClick={() => skip(15)}
-                        className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-2 md:p-3"
-                      >
+                      <button className="text-white/80 hover:text-emerald-400 hover:scale-110 transition-all p-2 md:p-3">
                         <ForwardIcon className="w-5 h-5 md:w-7 md:h-7" />
                       </button>
                     </div>
@@ -544,13 +512,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
-          {/* Hidden audio element */}
-          <audio
-            ref={audioRef}
-            src={sermon.audioSrc}
-            preload="metadata"
-          />
         </section>
 
         {/* Horizontal Scrollable Ministries Section */}
