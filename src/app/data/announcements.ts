@@ -3,9 +3,9 @@ import { Announcement } from '../../types';
 export const announcements: Announcement[] = [
   {
     id: 1,
-    title: 'Annual Church Picnic',
-    description: 'Join us for our annual church picnic at Memorial Park. Food, games, and fellowship for the whole family!',
-    date: 'May 15, 2025',
+    title: 'Sunday Apostolic Service',
+    description: 'Join us this Sunday for an impactful time with God, Sunday Apostolic Service!',
+    date: 'October 4, 2026',
     image: '/images/picnic.jpg',
     link: '#'
   },

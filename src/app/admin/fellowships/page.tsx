@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, LockKeyhole, Users } from 'lucide-react'
+import { ArrowUpRight, LockKeyhole } from 'lucide-react'
 import { isAdmin } from '@/lib/admin/auth'
 import { authConfig, totpConfig } from '@/lib/admin/session'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
 import { readGroups } from '@/lib/community'
 import CommunityAdmin from '@/components/admin/CommunityAdmin'
 import AdminLogin from '@/components/admin/AdminLogin'
+import AdminTabs from '@/components/admin/AdminTabs'
 import styles from '@/components/admin/admin.module.css'
 
 export const metadata: Metadata = {
@@ -51,14 +52,7 @@ export default async function AdminCommunityPage() {
         </div>
         {authenticated ? (
           <>
-            <div className={styles.adminTabs}>
-              <Link href="/admin/fellowships" aria-current="page">
-                <Users size={15} aria-hidden="true" /> Fellowships & units
-              </Link>
-              <Link href="/admin/media">
-                Media room
-              </Link>
-            </div>
+            <AdminTabs active="fellowships" />
             <CommunityAdmin
               initialGroups={await readGroups()}
               cloudinaryReady={Boolean(cloudinaryConfig())}

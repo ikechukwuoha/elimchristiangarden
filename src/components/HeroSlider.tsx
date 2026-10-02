@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import {
   ArrowDown,
@@ -9,6 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
+  Pause,
+  Play,
 } from 'lucide-react'
 import { church } from '@/app/data/church'
 import styles from '@/app/home.module.css'
@@ -80,6 +82,10 @@ export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
     Array.from({ length: slideCount }, (_, index) => index),
   )
   const [position, setPosition] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const touchStart = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     // Deferred with a timeout so the shuffled order lands after hydration.
@@ -88,19 +94,59 @@ export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
   }, [slideCount])
 
   useEffect(() => {
-    if (order.length < 2) return
-    const interval = setInterval(
-      () => setPosition((value) => (value + 1) % order.length),
-      6000,
-    )
-    return () => clearInterval(interval)
-  }, [order.length])
+    if (order.length < 2 || paused || hovered || focused) return
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    let interval: ReturnType<typeof setInterval> | undefined
+    const sync = () => {
+      clearInterval(interval)
+      if (!document.hidden && !motion.matches) {
+        interval = setInterval(() => setPosition((value) => (value + 1) % order.length), 6000)
+      }
+    }
+    sync()
+    document.addEventListener('visibilitychange', sync)
+    motion.addEventListener('change', sync)
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', sync)
+      motion.removeEventListener('change', sync)
+    }
+  }, [order.length, paused, hovered, focused, position])
 
   const move = (step: number) =>
     setPosition((value) => (value + step + order.length) % order.length)
 
   return (
-    <section className={styles.hero} aria-labelledby="welcome-title">
+    <section
+      className={styles.hero}
+      aria-labelledby="welcome-title"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
+      }}
+      onTouchStart={(event) => {
+        touchStart.current = null
+        if (event.touches.length !== 1) return
+        if ((event.target as HTMLElement).closest('a, button')) return
+        const touch = event.touches[0]
+        touchStart.current = touch ? { x: touch.clientX, y: touch.clientY } : null
+      }}
+      onTouchEnd={(event) => {
+        const start = touchStart.current
+        touchStart.current = null
+        const touch = event.changedTouches[0]
+        if (!start || !touch || order.length < 2) return
+        const dx = touch.clientX - start.x
+        const dy = touch.clientY - start.y
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          setPaused(true)
+          move(dx < 0 ? 1 : -1)
+        }
+      }}
+      onTouchCancel={() => { touchStart.current = null }}
+    >
       <h1 id="welcome-title" className="sr-only">
         Rooted in faith. Growing together. Elim Christian Garden International,
         Bwari, Abuja.
@@ -128,7 +174,7 @@ export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
                   alt={photo.alt}
                   fill
                   unoptimized
-                  sizes="(max-width: 700px) 100vw, 72vw"
+                  sizes="(max-width: 899px) 100vw, 72vw"
                   loading="eager"
                   fetchPriority={active ? 'high' : 'auto'}
                   className={styles.cover}
@@ -178,6 +224,52 @@ export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
           <MapPin size={14} aria-hidden="true" /> BWARI, ABUJA{' '}
           <span>•</span> ONE FAMILY IN CHRIST
         </div>
+        {photos.length > 1 && (
+          <div className={styles.heroControls} role="group" aria-label="Photo slideshow controls">
+            <button
+              type="button"
+              className={styles.heroArrow}
+              onClick={() => move(-1)}
+              aria-label="Previous slide"
+            >
+              <ChevronLeft size={20} aria-hidden="true" />
+            </button>
+            {order.length <= 6 && (
+              <div className={styles.heroDots} role="group" aria-label="Slides">
+                {order.map((slideIndex, slidePosition) => (
+                  <button
+                    key={slideIndex}
+                    type="button"
+                    className={styles.heroDot}
+                    aria-current={slidePosition === position}
+                    aria-label={`Go to slide ${slidePosition + 1}`}
+                    onClick={() => setPosition(slidePosition)}
+                  />
+                ))}
+              </div>
+            )}
+            <span className={styles.heroCount}>
+              <span className="sr-only">Photo </span>{position + 1} / {order.length}
+            </span>
+            <button
+              type="button"
+              className={styles.heroArrow}
+              onClick={() => move(1)}
+              aria-label="Next slide"
+            >
+              <ChevronRight size={20} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className={styles.heroArrow}
+              aria-label={paused ? 'Resume slideshow' : 'Pause slideshow'}
+              aria-pressed={paused}
+              onClick={() => setPaused((value) => !value)}
+            >
+              {paused ? <Play size={17} aria-hidden="true" /> : <Pause size={17} aria-hidden="true" />}
+            </button>
+          </div>
+        )}
       </div>
       <a
         className={styles.heroScroll}
@@ -190,44 +282,6 @@ export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
       {photos.length > 0 && (
         <div className={styles.photoCaption}>
           <span className={styles.captionLine} /> REAL PEOPLE. SHARED FAITH.
-        </div>
-      )}
-      {photos.length > 1 && (
-        <div className={styles.heroControls}>
-          <button
-            type="button"
-            className={styles.heroArrow}
-            onClick={() => move(-1)}
-            aria-label="Previous slide"
-          >
-            <ChevronLeft size={20} aria-hidden="true" />
-          </button>
-          {order.length <= 12 ? (
-            <div className={styles.heroDots} role="group" aria-label="Slides">
-              {order.map((slideIndex, slidePosition) => (
-                <button
-                  key={slideIndex}
-                  type="button"
-                  className={styles.heroDot}
-                  aria-current={slidePosition === position}
-                  aria-label={`Go to slide ${slidePosition + 1}`}
-                  onClick={() => setPosition(slidePosition)}
-                />
-              ))}
-            </div>
-          ) : (
-            <span className={styles.heroCount} aria-live="polite">
-              {position + 1} / {order.length}
-            </span>
-          )}
-          <button
-            type="button"
-            className={styles.heroArrow}
-            onClick={() => move(1)}
-            aria-label="Next slide"
-          >
-            <ChevronRight size={20} aria-hidden="true" />
-          </button>
         </div>
       )}
     </section>

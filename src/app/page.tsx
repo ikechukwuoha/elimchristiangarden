@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Clock3,
   Heart,
+  Images,
   Leaf,
   MapPin,
   MoveUpRight,
@@ -18,48 +19,20 @@ import {
 import Layout from '@/components/Layout'
 import HeroSlider from '@/components/HeroSlider'
 import { cachedHeroPhotos } from '@/lib/hero-images'
-import { church } from './data/church'
+import { cachedGroups } from '@/lib/community-cache'
+import { communityWithPhotos } from '@/lib/community-images'
+import { deliveryUrl } from '@/lib/gallery'
+import { FaWhatsapp } from 'react-icons/fa'
+import { church, whatsappLink } from './data/church'
 import { cachedMessageLibrary } from '@/lib/message-cache'
 import MessageArtwork from '@/components/sermons/MessageArtwork'
+import CommunityRefresh from '@/components/community/CommunityRefresh'
 import styles from './home.module.css'
 
 export const metadata: Metadata = {
   title: 'Welcome Home',
   description: `A place to belong, believe, and grow. Join Elim Christian Garden International in Bwari, Abuja for Sunday worship at ${church.sundayTime}.`,
 }
-
-const communities = [
-  {
-    number: '01',
-    name: 'The next generation',
-    category: 'CHILDREN & TEENAGERS',
-    image: '/images/teenagerandchildren.jpg',
-    alt: 'Young people participating in a church gathering at Elim',
-    description:
-      'Helping young hearts discover Jesus, build friendships, and grow in faith.',
-    href: '/community#children-and-teenagers',
-  },
-  {
-    number: '02',
-    name: 'A life of worship',
-    category: 'TEHILLA MINISTRIES',
-    image: '/images/worship.jpg',
-    alt: 'Members of Elim church worshipping together',
-    description:
-      'Using our voices and creativity to honour God and bring people together.',
-    href: '/community#tehilla',
-  },
-  {
-    number: '03',
-    name: 'Better together',
-    category: 'FELLOWSHIP & SERVICE',
-    image: '/images/community.jpg',
-    alt: 'Members of the Elim church community gathered together',
-    description:
-      'Find friendship, share life, and make a difference through serving others.',
-    href: '/community',
-  },
-]
 
 const gatherings = [
   {
@@ -92,10 +65,12 @@ const gatherings = [
 ]
 
 export default async function Home() {
-  const [photoResult, messageResult] = await Promise.allSettled([
-    cachedHeroPhotos(), cachedMessageLibrary(),
+  const [photoResult, messageResult, communityResult] = await Promise.allSettled([
+    cachedHeroPhotos(), cachedMessageLibrary(), cachedGroups({ strict: true }).then(communityWithPhotos),
   ])
   const photos = photoResult.status === 'fulfilled' ? photoResult.value : []
+  const communities = communityResult.status === 'fulfilled' ? communityResult.value : []
+  const communityUnavailable = communityResult.status === 'rejected'
   const featuredSermon = messageResult.status === 'fulfilled' ? messageResult.value.messages[0] : undefined
   const messagesUnavailable = messageResult.status === 'rejected' || messageResult.value.unavailableSources.length > 0
 
@@ -156,7 +131,7 @@ export default async function Home() {
                 src="/images/church-main.jpg"
                 alt="A minister leading worship at Elim Christian Garden"
                 fill
-                sizes="(max-width: 700px) 85vw, 38vw"
+                sizes="(max-width: 599px) 88vw, (max-width: 899px) 423px, 40vw"
                 className={styles.cover}
               />
             </div>
@@ -165,7 +140,7 @@ export default async function Home() {
                 src="/images/church-history.jpg"
                 alt="Elim church leadership sharing a moment together"
                 fill
-                sizes="(max-width: 700px) 45vw, 20vw"
+                sizes="(max-width: 599px) 52vw, (max-width: 899px) 250px, 23vw"
                 className={styles.cover}
               />
             </div>
@@ -239,24 +214,38 @@ export default async function Home() {
                 community where you can belong and become.
               </p>
             </div>
+            <CommunityRefresh unavailable={communityUnavailable} className={styles.communityNotice} />
+            {!communityUnavailable && communities.length === 0 && (
+              <p className={styles.communityNotice} role="status">
+                No fellowships or units have been added yet.
+              </p>
+            )}
             <div className={styles.communityGrid}>
-              {communities.map((community) => (
+              {communities.map((community, index) => (
                 <Link
                   className={styles.communityCard}
-                  key={community.number}
-                  href={community.href}
-                  aria-label={`Explore ${community.category.toLowerCase()}`}
+                  key={community.id}
+                  href={`/community/${community.id}`}
+                  aria-label={`Explore ${community.title}`}
                 >
                   <div className={styles.communityImage}>
-                    <Image
-                      src={community.image}
-                      alt={community.alt}
-                      fill
-                      sizes="(max-width: 700px) 100vw, 33vw"
-                      className={styles.cover}
-                    />
+                    {community.image ? (
+                      <Image
+                        src={community.image.startsWith('https://res.cloudinary.com/') ? deliveryUrl(community.image, 1000) : community.image}
+                        alt={community.alt}
+                        fill
+                        unoptimized={community.image.startsWith('https://res.cloudinary.com/')}
+                        sizes="(max-width: 599px) calc(100vw - 40px), (max-width: 899px) calc((100vw - 88px) / 2), (max-width: 1239px) 30vw, 370px"
+                        className={styles.cover}
+                      />
+                    ) : (
+                      <span className={styles.communityPlaceholder}>
+                        <Images size={32} strokeWidth={1.2} aria-hidden="true" />
+                        <span>PHOTOGRAPHS COMING SOON</span>
+                      </span>
+                    )}
                     <span className={styles.cardNumber}>
-                      {community.number}
+                      {String(index + 1).padStart(2, '0')}
                     </span>
                     <span className={styles.cardArrow}>
                       <ArrowUpRight size={22} aria-hidden="true" />
@@ -264,15 +253,18 @@ export default async function Home() {
                   </div>
                   <div className={styles.communityCopy}>
                     <span>{community.category}</span>
-                    <h3>{community.name}</h3>
+                    <h3>{community.title}</h3>
                     <p>{community.description}</p>
                     <div className={styles.communityAction}>
-                      Let’s connect <ArrowRight size={15} aria-hidden="true" />
+                      Get to know us <ArrowRight size={15} aria-hidden="true" />
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
+            <Link href="/community" className={styles.textLink}>
+              Explore our fellowships and units <ArrowUpRight size={18} aria-hidden="true" />
+            </Link>
           </div>
         </section>
 
@@ -442,10 +434,14 @@ export default async function Home() {
                 Get directions <ArrowUpRight size={18} aria-hidden="true" />
               </a>
               <a
-                href={`mailto:${church.email}?subject=My%20first%20visit%20to%20Elim`}
+                href={whatsappLink(
+                  'Hello! I would like to plan my first visit to Elim.',
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={styles.textLink}
               >
-                Say hello <ArrowRight size={17} aria-hidden="true" />
+                Say hello <FaWhatsapp size={17} aria-hidden="true" />
               </a>
             </div>
           </div>
@@ -482,9 +478,13 @@ export default async function Home() {
                 Absolutely. People of all ages are welcome at Elim, including
                 children and teenagers.{' '}
                 <a
-                  href={`mailto:${church.email}?subject=Visiting%20Elim%20with%20my%20family`}
+                  href={whatsappLink(
+                    'Hello! I would like to visit Elim with my family.',
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  Contact us
+                  Contact us on WhatsApp
                 </a>{' '}
                 before your visit if you’d like to learn more about our
                 children’s and teenagers’ ministry.

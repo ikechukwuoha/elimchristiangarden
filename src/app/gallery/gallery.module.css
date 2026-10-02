@@ -2,12 +2,12 @@
   --cream: #f9f8f3;
   --green: #244c3b;
   --ink: #243a30;
-  padding-top: 88px;
+  padding-top: 128px;
   background: var(--cream);
   color: var(--ink);
 }
 .gallery [id] {
-  scroll-margin-top: 112px;
+  scroll-margin-top: 154px;
 }
 .gallery :is(a, summary):focus-visible {
   outline: 3px solid #a78b51;
@@ -115,12 +115,27 @@
   align-items: center;
   margin-top: 43px;
 }
+.groupHeroGrid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 38px;
+}
+.carouselContainer {
+  width: calc(100% - 64px);
+  max-width: 1600px;
+  margin: 38px auto 0;
+}
 .heroCopy > p {
   max-width: 430px;
   margin: 24px 0 28px;
   color: #717969;
   font-size: 14px;
   line-height: 1.95;
+}
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
 }
 .heroAside {
   border: 1px solid #e2e5d9;
@@ -618,6 +633,10 @@
   }
 }
 @media (max-width: 760px) {
+  .carouselContainer {
+    width: calc(100% - 32px);
+    margin-top: 30px;
+  }
   .container {
     padding-left: 24px;
     padding-right: 24px;
@@ -661,10 +680,10 @@
 }
 @media (max-width: 600px) {
   .gallery {
-    padding-top: 76px;
+    padding-top: 112px;
   }
   .gallery [id] {
-    scroll-margin-top: 96px;
+    scroll-margin-top: 138px;
   }
   .groupGrid,
   .photoGrid {

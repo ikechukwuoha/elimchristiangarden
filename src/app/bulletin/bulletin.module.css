@@ -2,7 +2,7 @@
   --cream: #f9f8f3;
   --green: #244c3b;
   --ink: #243a30;
-  padding-top: 88px;
+  padding-top: 128px;
   background: var(--cream);
   color: var(--ink);
 }
@@ -333,10 +333,10 @@
 
 @media (max-width: 600px) {
   .bulletinPage {
-    padding-top: 76px;
+    padding-top: 112px;
   }
   .bulletinPage [id] {
-    scroll-margin-top: 96px;
+    scroll-margin-top: 138px;
   }
 }
 

@@ -1,7 +1,7 @@
-import { revalidateTag } from 'next/cache'
 import { isAdmin, json, readSmallJson, sameOrigin } from '@/lib/admin/auth'
 import { logAdminEvent } from '@/lib/admin/audit'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import { invalidateCommunityPages } from '@/lib/community-cache'
 import {
   addGroup,
   CommunityStorageError,
@@ -9,6 +9,7 @@ import {
   readGroups,
   removeGroup,
   saveGroups,
+  updateGroup,
 } from '@/lib/community'
 
 export const runtime = 'nodejs'
@@ -52,7 +53,7 @@ export async function POST(request: Request) {
     )
   let input
   try {
-    input = await readSmallJson(request)
+    input = await readSmallJson(request, 65536)
     // Reject invalid form fields before making any storage requests.
     parseGroupInput(input, [])
   } catch (error) {
@@ -61,10 +62,11 @@ export async function POST(request: Request) {
   try {
     const current = await readGroups({ strict: true })
     const record = parseGroupInput(input, current)
-    await saveGroups(addGroup(current, record))
-    revalidateTag('community-groups', { expire: 0 })
+    const groups = addGroup(current, record)
+    await saveGroups(groups)
+    invalidateCommunityPages()
     logAdminEvent('group_added', { id: record.id, kind: record.kind })
-    return json({ group: record })
+    return json({ group: record, groups })
   } catch (error) {
     return failure(error, 'This group could not be saved. Please try again.')
   }
@@ -99,11 +101,43 @@ export async function DELETE(request: Request) {
   if (!id) return json({ error: 'Choose a group to remove.' }, 400)
   try {
     const current = await readGroups({ strict: true })
-    await saveGroups(removeGroup(current, id))
-    revalidateTag('community-groups', { expire: 0 })
+    const groups = removeGroup(current, id)
+    await saveGroups(groups)
+    invalidateCommunityPages()
     logAdminEvent('group_removed', { id })
-    return json({ ok: true })
+    return json({ ok: true, groups })
   } catch (error) {
     return failure(error, 'This group could not be removed. Please try again.')
+  }
+}
+
+export async function PATCH(request: Request) {
+  if (!sameOrigin(request))
+    return json({ error: 'This request is not allowed.' }, 403)
+  if (!(await isAdmin()))
+    return json({ error: 'Your session has expired. Please sign in again.' }, 401)
+  if (!cloudinaryConfig())
+    return json({ error: 'Cloudinary hasn’t been connected yet, so changes can’t be saved.' }, 503)
+
+  let input
+  let id: string
+  try {
+    input = await readSmallJson(request, 65536)
+    id = input && typeof input === 'object' && typeof (input as { id?: unknown }).id === 'string'
+      ? (input as { id: string }).id : ''
+    if (!id || id.length > 80) throw new Error('Choose a group to edit.')
+    parseGroupInput(input, [])
+  } catch (error) {
+    return failure(error, 'Invalid request.')
+  }
+  try {
+    const groups = updateGroup(await readGroups({ strict: true }), id, input)
+    await saveGroups(groups)
+    invalidateCommunityPages()
+    const group = groups.find((item) => item.id === id)
+    logAdminEvent('group_updated', { id, kind: group?.kind })
+    return json({ group, groups })
+  } catch (error) {
+    return failure(error, 'This group could not be updated. Please try again.')
   }
 }

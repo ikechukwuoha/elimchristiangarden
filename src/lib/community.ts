@@ -22,6 +22,11 @@ export type CommunityGroup = {
   image: string
   alt: string
   activities: string[]
+  details?: string
+  audience?: string
+  leader?: string
+  meetingTime?: string
+  meetingLocation?: string
 }
 
 export const seedGroups: CommunityGroup[] = ministries.map((ministry) => ({
@@ -65,6 +70,10 @@ function isImageRef(value: unknown): value is string {
   }
 }
 
+function optionalText(value: unknown, maxLength: number) {
+  return value === undefined || (typeof value === 'string' && value.length <= maxLength)
+}
+
 export function isGroupArray(value: unknown): value is CommunityGroup[] {
   return (
     Array.isArray(value) &&
@@ -87,6 +96,11 @@ export function isGroupArray(value: unknown): value is CommunityGroup[] {
         isImageRef(group.image) &&
         typeof group.alt === 'string' &&
         group.alt.length <= 250 &&
+        optionalText(group.details, 6000) &&
+        optionalText(group.audience, 200) &&
+        optionalText(group.leader, 120) &&
+        optionalText(group.meetingTime, 160) &&
+        optionalText(group.meetingLocation, 200) &&
         Array.isArray(group.activities) &&
         group.activities.length <= 12 &&
         group.activities.every(
@@ -107,6 +121,17 @@ export function parseGroupInput(
   if (!value || typeof value !== 'object')
     throw new Error('Enter the group details.')
   const data = value as Record<string, unknown>
+  function detail(field: string, limit: number, label: string) {
+    if (data[field] === undefined) return ''
+    if (typeof data[field] !== 'string' || (data[field] as string).trim().length > limit)
+      throw new Error(`Enter ${label} using no more than ${limit} characters.`)
+    return (data[field] as string).trim()
+  }
+  const details = detail('details', 6000, 'the full description')
+  const audience = detail('audience', 200, 'who the group is for')
+  const leader = detail('leader', 120, 'the group leader’s name')
+  const meetingTime = detail('meetingTime', 160, 'the meeting time')
+  const meetingLocation = detail('meetingLocation', 200, 'the meeting location')
   const title =
     typeof data.title === 'string' ? data.title.trim() : ''
   if (!title || title.length > 80)
@@ -157,6 +182,11 @@ export function parseGroupInput(
     image,
     alt,
     activities,
+    ...(details ? { details } : {}),
+    ...(audience ? { audience } : {}),
+    ...(leader ? { leader } : {}),
+    ...(meetingTime ? { meetingTime } : {}),
+    ...(meetingLocation ? { meetingLocation } : {}),
   }
 }
 
@@ -175,6 +205,14 @@ export function removeGroup(
   if (remaining.length === items.length)
     throw new Error('That group could not be found.')
   return remaining
+}
+
+export function updateGroup(items: CommunityGroup[], id: string, input: unknown): CommunityGroup[] {
+  if (!items.some((group) => group.id === id))
+    throw new Error('That group could not be found.')
+  const updated = { ...parseGroupInput(input, items.filter((group) => group.id !== id)), id }
+  // Keep the existing ID so editing a name does not detach its gallery.
+  return items.map((group) => group.id === id ? updated : group)
 }
 
 // Galleries and upload grouping are keyed by group id, with Church-wide

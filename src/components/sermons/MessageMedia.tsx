@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ArrowUpRight, Download, Headphones, Video } from 'lucide-react'
-import { church } from '@/app/data/church'
+import { whatsappLink } from '@/app/data/church'
 import { youtubeEmbedUrl } from '@/lib/sermons'
 import type { Sermon } from '@/lib/messages'
 import MessageArtwork from './MessageArtwork'
@@ -14,7 +14,9 @@ export default function MessageMedia({ sermon }: { sermon: Sermon }) {
     embedUrl ? 'video' : 'audio',
   )
   const [audioError, setAudioError] = useState(false)
-  const requestUrl = `mailto:${church.email}?subject=${encodeURIComponent(`Recording request: ${sermon.title}`)}`
+  const requestUrl = whatsappLink(
+    `Hello! Please I would like the recording "${sermon.title}".`,
+  )
   const available = Boolean(embedUrl || sermon.audioUrl)
 
   return (
@@ -91,7 +93,11 @@ export default function MessageMedia({ sermon }: { sermon: Sermon }) {
                   ? 'Please try again later or ask our team for a copy.'
                   : 'You can explore the message and Scripture below, or ask our team for the recording.'}
               </p>
-              <a href={requestUrl}>
+              <a
+                href={requestUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Request this recording{' '}
                 <ArrowUpRight size={15} aria-hidden="true" />
               </a>

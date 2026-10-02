@@ -13,6 +13,7 @@
     "test:admin": "node --conditions=react-server --import tsx --test tests/media-admin.test.ts",
     "test:gallery": "node --conditions=react-server --import tsx --test tests/gallery.test.ts",
     "test:community": "node --conditions=react-server --import tsx --test tests/community.test.ts",
+    "test:content": "node --conditions=react-server --import tsx --test tests/content.test.ts",
     "admin:totp": "node scripts/generate-totp.mjs",
     "test:bulletins": "node --conditions=react-server --import tsx --test tests/bulletins.test.ts"
   },

@@ -4,10 +4,10 @@
   --cream: #f9f8f3;
   color: var(--ink);
   background: var(--cream);
-  padding-top: 88px;
+  padding-top: 128px;
 }
 .sermons section[id] {
-  scroll-margin-top: 112px;
+  scroll-margin-top: 154px;
 }
 .sermons :is(a, button, input, select):focus-visible {
   outline: 3px solid #af955f;
@@ -1471,10 +1471,10 @@
 }
 @media (max-width: 600px) {
   .sermons {
-    padding-top: 76px;
+    padding-top: 112px;
   }
   .sermons section[id] {
-    scroll-margin-top: 96px;
+    scroll-margin-top: 138px;
   }
   .messageGrid {
     grid-template-columns: 1fr;

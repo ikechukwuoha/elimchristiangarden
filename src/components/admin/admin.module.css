@@ -252,6 +252,10 @@
   background: #e9edde;
   color: #506449;
 }
+.pastBadge {
+  background: #efeee7;
+  color: #9a9c8d;
+}
 .removeButton {
   display: inline-flex;
   align-items: center;

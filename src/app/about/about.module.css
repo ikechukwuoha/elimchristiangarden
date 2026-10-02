@@ -2,12 +2,12 @@
   --cream: #f9f8f3;
   --green: #244c3b;
   --ink: #243a30;
-  padding-top: 88px;
+  padding-top: 128px;
   background: var(--cream);
   color: var(--ink);
 }
 .about section[id] {
-  scroll-margin-top: 110px;
+  scroll-margin-top: 152px;
 }
 .about a:focus-visible,
 .about summary:focus-visible {
@@ -380,14 +380,18 @@
 }
 .valuesGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 24px;
 }
 .value {
+  grid-column: span 2;
   background: #faf9f4;
   padding: 30px 28px;
   border: 1px solid #e5e5da;
   border-radius: 4px;
+}
+.value:nth-child(4) {
+  grid-column: 2 / span 2;
 }
 .valueTop {
   display: flex;
@@ -461,8 +465,8 @@
 }
 .mission p {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 23px;
-  line-height: 1.45;
+  font-size: 20px;
+  line-height: 1.65;
   letter-spacing: -0.025em;
   color: #506449;
 }
@@ -862,6 +866,10 @@
     grid-template-columns: 1fr;
     gap: 18px;
   }
+  .value,
+  .value:nth-child(4) {
+    grid-column: auto;
+  }
   .value {
     padding: 28px;
   }
@@ -883,7 +891,7 @@
     align-items: flex-start;
   }
   .mission p {
-    font-size: 23px;
+    font-size: 19px;
   }
   .mission > svg {
     width: 28px;
@@ -942,10 +950,10 @@
 }
 @media (max-width: 600px) {
   .about {
-    padding-top: 76px;
+    padding-top: 112px;
   }
   .about section[id] {
-    scroll-margin-top: 94px;
+    scroll-margin-top: 136px;
   }
 }
 @media (max-width: 380px) {

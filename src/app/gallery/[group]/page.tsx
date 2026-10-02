@@ -13,6 +13,7 @@ import {
 import { unstable_cache } from 'next/cache'
 import { notFound, redirect } from 'next/navigation'
 import Layout from '@/components/Layout'
+import GalleryCarousel from '@/components/gallery/GalleryCarousel'
 import { church } from '@/app/data/church'
 import { cachedGroups } from '@/lib/community-cache'
 import { groupDetails } from '@/lib/community'
@@ -77,7 +78,7 @@ export default async function GroupGalleryPage({
               <ChevronRight size={13} aria-hidden="true" />
               <span aria-current="page">{info.label}</span>
             </nav>
-            <div className={styles.heroGrid}>
+            <div className={`${styles.heroGrid} ${media.photos.length > 0 ? styles.groupHeroGrid : ''}`}>
               <div className={styles.heroCopy}>
                 <span className={styles.eyebrow}>
                   <span /> {info.category}
@@ -88,41 +89,46 @@ export default async function GroupGalleryPage({
                   <em>gallery.</em>
                 </h1>
                 <p>{info.description}</p>
-                <Link href="/gallery" className={styles.greenButton}>
-                  All galleries <ArrowUpRight size={17} aria-hidden="true" />
-                </Link>
+                <div className={styles.heroActions}>
+                  <Link href="/gallery" className={styles.greenButton}>
+                    All galleries <ArrowUpRight size={17} aria-hidden="true" />
+                  </Link>
+                  {info.id !== 'church-wide' && <Link href={`/community/${info.id}`} className={styles.textLink}>
+                    About this group <ArrowUpRight size={17} aria-hidden="true" />
+                  </Link>}
+                </div>
               </div>
-              <div className={styles.heroAside}>
-                {media.photos[0] ? (
-                  <div className={styles.heroAsidePhoto}>
-                    <Image
-                      src={deliveryUrl(media.photos[0].url, 1000)}
-                      alt={
-                        media.photos[0].description || media.photos[0].title
-                      }
-                      fill
-                      unoptimized
-                      loading="eager"
-                      fetchPriority="high"
-                      className={styles.cover}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <Camera size={30} strokeWidth={1.2} aria-hidden="true" />
-                    <span className={styles.smallLabel}>
-                      THIS GALLERY IS GROWING
-                    </span>
-                    <p>
-                      Our media team shares new moments here after our
-                      gatherings. Check back soon for photographs and videos
-                      from this fellowship.
-                    </p>
-                  </>
-                )}
-              </div>
+              {media.photos.length === 0 && (
+                <div className={styles.heroAside}>
+                  <Camera size={30} strokeWidth={1.2} aria-hidden="true" />
+                  <span className={styles.smallLabel}>
+                    THIS GALLERY IS GROWING
+                  </span>
+                  <p>
+                    Our media team shares new moments here after our
+                    gatherings. Check back soon for photographs and videos
+                    from this fellowship.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
+          {media.photos.length > 0 && (
+            <div className={styles.carouselContainer}>
+              <GalleryCarousel
+                key={group}
+                label={info.label}
+                photos={media.photos.map((photo) => ({
+                  id: photo.id,
+                  src: deliveryUrl(photo.url, 1800),
+                  thumbnail: deliveryUrl(photo.url, 200),
+                  originalUrl: photo.url,
+                  title: photo.title,
+                  description: photo.description,
+                }))}
+              />
+            </div>
+          )}
         </section>
 
         <div className={`${styles.container} ${styles.mediaSections}`}>

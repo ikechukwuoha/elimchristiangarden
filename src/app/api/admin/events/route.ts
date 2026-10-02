@@ -1,0 +1,110 @@
+import { isAdmin, json, readSmallJson, sameOrigin } from '@/lib/admin/auth'
+import { logAdminEvent } from '@/lib/admin/audit'
+import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import { invalidateEventPages } from '@/lib/events-cache'
+import {
+  addEvent,
+  EventStorageError,
+  parseEventInput,
+  readEvents,
+  removeEvent,
+  saveEvents,
+} from '@/lib/events'
+
+export const runtime = 'nodejs'
+export const maxDuration = 60
+
+function failure(error: unknown, fallback: string) {
+  return json(
+    { error: error instanceof Error ? error.message : fallback },
+    error instanceof EventStorageError ? error.status : 400,
+  )
+}
+
+export async function GET() {
+  if (!(await isAdmin()))
+    return json(
+      { error: 'Your session has expired. Please sign in again.' },
+      401,
+    )
+  try {
+    return json({ events: await readEvents({ strict: true }) })
+  } catch (error) {
+    return failure(error, 'The saved events could not be loaded.')
+  }
+}
+
+export async function POST(request: Request) {
+  if (!sameOrigin(request))
+    return json({ error: 'This request is not allowed.' }, 403)
+  if (!(await isAdmin()))
+    return json(
+      { error: 'Your session has expired. Please sign in again.' },
+      401,
+    )
+  if (!cloudinaryConfig())
+    return json(
+      {
+        error:
+          'Cloudinary hasn’t been connected yet, so changes can’t be saved. Contact the site administrator.',
+      },
+      503,
+    )
+  let input
+  try {
+    input = await readSmallJson(request)
+    parseEventInput(input, [])
+  } catch (error) {
+    return failure(error, 'Invalid request.')
+  }
+  try {
+    const current = await readEvents({ strict: true })
+    const record = parseEventInput(input, current)
+    const events = addEvent(current, record)
+    await saveEvents(events)
+    invalidateEventPages()
+    logAdminEvent('event_added', { id: record.id, date: record.date })
+    return json({ event: record, events })
+  } catch (error) {
+    return failure(error, 'This event could not be saved. Please try again.')
+  }
+}
+
+export async function DELETE(request: Request) {
+  if (!sameOrigin(request))
+    return json({ error: 'This request is not allowed.' }, 403)
+  if (!(await isAdmin()))
+    return json(
+      { error: 'Your session has expired. Please sign in again.' },
+      401,
+    )
+  if (!cloudinaryConfig())
+    return json(
+      {
+        error:
+          'Cloudinary hasn’t been connected yet, so changes can’t be saved. Contact the site administrator.',
+      },
+      503,
+    )
+  let input
+  try {
+    input = await readSmallJson(request)
+  } catch {
+    return json({ error: 'Invalid request.' }, 400)
+  }
+  const id =
+    input && typeof input === 'object' && typeof (input as { id?: unknown }).id === 'string'
+      ? (input as { id: string }).id
+      : ''
+  if (!id) return json({ error: 'Choose an event to remove.' }, 400)
+  try {
+    const current = await readEvents({ strict: true })
+    const events = removeEvent(current, id)
+    await saveEvents(events)
+    invalidateEventPages()
+    logAdminEvent('event_removed', { id })
+    return json({ ok: true, events })
+  } catch (error) {
+    return failure(error, 'This event could not be removed. Please try again.')
+  }
+}

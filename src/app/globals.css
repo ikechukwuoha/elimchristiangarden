@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --site-nav-height: 76px;
+  --site-ticker-height: 36px;
+  --site-header-height: calc(var(--site-nav-height) + var(--site-ticker-height) + 1px);
+}
+
+@media (min-width: 600px) {
+  :root {
+    --site-nav-height: 88px;
+    --site-ticker-height: 40px;
+  }
+}
+
 /* Hide horizontal overflow globally */
 html,
 body {

@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, ArrowUpRight, Mail, MapPin } from 'lucide-react'
-import { church } from '@/app/data/church'
+import { ArrowRight, MapPin } from 'lucide-react'
+import { FaWhatsapp } from 'react-icons/fa'
+import { church, whatsappLink } from '@/app/data/church'
 import styles from './site.module.css'
 
 export default function Footer() {
@@ -15,8 +16,13 @@ export default function Footer() {
             </span>
             <h2>There’s a place for you here.</h2>
           </div>
-          <a href={`mailto:${church.email}`} className={styles.footerButton}>
-            Get in touch <ArrowUpRight size={19} aria-hidden="true" />
+          <a
+            href={whatsappLink('Hello Elim Christian Garden!')}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.footerButton}
+          >
+            Get in touch <FaWhatsapp size={19} aria-hidden="true" />
           </a>
         </div>
         <div className={styles.footerGrid}>
@@ -48,6 +54,7 @@ export default function Footer() {
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- Full navigation reads newly published gallery uploads. */}
             <a href="/gallery">Photo gallery</a>
             <Link href="/gallery/audio">Recordings</Link>
+            <Link href="/testimonies">Testimonies</Link>
             <Link href="/#visit">Your first visit</Link>
           </div>
           <div>
@@ -81,9 +88,16 @@ export default function Footer() {
                 <small>Get directions ↗</small>
               </span>
             </a>
-            <a href={`mailto:${church.email}`}>
-              <Mail size={18} aria-hidden="true" />
-              <span>{church.email}</span>
+            <a
+              href={whatsappLink('Hello!')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaWhatsapp size={18} aria-hidden="true" />
+              <span>
+                WhatsApp us
+                <small>+{church.whatsapp}</small>
+              </span>
             </a>
           </div>
         </div>

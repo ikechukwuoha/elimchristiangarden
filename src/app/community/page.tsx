@@ -17,8 +17,11 @@ import {
   Users,
 } from 'lucide-react'
 import Layout from '@/components/Layout'
-import { church } from '@/app/data/church'
+import CommunityRefresh from '@/components/community/CommunityRefresh'
+import { church, whatsappLink } from '@/app/data/church'
 import { cachedGroups } from '@/lib/community-cache'
+import { communityWithPhotos } from '@/lib/community-images'
+import { deliveryUrl } from '@/lib/gallery'
 import type { CommunityGroup } from '@/lib/community'
 import styles from './community.module.css'
 
@@ -72,18 +75,20 @@ const questions = [
 ]
 
 function enquiry(subject: string) {
-  return `mailto:${church.email}?subject=${encodeURIComponent(subject)}`
+  return whatsappLink(`Hello! ${subject}`)
 }
 
 function GroupCard({ group }: { group: CommunityGroup }) {
+  const cloudinaryImage = group.image.startsWith('https://res.cloudinary.com/')
   return (
     <article className={styles.fellowshipCard} id={group.id} key={group.id}>
       <div className={styles.cardImage}>
         {group.image ? (
           <Image
-            src={group.image}
+            src={cloudinaryImage ? deliveryUrl(group.image, 1000) : group.image}
             alt={group.alt}
             fill
+            unoptimized={cloudinaryImage}
             sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
             className={styles.cover}
           />
@@ -109,6 +114,9 @@ function GroupCard({ group }: { group: CommunityGroup }) {
           </ul>
         )}
         <div className={styles.cardActions}>
+          <Link href={`/community/${group.id}`} className={styles.textLink} aria-label={`Learn more about ${group.title}`}>
+            About this fellowship <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
           <a
             href={enquiry(`${group.title} enquiry`)}
             className={styles.textLink}
@@ -130,7 +138,13 @@ function GroupCard({ group }: { group: CommunityGroup }) {
 }
 
 export default async function CommunityPage() {
-  const groups = await cachedGroups()
+  let groups: CommunityGroup[] = []
+  let unavailable = false
+  try {
+    groups = await communityWithPhotos(await cachedGroups({ strict: true }))
+  } catch {
+    unavailable = true
+  }
   const fellowships = groups.filter((group) => group.kind === 'fellowship')
   const units = groups.filter((group) => group.kind === 'unit')
 
@@ -225,6 +239,8 @@ export default async function CommunityPage() {
           </div>
         </nav>
 
+        <CommunityRefresh unavailable={unavailable} className={`${styles.container} ${styles.groupsNotice}`} />
+
         <section
           className={`${styles.container} ${styles.fellowships}`}
           id="fellowships"
@@ -247,6 +263,9 @@ export default async function CommunityPage() {
             </p>
           </div>
           <div className={styles.fellowshipGrid}>
+            {!unavailable && fellowships.length === 0 && (
+              <p className={styles.emptyGroups}>No fellowships have been added yet.</p>
+            )}
             {fellowships.map((group) => (
               <GroupCard group={group} key={group.id} />
             ))}
@@ -305,6 +324,9 @@ export default async function CommunityPage() {
               </div>
             </div>
             <div className={styles.serveTeams}>
+              {!unavailable && units.length === 0 && (
+                <p className={styles.emptyGroups}>No units have been added yet.</p>
+              )}
               {units.map((unit) => (
                 <article
                   className={styles.serveTeam}
@@ -333,6 +355,9 @@ export default async function CommunityPage() {
                       </ul>
                     )}
                     <div className={styles.cardActions}>
+                      <Link href={`/community/${unit.id}`} className={styles.textLink} aria-label={`Learn more about ${unit.title}`}>
+                        About this unit <ArrowUpRight size={17} aria-hidden="true" />
+                      </Link>
                       <a
                         href={enquiry(`${unit.title} serving enquiry`)}
                         className={styles.textLink}

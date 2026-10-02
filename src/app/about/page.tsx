@@ -5,55 +5,35 @@ import {
   ArrowDown,
   ArrowRight,
   ArrowUpRight,
-  BookOpen,
   ChevronRight,
   Clock3,
+  Droplets,
+  HandHeart,
+  ShieldCheck,
   HeartHandshake,
-  Leaf,
   MapPin,
   Sprout,
-  TreePalm,
   Users,
 } from 'lucide-react'
 import Layout from '@/components/Layout'
-import { church } from '@/app/data/church'
+import { FaWhatsapp } from 'react-icons/fa'
+import { church, whatsappLink } from '@/app/data/church'
+import { churchFoundedYear, churchMission, churchValues } from '@/app/data/about'
+import ChurchStoryBook from '@/components/about/ChurchStoryBook'
 import styles from './about.module.css'
 
 export const metadata: Metadata = {
   title: 'Our Church',
-  description:
-    'Discover the story, values, and people of Elim Christian Garden International. A family of faith in Bwari, Abuja, watering lives for fruitfulness since 2015.',
+  description: `Discover the story, vision, mission, and five F’s of Elim Christian Garden International. A family of faith in Bwari, Abuja, founded in ${churchFoundedYear}.`,
 }
 
-const values = [
-  {
-    number: '01',
-    Icon: BookOpen,
-    name: 'Rooted in the Word',
-    label: 'BIBLICAL TRUTH',
-    description:
-      'The Bible is the foundation of our faith. We are committed to teaching its truth and putting it into practice in the everyday moments of life.',
-    invitation: 'A faith that shapes how we live.',
-  },
-  {
-    number: '02',
-    Icon: Users,
-    name: 'Made for each other',
-    label: 'AUTHENTIC COMMUNITY',
-    description:
-      'We make room for real relationships. We celebrate together, walk through challenges together, and encourage one another to grow in Christ.',
-    invitation: 'A family where you can belong.',
-  },
-  {
-    number: '03',
-    Icon: HeartHandshake,
-    name: 'Love in action',
-    label: 'COMPASSIONATE SERVICE',
-    description:
-      'We believe the love of Jesus moves us to serve. Through practical care and compassion, we seek to bring hope to our neighbours and the world around us.',
-    invitation: 'A love that reaches beyond Sunday.',
-  },
-]
+const valueIcons = {
+  faithfulness: ShieldCheck,
+  fruitfulness: Sprout,
+  fatherhood: Users,
+  freshness: Droplets,
+  fullness: HandHeart,
+}
 
 const leaders = [
   {
@@ -120,7 +100,8 @@ export default function About() {
                 <div className={styles.heroNote}>
                   <span />
                   <p>
-                    WATERING LIVES FOR FRUITFULNESS <span>SINCE 2015</span>
+                    WATERING LIVES FOR FRUITFULNESS{' '}
+                    <span>SINCE {churchFoundedYear}</span>
                   </p>
                 </div>
               </div>
@@ -167,7 +148,7 @@ export default function About() {
               Our story <ArrowDown size={14} aria-hidden="true" />
             </a>
             <a href="#our-values">
-              What guides us <ArrowDown size={14} aria-hidden="true" />
+              The five F’s <ArrowDown size={14} aria-hidden="true" />
             </a>
             <a href="#our-leadership">
               Our leadership <ArrowDown size={14} aria-hidden="true" />
@@ -178,80 +159,7 @@ export default function About() {
           </div>
         </nav>
 
-        <section
-          className={`${styles.container} ${styles.story}`}
-          id="our-story"
-          aria-labelledby="story-heading"
-        >
-          <div className={styles.storyCopy}>
-            <span className={styles.eyebrow}>
-              <span /> OUR STORY
-            </span>
-            <h2 id="story-heading">
-              A place of refreshing.
-              <br />
-              <em>A life of fruitfulness.</em>
-            </h2>
-            <p className={styles.intro}>
-              Every family has a story. Ours began with a simple vision: to
-              create a place where lives are refreshed and faith can flourish.
-            </p>
-            <p>
-              Founded in 2005, Elim Christian Garden International began as a
-              small gathering with a heart for worship, spiritual growth, and
-              fellowship. Today, that same heart continues to shape our church
-              family.
-            </p>
-            <p>
-              Our name comes from Elim, the place of rest and refreshment
-              described in Exodus 15:27. Just as those springs offered renewal
-              on a long journey, we want our church to be a place where people
-              find hope, encouragement, and new strength in God.
-            </p>
-            <div className={styles.storySignature}>
-              <Leaf size={24} strokeWidth={1.3} aria-hidden="true" />
-              <span>
-                Our roots are in Christ.
-                <br />
-                <strong>Our hearts are open to you.</strong>
-              </span>
-            </div>
-          </div>
-          <aside className={styles.originCard} aria-label="The meaning of Elim">
-            <TreePalm
-              className={styles.originPalm}
-              size={180}
-              strokeWidth={0.7}
-              aria-hidden="true"
-            />
-            <span className={styles.originLabel}>
-              THE HEART BEHIND OUR NAME
-            </span>
-            <h3>Elim.</h3>
-            <span className={styles.originSubtitle}>
-              A place to be refreshed.
-            </span>
-            <blockquote>
-              “And they came to Elim, where were twelve wells of water, and
-              threescore and ten palm trees.”
-            </blockquote>
-            <cite>EXODUS 15:27</cite>
-            <div className={styles.originNumbers}>
-              <div>
-                <span>12</span>
-                <p>WELLS OF WATER</p>
-              </div>
-              <div>
-                <span>70</span>
-                <p>PALM TREES</p>
-              </div>
-            </div>
-            <p className={styles.originFootnote}>
-              The biblical place that inspires our name and our heart for
-              spiritual renewal.
-            </p>
-          </aside>
-        </section>
+        <ChurchStoryBook />
 
         <section
           className={styles.values}
@@ -271,36 +179,36 @@ export default function About() {
                 </h2>
               </div>
               <p>
-                Our values are more than words. They shape the way we worship,
-                build relationships, and care for the people around us.
+                Our five F’s shape the way we worship, grow, build relationships,
+                and care for the people around us.
               </p>
             </div>
             <div className={styles.valuesGrid}>
-              {values.map(
-                ({ number, Icon, name, label, description, invitation }) => (
-                  <article key={number} className={styles.value}>
-                    <div className={styles.valueTop}>
-                      <span className={styles.valueIcon}>
-                        <Icon size={27} strokeWidth={1.3} aria-hidden="true" />
-                      </span>
-                      <span>{number}</span>
-                    </div>
-                    <span className={styles.valueLabel}>{label}</span>
-                    <h3>{name}</h3>
-                    <p>{description}</p>
-                    <div className={styles.valueInvitation}>{invitation}</div>
-                  </article>
-                ),
+              {churchValues.map(
+                ({ id, name, label, description, invitation }, index) => {
+                  const Icon = valueIcons[id]
+                  return (
+                    <article key={id} className={styles.value}>
+                      <div className={styles.valueTop}>
+                        <span className={styles.valueIcon}>
+                          <Icon size={27} strokeWidth={1.3} aria-hidden="true" />
+                        </span>
+                        <span>{String(index + 1).padStart(2, '0')}</span>
+                      </div>
+                      <span className={styles.valueLabel}>{label}</span>
+                      <h3>{name}</h3>
+                      <p>{description}</p>
+                      <div className={styles.valueInvitation}>{invitation}</div>
+                    </article>
+                  )
+                },
               )}
             </div>
             <div className={styles.mission}>
               <Sprout size={34} strokeWidth={1.2} aria-hidden="true" />
               <div>
                 <span>OUR MISSION</span>
-                <p>
-                  To nourish faith, build community, and equip people to live
-                  out the love of Christ every day.
-                </p>
+                <p>{churchMission}</p>
               </div>
             </div>
           </div>
@@ -365,11 +273,12 @@ export default function About() {
           <div className={styles.leadershipNote}>
             <p>We’d love to get to know you, too.</p>
             <a
-              href={`mailto:${church.email}?subject=Hello%20to%20the%20Elim%20team`}
+              href={whatsappLink('Hello to the Elim team!')}
+              target="_blank"
+              rel="noopener noreferrer"
               className={styles.textLink}
             >
-              Say hello to our team{' '}
-              <ArrowUpRight size={18} aria-hidden="true" />
+              Say hello to our team <FaWhatsapp size={18} aria-hidden="true" />
             </a>
           </div>
         </section>

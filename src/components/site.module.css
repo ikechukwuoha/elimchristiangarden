@@ -1,3 +1,5 @@
+/* Navigation and footer start with phone layouts. */
+
 .header {
   position: fixed;
   z-index: 50;
@@ -6,43 +8,52 @@
   border-bottom: 1px solid #e5e7de;
   color: #183d32;
 }
+
 .navInner {
   max-width: 1320px;
-  height: 88px;
   margin: auto;
-  padding: 0 40px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 26px;
+  height: var(--site-nav-height);
+  padding: 0 20px;
+  gap: 12px;
 }
+
 .brand {
   display: inline-flex;
-  gap: 12px;
   align-items: center;
   flex-shrink: 0;
+  gap: 9px;
+  min-width: 0;
 }
+
 .brand img {
-  width: 52px;
-  height: 52px;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
 }
+
 .brand strong {
   display: block;
-  font-size: 13px;
   font-weight: 750;
-  letter-spacing: 0.07em;
+  font-size: 10px;
+  letter-spacing: 0.03em;
 }
+
 .brand small {
   display: block;
   margin-top: 5px;
-  font-size: 9px;
-  letter-spacing: 0.32em;
+  font-size: 8px;
+  letter-spacing: 0.2em;
 }
+
 .desktopNav {
-  display: flex;
   align-items: center;
   gap: 27px;
+  display: none;
 }
+
 .desktopNav a {
   position: relative;
   padding: 10px 0;
@@ -50,10 +61,12 @@
   font-weight: 550;
   color: #4c5750;
 }
+
 .desktopNav a:hover,
 .desktopNav a[aria-current] {
   color: #224f3d;
 }
+
 .desktopNav a[aria-current]::after {
   content: '';
   position: absolute;
@@ -63,6 +76,7 @@
   height: 2px;
   background: #668567;
 }
+
 .navCta,
 .footerButton {
   display: inline-flex;
@@ -77,28 +91,47 @@
   font-weight: 600;
   transition: background 0.2s;
 }
+
 .navCta:hover {
   background: #3e674e;
 }
+
 .menuToggle {
-  display: none;
   border: 1px solid #dce0d6;
   border-radius: 4px;
   padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  flex-shrink: 0;
 }
+
 .mobileNav {
-  padding: 12px 24px 24px;
   border-top: 1px solid #e5e7de;
   box-shadow: 0 20px 30px #162b1912;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #faf9f5;
+  padding: 12px 20px max(24px, env(safe-area-inset-bottom));
+  max-height: calc(100dvh - var(--site-header-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
+
 .mobileNav a {
-  padding: 14px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
   border-bottom: 1px solid #e5e7de;
+  min-height: 48px;
+  padding: 14px 10px;
+  font-size: 15px;
 }
+
 .mobileNav .mobileCta {
   margin-top: 16px;
   padding: 15px;
@@ -106,6 +139,7 @@
   color: white;
   border-radius: 4px;
 }
+
 .skipLink {
   position: absolute;
   top: -80px;
@@ -115,208 +149,393 @@
   color: #183d32;
   z-index: 100;
 }
+
 .skipLink:focus {
   top: 12px;
 }
+
 .header a:focus-visible,
 .header button:focus-visible,
 .footer a:focus-visible {
   outline: 3px solid #c8a86d;
   outline-offset: 5px;
 }
+
 .footer {
   background: #153b30;
   color: #f7f7eb;
-  scroll-margin-top: 100px;
+  scroll-margin-top: calc(var(--site-header-height) + 16px);
 }
+
 .footerInner {
   max-width: 1240px;
   margin: auto;
-  padding: 0 40px;
+  padding: 0 20px;
 }
+
 .footerInvitation {
-  padding: 64px 0 45px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 30px;
   border-bottom: 1px solid #ffffff22;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 44px 0 36px;
 }
+
 .eyebrow {
   font-size: 10px;
   letter-spacing: 0.17em;
   color: #c8cebc;
   font-weight: 500;
 }
+
 .footerInvitation h2 {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(30px, 3.4vw, 43px);
   font-weight: 400;
   margin-top: 12px;
   letter-spacing: -0.035em;
+  font-size: clamp(30px, 8vw, 43px);
+  line-height: 1.2;
 }
+
 .footerButton {
   background: #d6b985;
   color: #153b30;
   padding: 17px 25px;
   white-space: nowrap;
+  min-height: 50px;
 }
+
 .footerButton:hover {
   background: #e7cca0;
 }
+
 .footerGrid {
-  padding: 47px 0;
   display: grid;
-  grid-template-columns: 1.4fr 0.7fr 0.9fr 1.1fr;
-  gap: 45px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 20px;
+  padding: 36px 0;
 }
+
 .footerGrid h3 {
   font-size: 13px;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 14px;
 }
+
 .footerGrid p,
 .footerGrid > div > a:not(.brand) {
-  font-size: 13px;
-  line-height: 1.9;
   color: #bdcbbf;
+  font-size: 14px;
+  line-height: 1.7;
 }
+
 .footerGrid p {
   margin-bottom: 16px;
 }
+
 .footerGrid > div > a:not(.brand) {
   display: flex;
-  margin-bottom: 8px;
+  min-height: 44px;
+  align-items: center;
+  padding: 8px 0;
+  margin-bottom: 0;
 }
+
 .footerGrid > div > a:hover {
   color: #e0c38c;
 }
+
 .footerGrid strong {
   font-weight: 500;
   color: #eff2e7;
 }
+
 .footerAbout p {
   margin-top: 22px;
 }
+
 .footerAbout .brand strong {
   font-size: 10px;
 }
+
 .footerAbout .brand small {
   font-size: 8px;
 }
+
 .footerAbout .brand img {
   width: 46px;
   height: 46px;
 }
+
 .footerTextLink {
   align-items: center;
   gap: 12px;
 }
+
 .footerContact a {
   align-items: flex-start;
   gap: 12px;
   overflow-wrap: anywhere;
 }
+
 .footerContact svg {
   flex-shrink: 0;
   margin-top: 4px;
   color: #d6b985;
 }
+
 .footerContact small {
   display: block;
   color: #d6b985;
   margin-top: 8px;
 }
+
 .footerBottom {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
   padding: 23px 0;
   border-top: 1px solid #ffffff22;
-  font-size: 10px;
   color: #a7b8ab;
   line-height: 1.8;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 11px;
 }
-@media (min-width: 1001px) {
-  .mobileNav {
-    display: none;
+
+/* Upcoming-events ticker — the scrolling strip beneath the navbar. */
+
+.ticker {
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(90deg, #142f25, #1e4435 55%, #173c30);
+  border-top: 1px solid #ffffff14;
+  color: #cfdcc8;
+  overflow: hidden;
+  height: var(--site-ticker-height);
+}
+
+.tickerLabel {
+  flex-shrink: 0;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  background: #d9bd8b;
+  color: #233c2f;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 8px 12px;
+  font-size: 8px;
+  gap: 6px;
+}
+
+.tickerViewport {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  min-width: 0;
+}
+
+.tickerTrack {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  animation: tickerScroll 32s linear infinite;
+  padding-left: 18px;
+}
+
+.tickerViewport:hover .tickerTrack {
+  animation-play-state: paused;
+}
+
+.tickerItem {
+  display: inline-flex;
+  align-items: baseline;
+  line-height: 1.5;
+  white-space: nowrap;
+  font-size: 10.5px;
+  gap: 7px;
+  padding-right: 18px;
+}
+
+.tickerWhen {
+  color: #d9bd8b;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.tickerTitle {
+  color: #f2f0e4;
+  font-weight: 600;
+}
+
+.tickerDetail {
+  color: #9fb08c;
+  font-size: 10.5px;
+}
+
+.tickerDot {
+  align-self: center;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d9bd8b99;
+}
+
+@keyframes tickerScroll {
+  to {
+    transform: translateX(-50%);
   }
 }
-@media (max-width: 1100px) {
+
+.navCta {
+  display: none;
+  white-space: nowrap;
+}
+
+.mobileNav a[aria-current] {
+  background: #e9eddf;
+  color: #224f3d;
+  border-radius: 4px;
+}
+
+.menuBackdrop {
+  position: fixed;
+  inset: var(--site-header-height) 0 0;
+  z-index: 49;
+  background: #102f2566;
+}
+
+.footerGrid > div {
+  min-width: 0;
+}
+
+.footerAbout,
+.footerContact {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 600px) {
   .navInner {
-    padding: 0 28px;
+    padding: 0 32px;
+    gap: 20px;
+  }
+  .brand {
+    gap: 12px;
+  }
+  .brand img {
+    width: 52px;
+    height: 52px;
+  }
+  .brand strong {
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .brand small {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+  }
+  .navCta {
+    display: inline-flex;
+    margin-left: auto;
+  }
+  .mobileNav {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .footerInner {
+    padding: 0 32px;
+  }
+  .footerInvitation {
+    flex-direction: row;
+    align-items: center;
+    padding: 56px 0 40px;
+  }
+  .footerGrid {
+    gap: 36px;
+  }
+  .footerAbout, .footerContact {
+    grid-column: auto;
+  }
+  .footerBottom {
+    flex-direction: row;
+  }
+  .tickerLabel {
+    padding: 10px 18px;
+    font-size: 9px;
+    gap: 9px;
+  }
+  .tickerItem {
+    font-size: 11.5px;
+    gap: 10px;
+    padding-right: 26px;
+  }
+  .tickerTrack {
+    padding-left: 26px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .footerInner {
+    padding: 0 40px;
+  }
+  .footerGrid {
+    grid-template-columns: 1.4fr 0.7fr 0.9fr 1.1fr;
+    gap: 32px;
+    padding: 47px 0;
+  }
+  .footerInvitation {
+    padding: 64px 0 45px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .navInner {
+    padding: 0 32px;
     gap: 20px;
   }
   .desktopNav {
-    gap: 19px;
+    display: flex;
+    gap: 20px;
   }
-  .brand strong {
-    font-size: 10px;
-  }
-  .navCta {
-    padding: 14px 16px;
-  }
-  .footerGrid {
-    gap: 28px;
-  }
-}
-@media (max-width: 1000px) {
-  .desktopNav {
+  .menuToggle, .mobileNav, .menuBackdrop {
     display: none;
   }
-  .menuToggle {
-    display: inline-flex;
-  }
   .navCta {
-    margin-left: auto;
-  }
-  .footerGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 35px;
-  }
-}
-@media (max-width: 600px) {
-  .navInner {
-    height: 76px;
-    padding: 0 20px;
+    margin-left: 0;
+    padding: 14px 18px;
     gap: 12px;
   }
-  .brand {
-    gap: 9px;
+}
+
+@media (min-width: 1320px) {
+  .navInner {
+    padding: 0 40px;
   }
-  .brand img {
-    width: 43px;
-    height: 43px;
+  .desktopNav {
+    gap: 24px;
   }
   .brand strong {
-    font-size: 9px;
-    letter-spacing: 0.045em;
-  }
-  .brand small {
-    font-size: 8px;
-    letter-spacing: 0.2em;
-  }
-  .navCta {
-    display: none;
-  }
-  .footerInner {
-    padding: 0 24px;
-  }
-  .footerInvitation {
-    align-items: flex-start;
-    flex-direction: column;
-    padding-top: 48px;
+    font-size: 13px;
   }
   .footerGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 36px 22px;
+    gap: 45px;
   }
-  .footerAbout,
-  .footerContact {
-    grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tickerTrack {
+    animation: none;
   }
-  .footerBottom {
-    flex-direction: column;
-    gap: 10px;
+  .tickerViewport {
+    overflow-x: auto;
+    mask-image: none;
+  }
+  .tickerItem[aria-hidden='true'] {
+    display: none;
   }
 }

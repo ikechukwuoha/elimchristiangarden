@@ -38,7 +38,7 @@ export function json(
   })
 }
 
-export async function readSmallJson(request: Request): Promise<unknown> {
+export async function readSmallJson(request: Request, maxBytes = 8192): Promise<unknown> {
   if (!request.headers.get('content-type')?.startsWith('application/json'))
     throw new Error('Expected JSON.')
   const reader = request.body?.getReader()
@@ -50,7 +50,7 @@ export async function readSmallJson(request: Request): Promise<unknown> {
       const chunk = await reader.read()
       if (chunk.done) break
       size += chunk.value.byteLength
-      if (size > 8192) {
+      if (size > maxBytes) {
         await reader.cancel()
         throw new Error('Request is too large.')
       }

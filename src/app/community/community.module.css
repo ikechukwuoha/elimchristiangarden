@@ -2,12 +2,12 @@
   --cream: #f9f8f3;
   --green: #244c3b;
   --ink: #243a30;
-  padding-top: 88px;
+  padding-top: 128px;
   background: var(--cream);
   color: var(--ink);
 }
 .community [id] {
-  scroll-margin-top: 112px;
+  scroll-margin-top: 154px;
 }
 .community :is(a, summary):focus-visible {
   outline: 3px solid #a78b51;
@@ -441,6 +441,38 @@
   display: grid;
   gap: 20px;
 }
+.groupsNotice {
+  margin-top: 32px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  border: 1px solid #d7ddcc;
+  border-radius: 4px;
+  color: #64745a;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.groupsNotice button {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid #a7b395;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.groupsNotice button:focus-visible {
+  outline: 3px solid #a78b51;
+  outline-offset: 3px;
+}
+.groupsNotice button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.emptyGroups {
+  padding: 24px;
+  border: 1px dashed #b8c3a8;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.8;
+}
 .serveTeam {
   display: flex;
   align-items: flex-start;
@@ -728,10 +760,10 @@
 }
 @media (max-width: 600px) {
   .community {
-    padding-top: 76px;
+    padding-top: 112px;
   }
   .community [id] {
-    scroll-margin-top: 96px;
+    scroll-margin-top: 138px;
   }
   .fellowshipGrid {
     grid-template-columns: 1fr;

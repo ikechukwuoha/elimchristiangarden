@@ -5,19 +5,18 @@ import { ArrowUpRight, LockKeyhole } from 'lucide-react'
 import { isAdmin } from '@/lib/admin/auth'
 import { authConfig, totpConfig } from '@/lib/admin/session'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
-import { groupOptions, readGroups } from '@/lib/community'
-import AdminTabs from '@/components/admin/AdminTabs'
-import MediaAdmin from '@/components/admin/MediaAdmin'
-import YoutubeMessageAdmin from '@/components/admin/YoutubeMessageAdmin'
+import { readEvents } from '@/lib/events'
+import EventsAdmin from '@/components/admin/EventsAdmin'
 import AdminLogin from '@/components/admin/AdminLogin'
+import AdminTabs from '@/components/admin/AdminTabs'
 import styles from '@/components/admin/admin.module.css'
 
 export const metadata: Metadata = {
-  title: 'Media Room',
+  title: 'Upcoming events',
   robots: { index: false, follow: false, noarchive: true },
 }
 
-export default async function AdminMediaPage() {
+export default async function AdminEventsPage() {
   const authenticated = await isAdmin()
   return (
     <div className={styles.admin}>
@@ -30,7 +29,7 @@ export default async function AdminMediaPage() {
             height={45}
           />
           <span>
-            ELIM CHRISTIAN GARDEN<small>MEDIA ROOM</small>
+            ELIM CHRISTIAN GARDEN<small>ADMIN</small>
           </span>
         </Link>
         <Link href="/" className={styles.backLink}>
@@ -40,23 +39,23 @@ export default async function AdminMediaPage() {
       <main id="main-content" className={styles.main}>
         <div className={styles.intro}>
           <span className={styles.eyebrow}>
-            <LockKeyhole size={14} aria-hidden="true" /> FOR OUR MEDIA TEAM
+            <LockKeyhole size={14} aria-hidden="true" /> FOR OUR TEAM
           </span>
           <h1>
-            Share the life of <em>our church.</em>
+            Upcoming <em>events.</em>
           </h1>
           <p>
-            A home for our photographs, videos, audio, YouTube messages, and monthly bulletins.
+            Events added here scroll beneath the navbar on every page, so the
+            whole church family sees what is coming.
           </p>
         </div>
         {authenticated ? (
           <>
-            <AdminTabs active="media" />
-            <MediaAdmin
+            <AdminTabs active="events" />
+            <EventsAdmin
+              initialEvents={await readEvents()}
               cloudinaryReady={Boolean(cloudinaryConfig())}
-              groups={groupOptions(await readGroups())}
             />
-            <YoutubeMessageAdmin cloudinaryReady={Boolean(cloudinaryConfig())} />
           </>
         ) : (
           <AdminLogin

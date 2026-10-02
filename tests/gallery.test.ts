@@ -61,7 +61,8 @@ test('resources map to gallery assets with context, and unsafe resources are dro
     'image',
   )
   assert.ok(untitled)
-  assert.equal(untitled.title, 'Untitled')
+  // Untitled assets fall back to the last segment of the public ID.
+  assert.equal(untitled.title, 'id-1')
   assert.equal(untitled.id, untitled.publicId)
 })
 
