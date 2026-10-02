@@ -9,7 +9,7 @@ const GALLERY_MAX_RESULTS = 100
 
 type GalleryKind = 'image' | 'video' | 'audio'
 
-type CloudinaryResource = {
+export type CloudinaryResource = {
   asset_id?: string
   public_id: string
   secure_url: string

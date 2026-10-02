@@ -109,7 +109,7 @@ export default function SermonLibrary({ sermons, unavailable = false }: { sermon
     window.history.replaceState(null, '', '/sermons#message-library')
   }
 
-  if (unavailable || !sermons.length) return (
+  if (!sermons.length) return (
     <div className={styles.emptyState} role="status">
       <h2>{unavailable ? 'Messages could not be loaded' : 'No messages published yet'}</h2>
       <p>{unavailable ? 'Please try again in a moment.' : 'Uploaded audio and published YouTube messages will appear here.'}</p>
@@ -118,6 +118,11 @@ export default function SermonLibrary({ sermons, unavailable = false }: { sermon
 
   return (
     <div className={styles.library}>
+      {unavailable && (
+        <p className={styles.libraryNotice} role="status">
+          Some recordings could not be loaded. Available messages are shown below; please try again later for the rest.
+        </p>
+      )}
       <div className={styles.libraryHeading}>
         <div>
           <span className={styles.eyebrow}>

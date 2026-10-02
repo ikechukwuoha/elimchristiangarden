@@ -1,13 +1,11 @@
 import 'server-only'
 import { cache } from 'react'
-import { unstable_cache, revalidatePath, revalidateTag } from 'next/cache'
-import { listMessages } from './message-store'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { listMessageLibrary } from './message-store'
 
-const publishedMessages = unstable_cache(listMessages, ['published-messages-v1'], {
-  revalidate: 60, tags: ['messages', 'gallery'],
-})
-
-export const cachedMessages = cache(publishedMessages)
+// Cross-request caching happens on each successful Cloudinary read. This wrapper
+// only deduplicates work within a render and never persists a failed/partial result.
+export const cachedMessageLibrary = cache(listMessageLibrary)
 
 export function refreshMessages() {
   revalidateTag('messages', { expire: 0 })

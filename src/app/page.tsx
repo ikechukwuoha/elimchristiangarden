@@ -19,7 +19,7 @@ import Layout from '@/components/Layout'
 import HeroSlider from '@/components/HeroSlider'
 import { cachedHeroPhotos } from '@/lib/hero-images'
 import { church } from './data/church'
-import { cachedMessages } from '@/lib/message-cache'
+import { cachedMessageLibrary } from '@/lib/message-cache'
 import MessageArtwork from '@/components/sermons/MessageArtwork'
 import styles from './home.module.css'
 
@@ -73,16 +73,16 @@ const gatherings = [
   },
   {
     day: 'SAT',
-    frequency: 'EVERY SATURDAY',
-    name: 'A morning of prayer',
+    frequency: 'EVERY FIRST & LAST SATURDAY',
+    name: 'Apostolic Meeting',
     description:
       'Make room to pray, reflect on Scripture, and seek God together.',
-    time: '7:00 AM – 8:30 AM',
-    location: 'Prayer chapel',
+    time: '7:00 AM – 9:00 AM',
+    location: 'Main sanctuary',
   },
   {
     day: 'FRI',
-    frequency: 'FIRST FRIDAY OF THE MONTH',
+    frequency: 'FIRST DAY OF THE MONTH',
     name: 'New month gathering',
     description:
       'Step into a new month with worship, prayer, and thanksgiving.',
@@ -93,10 +93,11 @@ const gatherings = [
 
 export default async function Home() {
   const [photoResult, messageResult] = await Promise.allSettled([
-    cachedHeroPhotos(), cachedMessages(),
+    cachedHeroPhotos(), cachedMessageLibrary(),
   ])
   const photos = photoResult.status === 'fulfilled' ? photoResult.value : []
-  const featuredSermon = messageResult.status === 'fulfilled' ? messageResult.value[0] : undefined
+  const featuredSermon = messageResult.status === 'fulfilled' ? messageResult.value.messages[0] : undefined
+  const messagesUnavailable = messageResult.status === 'rejected' || messageResult.value.unavailableSources.length > 0
 
   return (
     <Layout>
@@ -328,8 +329,8 @@ export default async function Home() {
               </div>
             </Link> : <div className={styles.featuredMessage}>
               <div className={styles.messageCardCopy} role="status">
-                <h3>{messageResult.status === 'rejected' ? 'Messages could not be loaded' : 'No messages published yet'}</h3>
-                <p>{messageResult.status === 'rejected' ? 'Please try again in a moment.' : 'Our audio and YouTube recordings will appear here once published.'}</p>
+                <h3>{messagesUnavailable ? 'Messages could not be loaded' : 'No messages published yet'}</h3>
+                <p>{messagesUnavailable ? 'Please try again in a moment.' : 'Our audio and YouTube recordings will appear here once published.'}</p>
               </div>
             </div>}
           </div>

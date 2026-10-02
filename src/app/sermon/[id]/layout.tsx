@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
-import { cachedMessages } from '@/lib/message-cache'
+import { cachedMessageLibrary } from '@/lib/message-cache'
 
 export async function generateMetadata({ params }: LayoutProps<'/sermon/[id]'>): Promise<Metadata> {
   const { id } = await params
+  if (!/^(audio-[a-f0-9]{32}|youtube-[\w-]{11})$/.test(id)) return { title: 'Message not found' }
   let sermon
   try {
-    sermon = (await cachedMessages()).find((item) => item.id === id)
+    const { messages, unavailableSources } = await cachedMessageLibrary()
+    sermon = messages.find((item) => item.id === id)
+    if (!sermon && unavailableSources.includes(id.startsWith('audio-') ? 'audio' : 'youtube'))
+      return { title: 'Message' }
   } catch {
     // The page's error boundary provides a retry when storage is unavailable.
     return { title: 'Message' }

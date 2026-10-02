@@ -11,7 +11,7 @@ import {
 import Layout from '@/components/Layout'
 import SermonLibrary from '@/components/sermons/SermonLibrary'
 import MessageArtwork from '@/components/sermons/MessageArtwork'
-import { cachedMessages } from '@/lib/message-cache'
+import { cachedMessageLibrary } from '@/lib/message-cache'
 import type { Sermon } from '@/lib/messages'
 import { church } from '@/app/data/church'
 import { formatSermonDate } from '@/lib/sermons'
@@ -21,7 +21,9 @@ export default async function SermonsPage() {
   let sermons: Sermon[] = []
   let unavailable = false
   try {
-    sermons = await cachedMessages()
+    const library = await cachedMessageLibrary()
+    sermons = library.messages
+    unavailable = library.unavailableSources.length > 0
   } catch {
     unavailable = true
   }

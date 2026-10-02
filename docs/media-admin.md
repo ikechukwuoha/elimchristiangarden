@@ -105,8 +105,13 @@ are not inferred from channel names or recordings.
 YouTube entries are small JSON assets under `elim/messages/youtube/<video-id>.json`,
 tagged `elim-message-youtube`. Publishing the same video updates its entry.
 To remove a YouTube entry, delete its JSON asset in Cloudinary. Audio recordings
-are removed by deleting their audio assets. Messages cache for one minute and
-are invalidated after an audio upload or YouTube publication.
+are removed by deleting their audio assets. In production, each source's successful
+Cloudinary response caches for one minute and is invalidated after an audio upload
+or YouTube publication. Local development reads directly. Brief connection failures
+get one retry; publishing is never automatically retried. A failed source does not
+hide recordings from the other source or become a cached empty library. The library
+shows a notice when some recordings cannot be loaded. Connection logs contain only
+transport codes and HTTP status, without credentials or upstream response bodies.
 
 ### Publishing a monthly bulletin
 

@@ -15,7 +15,8 @@ import Layout from '@/components/Layout'
 import MessageActions from '@/components/sermons/MessageActions'
 import MessageMedia from '@/components/sermons/MessageMedia'
 import MessageCard from '@/components/sermons/MessageCard'
-import { cachedMessages } from '@/lib/message-cache'
+import { cachedMessageLibrary } from '@/lib/message-cache'
+import { MessageStorageError } from '@/lib/message-store'
 import { formatSermonDate, speakerInitials } from '@/lib/sermons'
 import styles from '@/components/sermons/sermons.module.css'
 
@@ -23,9 +24,15 @@ export default async function SermonPage({
   params,
 }: PageProps<'/sermon/[id]'>) {
   const { id } = await params
-  const sermons = await cachedMessages()
+  if (!/^(audio-[a-f0-9]{32}|youtube-[\w-]{11})$/.test(id)) notFound()
+  const { messages: sermons, unavailableSources } = await cachedMessageLibrary()
   const sermon = sermons.find((item) => item.id === id)
-  if (!sermon) notFound()
+  if (!sermon) {
+    const source = id.startsWith('audio-') ? 'audio' : 'youtube'
+    if (unavailableSources.includes(source))
+      throw new MessageStorageError('This recording could not be loaded. Please try again.')
+    notFound()
+  }
   const seriesMessages = sermon.series ? sermons.filter((item) => item.series === sermon.series) : []
   const related = sermons
     .filter((item) => item.id !== id)
