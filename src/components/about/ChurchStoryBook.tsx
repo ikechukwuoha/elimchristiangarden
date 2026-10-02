@@ -28,10 +28,9 @@ export default function ChurchStoryBook() {
 
   useEffect(() => {
     if (!turn) return
-    // Leave enough time for the slower mobile animation to finish. Normally
+    // Leave enough time for the page-turn animation to finish. Normally
     // onAnimationEnd clears the turn; this timer is a fallback.
-    const timeout = window.matchMedia('(max-width: 760px)').matches ? 2800 : 1200
-    const timer = window.setTimeout(() => setTurn(null), timeout)
+    const timer = window.setTimeout(() => setTurn(null), 2800)
     return () => window.clearTimeout(timer)
   }, [turn])
 
