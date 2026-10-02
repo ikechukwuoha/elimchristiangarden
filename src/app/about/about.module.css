@@ -670,6 +670,12 @@
   }
 }
 @media (max-width: 900px) {
+  .story {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-top: 64px;
+    padding-bottom: 72px;
+  }
   .heroGrid {
     gap: 24px;
   }

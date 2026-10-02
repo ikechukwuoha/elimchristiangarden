@@ -1,5 +1,12 @@
 import 'server-only'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import {
+  markStorageFailure,
+  markStorageSuccess,
+  recallStorageGood,
+  rememberStorageGood,
+  storageCircuitOpen,
+} from './storage-health'
 
 // Upcoming events are stored as a JSON document in Cloudinary (raw upload,
 // overwritten on each change) and scrolled under the navbar by the ticker.
@@ -152,7 +159,7 @@ async function storageRequest(
   operation: StorageOperation,
   allowMissing = false,
 ) {
-  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 15000)
+  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 9000)
   try {
     const response = await fetch(url, { ...init, cache: 'no-store', signal })
     if (allowMissing && response.status === 404) {
@@ -225,11 +232,24 @@ export async function readEvents(
       throw new EventStorageError('Cloudinary is not configured.', 503)
     return []
   }
+  // Fail fast while the network is known-bad, serving the last good list.
+  if (storageCircuitOpen('events')) {
+    if (options.strict)
+      throw new EventStorageError(
+        'Cloudinary could not be reached just now. Try again in a minute.',
+        502,
+      )
+    return recallStorageGood<ChurchEvent[]>('events') ?? []
+  }
   try {
-    return await fetchStoredEvents(config)
+    const events = await fetchStoredEvents(config)
+    markStorageSuccess('events')
+    rememberStorageGood('events', events)
+    return events
   } catch (error) {
+    markStorageFailure('events')
     if (options.strict) throw error
-    return []
+    return recallStorageGood<ChurchEvent[]>('events') ?? []
   }
 }
 

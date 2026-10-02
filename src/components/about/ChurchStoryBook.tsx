@@ -11,29 +11,50 @@ import styles from './church-story-book.module.css'
 type PageTurn = { direction: 'forward' | 'backward'; label: string; title: string; cover: boolean }
 
 export default function ChurchStoryBook() {
+  const [readerVisible, setReaderVisible] = useState(false)
   const [chapterIndex, setChapterIndex] = useState<number | null>(null)
   const [turn, setTurn] = useState<PageTurn | null>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const bookRef = useRef<HTMLDivElement>(null)
+  const readerCoverRef = useRef<HTMLButtonElement>(null)
   const contentsRef = useRef<HTMLDetailsElement>(null)
   const leftContentRef = useRef<HTMLDivElement>(null)
   const rightContentRef = useRef<HTMLDivElement>(null)
   const pointerStartRef = useRef<{ x: number; y: number; scrollTop: number } | null>(null)
-  const isOpen = chapterIndex !== null
+  const isOpen = readerVisible
   const chapter = chapterIndex !== null ? churchStoryChapters[chapterIndex] : null
 
   useEffect(() => {
     if (!turn) return
-    const timer = window.setTimeout(() => setTurn(null), 1200)
+    // Leave enough time for the slower mobile animation to finish. Normally
+    // onAnimationEnd clears the turn; this timer is a fallback.
+    const timeout = window.matchMedia('(max-width: 760px)').matches ? 2800 : 1200
+    const timer = window.setTimeout(() => setTurn(null), timeout)
     return () => window.clearTimeout(timer)
   }, [turn])
 
+  function showBookCover() {
+    setReaderVisible(true)
+    setChapterIndex(null)
+    setTurn(null)
+    window.requestAnimationFrame(() => {
+      readerCoverRef.current?.focus({ preventScroll: true })
+      bookRef.current?.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      })
+    })
+  }
+
   function goToChapter(index: number) {
+    if (index === -1 && chapterIndex === 0) {
+      returnToCover()
+      return
+    }
     if (turn || index < 0 || index >= churchStoryChapters.length || index === chapterIndex) return
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const openingBook = chapterIndex === null
     setTurn(reducedMotion ? null : {
       direction: chapterIndex !== null && index < chapterIndex ? 'backward' : 'forward',
       label: chapterIndex === null ? 'ELIM CHRISTIAN GARDEN INTERNATIONAL' : `CHAPTER ${String(chapterIndex + 1).padStart(2, '0')}`,
@@ -46,9 +67,6 @@ export default function ChurchStoryBook() {
       if (leftContentRef.current) leftContentRef.current.scrollTop = 0
       if (rightContentRef.current) rightContentRef.current.scrollTop = 0
       headingRef.current?.focus({ preventScroll: true })
-      if (openingBook) {
-        bookRef.current?.scrollIntoView({ block: 'start', behavior: reducedMotion ? 'instant' : 'smooth' })
-      }
     })
   }
 
@@ -74,9 +92,24 @@ export default function ChurchStoryBook() {
     goToChapter(chapterIndex + step)
   }
 
-  function closeBook() {
+  function returnToCover() {
+    if (turn || chapterIndex === null) return
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setTurn(reducedMotion ? null : {
+      direction: 'backward',
+      label: 'ELIM CHRISTIAN GARDEN INTERNATIONAL',
+      title: 'Our story.',
+      cover: true,
+    })
+    setChapterIndex(null)
+    if (contentsRef.current) contentsRef.current.open = false
+    window.requestAnimationFrame(() => readerCoverRef.current?.focus({ preventScroll: true }))
+  }
+
+  function dismissReader() {
     setTurn(null)
     setChapterIndex(null)
+    setReaderVisible(false)
     window.requestAnimationFrame(() => {
       openButtonRef.current?.focus({ preventScroll: true })
       sectionRef.current?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
@@ -87,7 +120,9 @@ export default function ChurchStoryBook() {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
     if (event.key === 'Escape') {
       event.preventDefault()
-      closeBook()
+      if (chapterIndex === null) {
+        if (!turn) dismissReader()
+      } else returnToCover()
     } else if (event.key === 'ArrowRight' && chapterIndex !== null) {
       event.preventDefault()
       goToChapter(chapterIndex + 1)
@@ -119,7 +154,7 @@ export default function ChurchStoryBook() {
                 on a long journey, we want our church to be a place where people
                 find hope, encouragement, and new strength in God.
               </p>
-              <button ref={openButtonRef} type="button" className={aboutStyles.greenButton} onClick={() => goToChapter(0)}>
+              <button ref={openButtonRef} type="button" className={aboutStyles.greenButton} onClick={showBookCover}>
                 <BookOpen size={18} aria-hidden="true" /> Open our story <ArrowRight size={17} aria-hidden="true" />
               </button>
               <div className={styles.coverEdition}>
@@ -132,7 +167,7 @@ export default function ChurchStoryBook() {
               </div>
             </div>
             <div className={styles.coverBook}>
-              <button type="button" className={styles.coverPhotoButton} onClick={() => goToChapter(0)} aria-label="Open our story book">
+              <button type="button" className={styles.coverPhotoButton} onClick={showBookCover} aria-label="Open our story book">
                 <Image src="/images/logo-removebg-preview.png" alt="Elim Christian Garden International church logo" fill sizes="(max-width: 760px) 90vw, 42vw" className={styles.coverLogo} />
                 <span><BookOpen size={17} aria-hidden="true" /> OPEN THE BOOK <ArrowRight size={17} aria-hidden="true" /></span>
               </button>
@@ -151,14 +186,14 @@ export default function ChurchStoryBook() {
               </aside>
             </div>
           </div>
-        ) : chapter && chapterIndex !== null ? (
+        ) : (
           <div ref={bookRef} id="church-story-reader" className={styles.reader} onKeyDown={handleKeys}>
             <div className={styles.readerToolbar}>
               <span><BookOpen size={17} aria-hidden="true" /> THE ELIM STORY</span>
-              <button type="button" onClick={closeBook}><X size={16} aria-hidden="true" /> Back to cover</button>
+              <button type="button" disabled={Boolean(turn)} onClick={chapterIndex === null ? dismissReader : returnToCover}><X size={16} aria-hidden="true" /> {chapterIndex === null ? 'Close reader' : 'Back to cover'}</button>
             </div>
             <div className={styles.contentsRow}>
-              <details ref={contentsRef} className={styles.contents}>
+              {chapterIndex !== null ? <details ref={contentsRef} className={styles.contents}>
                 <summary><List size={16} aria-hidden="true" /> Contents <ChevronRight size={14} aria-hidden="true" /></summary>
                 <nav aria-label="Book chapters">
                   {churchStoryChapters.map((item, index) => (
@@ -167,13 +202,14 @@ export default function ChurchStoryBook() {
                     </button>
                   ))}
                 </nav>
-              </details>
-              <p role="status" aria-live="polite" aria-atomic="true">Chapter {chapterIndex + 1} of {churchStoryChapters.length}</p>
+              </details> : <span className={styles.coverContents}><BookOpen size={16} aria-hidden="true" /> Book cover</span>}
+              <p role="status" aria-live="polite" aria-atomic="true">{chapterIndex === null ? 'Tap the cover to open' : `Chapter ${chapterIndex + 1} of ${churchStoryChapters.length}`}</p>
             </div>
             <div className={styles.book}>
+              {chapter && chapterIndex !== null ? (
               <div className={styles.spread}>
-                <aside className={styles.leftPage} aria-label="Chapter illustration" data-can-turn={chapterIndex > 0 && !turn} onPointerDownCapture={rememberPointer} onClick={(event) => turnFromPage(event, 'backward')}>
-                  <button type="button" className={`${styles.pageTurnTarget} ${styles.backPageTarget}`} aria-label="Turn back to the previous chapter" disabled={chapterIndex === 0 || Boolean(turn)} onClick={() => goToChapter(chapterIndex - 1)}><ArrowLeft size={17} aria-hidden="true" /></button>
+                <aside className={styles.leftPage} aria-label="Chapter illustration" data-can-turn={!turn} onPointerDownCapture={rememberPointer} onClick={(event) => turnFromPage(event, 'backward')}>
+                  <button type="button" className={`${styles.pageTurnTarget} ${styles.backPageTarget}`} aria-label={chapterIndex === 0 ? 'Close the book to its cover' : 'Turn back to the previous chapter'} disabled={Boolean(turn)} onClick={() => goToChapter(chapterIndex - 1)}><ArrowLeft size={17} aria-hidden="true" /></button>
                   <div ref={leftContentRef} className={styles.pageContent} tabIndex={0} aria-label="Scroll the chapter illustration">
                   <span className={styles.runningTitle}>ELIM CHRISTIAN GARDEN INTERNATIONAL</span>
                   <figure>
@@ -190,7 +226,7 @@ export default function ChurchStoryBook() {
                 </aside>
                 <article className={styles.rightPage} aria-labelledby="story-heading" data-can-turn={chapterIndex < churchStoryChapters.length - 1 && !turn} onPointerDownCapture={rememberPointer} onClick={(event) => turnFromPage(event, 'forward')}>
                   <button type="button" className={`${styles.pageTurnTarget} ${styles.frontPageTarget}`} aria-label="Turn forward to the next chapter" disabled={chapterIndex === churchStoryChapters.length - 1 || Boolean(turn)} onClick={() => goToChapter(chapterIndex + 1)}><ArrowRight size={17} aria-hidden="true" /></button>
-                  <button type="button" className={`${styles.pageTurnTarget} ${styles.mobileBackPage}`} aria-label="Turn back to the previous chapter" disabled={chapterIndex === 0 || Boolean(turn)} onClick={() => goToChapter(chapterIndex - 1)}><ArrowLeft size={17} aria-hidden="true" /></button>
+                  <button type="button" className={`${styles.pageTurnTarget} ${styles.mobileBackPage}`} aria-label={chapterIndex === 0 ? 'Close the book to its cover' : 'Turn back to the previous chapter'} disabled={Boolean(turn)} onClick={() => goToChapter(chapterIndex - 1)}><ArrowLeft size={17} aria-hidden="true" /></button>
                   <div ref={rightContentRef} className={styles.pageContent} tabIndex={0} aria-labelledby="story-heading">
                   <span className={styles.runningTitle}>OUR STORY / CHAPTER {String(chapterIndex + 1).padStart(2, '0')}</span>
                   <div className={styles.mobileChapterPhoto}><Image src={chapter.image} alt={chapter.imageAlt} fill sizes="(max-width: 760px) 85vw, 1px" className={aboutStyles.cover} /></div>
@@ -211,14 +247,27 @@ export default function ChurchStoryBook() {
                   <span className={styles.pageNumber} aria-hidden="true">{String(chapterIndex * 2 + 2).padStart(2, '0')}</span>
                 </article>
               </div>
+              ) : (
+                <button ref={readerCoverRef} type="button" className={styles.readerCover} aria-disabled={Boolean(turn)} onClick={() => goToChapter(0)} aria-label="Open the cover and read the first chapter">
+                  <span className={styles.readerCoverLogo}>
+                    <Image src="/images/logo-removebg-preview.png" alt="" fill sizes="140px" className={styles.coverLogoImage} />
+                  </span>
+                  <span className={styles.readerCoverLabel}>ELIM CHRISTIAN GARDEN INTERNATIONAL</span>
+                  <span id="story-heading" role="heading" aria-level={2} className={styles.readerCoverTitle}>Our story.</span>
+                  <span className={styles.readerCoverSubtitle}>A place of refreshing. A life of fruitfulness.</span>
+                  <span className={styles.readerCoverPrompt}><BookOpen size={18} aria-hidden="true" /> Tap the cover to begin <ArrowRight size={17} aria-hidden="true" /></span>
+                </button>
+              )}
               {turn && <div className={`${styles.turningPage} ${turn.direction === 'backward' ? styles.turnBackward : styles.turnForward} ${turn.cover ? styles.turningCover : ''}`} aria-hidden="true" onAnimationEnd={() => setTurn(null)}>
                 <span>{turn.label}</span><p>{turn.title}</p><Sprout size={50} strokeWidth={0.8} />
               </div>}
             </div>
-            <div className={styles.progress} aria-hidden="true">{churchStoryChapters.map((item, index) => <span key={item.id} data-active={index <= chapterIndex} />)}</div>
-            <p className={styles.readerHint}>Click the right side of the book to turn forward, or the left side to turn back. Scroll inside the book to read more. You can also use the arrow keys.</p>
+            {chapterIndex !== null && <>
+              <div className={styles.progress} aria-hidden="true">{churchStoryChapters.map((item, index) => <span key={item.id} data-active={index <= chapterIndex} />)}</div>
+              <p className={styles.readerHint}>Click the right side of the book to turn forward, or the left side to turn back. Turn back from the first chapter to close the book. Scroll inside the book to read more. You can also use the arrow keys.</p>
+            </>}
           </div>
-        ) : null}
+        )}
     </section>
   )
 }

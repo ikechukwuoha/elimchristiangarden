@@ -82,7 +82,7 @@
   border-left: 1px solid #d2d9c7;
 }
 .reader {
-  scroll-margin-top: 114px;
+  scroll-margin-top: 148px;
   overflow-anchor: none;
 }
 .readerToolbar,
@@ -127,7 +127,8 @@
   position: relative;
   z-index: 5;
 }
-.contents summary {
+.contents summary,
+.coverContents {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -141,6 +142,9 @@
 }
 .contents summary::-webkit-details-marker {
   display: none;
+}
+.coverContents {
+  cursor: default;
 }
 .contents summary > svg:last-child {
   margin-left: 10px;
@@ -186,6 +190,7 @@
   cursor: wait;
 }
 .book {
+  --book-page-height: clamp(420px, calc(100dvh - 280px), 720px);
   position: relative;
   isolation: isolate;
   perspective: 1800px;
@@ -208,11 +213,63 @@
 .spread {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  height: clamp(420px, calc(100dvh - 280px), 720px);
+  height: var(--book-page-height);
   grid-template-rows: minmax(0, 1fr);
   border-radius: 2px 4px 4px 2px;
   background: #fffcf3;
   overflow: hidden;
+}
+.readerCover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: var(--book-page-height);
+  padding: 20px;
+  border: 1px solid #8d9b7159;
+  border-radius: 2px 4px 4px 2px;
+  background: linear-gradient(110deg, #1d3d30, #2c553e 45%, #244c3b);
+  color: #f3eddb;
+  text-align: center;
+  cursor: pointer;
+}
+.readerCoverLogo {
+  position: relative;
+  flex: 1 1 140px;
+  min-height: 36px;
+  max-height: 140px;
+  width: 140px;
+}
+.coverLogoImage {
+  object-fit: contain;
+}
+.readerCoverLabel {
+  max-width: 310px;
+  font-size: 9px;
+  line-height: 1.7;
+  letter-spacing: 0.12em;
+}
+.readerCoverTitle {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(36px, 7vw, 56px);
+  line-height: 1.1;
+}
+.readerCoverSubtitle {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #d9d9bf;
+}
+.readerCoverPrompt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  min-height: 44px;
+  font-size: 12px;
+  color: #dfc495;
 }
 .leftPage,
 .rightPage {
@@ -288,7 +345,12 @@
 .pageTurnTarget:disabled > svg {
   visibility: hidden;
 }
-.mobileBackPage,
+.mobileBackPage {
+  display: none;
+  /* The page-turn control overlays the paper; it must not occupy a page of
+     space above the scrollable chapter content on small screens. */
+  position: absolute;
+}
 .mobileChapterPhoto {
   /* Positioned even while hidden: the fill image mounts on desktop too,
      and Next.js warns when the computed parent position is static. */
@@ -362,7 +424,7 @@
   margin-top: 30px;
 }
 .rightPage h2 {
-  scroll-margin-top: 106px;
+  scroll-margin-top: 142px;
   font-family: Georgia, 'Times New Roman', serif;
   font-weight: 400;
   font-size: clamp(30px, 3.3vw, 43px);
@@ -538,7 +600,7 @@
 @media (max-width: 760px) {
   .reader {
     margin-top: 25px;
-    scroll-margin-top: 98px;
+    scroll-margin-top: 126px;
   }
   .readerToolbar {
     gap: 12px;
@@ -550,11 +612,11 @@
     font-size: 11px;
   }
   .book {
+    --book-page-height: clamp(320px, calc(100dvh - 270px), 620px);
     padding: 6px 6px 10px;
   }
   .spread {
     grid-template-columns: 1fr;
-    height: clamp(320px, calc(100dvh - 270px), 620px);
   }
   .leftPage,
   .rightPage {
@@ -586,6 +648,7 @@
   }
   .rightPage h2 {
     font-size: 34px;
+    scroll-margin-top: 126px;
   }
   .prose {
     font-size: 15px;
@@ -597,7 +660,7 @@
     width: calc(100% - 12px);
     left: 6px;
     right: auto;
-    animation: mobilePageTurn 900ms cubic-bezier(0.45, 0.1, 0.45, 1) both;
+    animation: mobilePageTurn 2500ms cubic-bezier(0.45, 0.1, 0.45, 1) both;
     padding: 32px;
   }
   .turningPage.turnBackward {
@@ -625,6 +688,40 @@
   from { opacity: 1; transform: translateX(0); }
   30% { opacity: 1; }
   to { opacity: 0; transform: translateX(-45px); }
+}
+@media (max-width: 380px) {
+  .book {
+    --book-page-height: clamp(300px, calc(100dvh - 240px), 560px);
+  }
+  .leftPage,
+  .rightPage {
+    padding: 22px 18px 42px;
+  }
+  .mobileChapterPhoto {
+    height: 122px;
+    margin-bottom: 18px;
+  }
+  .rightPage h2 {
+    font-size: 28px;
+    margin-bottom: 18px;
+  }
+  .prose {
+    font-size: 14px;
+  }
+  .chapterNumber {
+    font-size: 54px;
+    margin: 22px 0 12px;
+  }
+  .runningTitle {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+  .turningPage {
+    padding: 22px;
+  }
+  .turningPage > p {
+    font-size: 30px;
+  }
 }
 @keyframes mobilePageTurnBackward {
   from { opacity: 1; transform: translateX(0); }

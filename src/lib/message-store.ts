@@ -1,6 +1,13 @@
 import 'server-only'
 import { createHash } from 'node:crypto'
 import { cloudinaryConfig, uploadContext } from './admin/cloudinary'
+import {
+  markStorageFailure,
+  markStorageSuccess,
+  recallStorageGood,
+  rememberStorageGood,
+  storageCircuitOpen,
+} from './storage-health'
 import { toGalleryAsset, type CloudinaryResource } from './gallery'
 import { validMessageDate, validateYoutubeMessage, type Sermon } from './messages'
 
@@ -41,7 +48,7 @@ async function cloudinaryRequest(path: string, init: RequestInit = {}) {
   const isRead = !init.method || init.method === 'GET'
   const startedAt = Date.now()
   for (let attempt = 0; attempt < 2; attempt++) {
-    const signal = AbortSignal.timeout(12000)
+    const signal = AbortSignal.timeout(9000)
     try {
       const headers = new Headers(init.headers)
       headers.set('Authorization', `Basic ${Buffer.from(`${config.api_key}:${config.api_secret}`).toString('base64')}`)
@@ -146,13 +153,30 @@ async function listAudioMessages(): Promise<Sermon[]> {
 
 export async function listMessageLibrary(): Promise<MessageLibrary> {
   if (!cloudinaryConfig()) return { messages: [], unavailableSources: [] }
+  // Fail fast while the network is known-bad, serving the last good library.
+  if (storageCircuitOpen('messages')) {
+    return (
+      recallStorageGood<MessageLibrary>('messages') ?? {
+        messages: [],
+        unavailableSources: ['audio', 'youtube'] as MessageSource[],
+      }
+    )
+  }
   const sources: MessageSource[] = ['audio', 'youtube']
   const results = await Promise.allSettled([listAudioMessages(), listYoutubeMessages()])
   const unavailableSources = sources.filter((_, index) => results[index].status === 'rejected')
   const recordings = results.flatMap((result) => result.status === 'fulfilled' ? result.value : [])
   const messages = [...new Map(recordings.map((message) => [message.id, message])).values()]
     .sort((a, b) => b.date.localeCompare(a.date) || b.publishedAt.localeCompare(a.publishedAt) || a.title.localeCompare(b.title))
-  return { messages, unavailableSources }
+  const library = { messages, unavailableSources }
+  if (unavailableSources.length === sources.length) {
+    // Nothing reachable: open the breaker and serve what we last had, if anything.
+    markStorageFailure('messages')
+    return recallStorageGood<MessageLibrary>('messages') ?? library
+  }
+  markStorageSuccess('messages')
+  rememberStorageGood('messages', library)
+  return library
 }
 
 export async function saveYoutubeMessage(details: ReturnType<typeof validateYoutubeMessage>) {

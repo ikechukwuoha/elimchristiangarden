@@ -1,5 +1,12 @@
 import 'server-only'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import {
+  markStorageFailure,
+  markStorageSuccess,
+  recallStorageGood,
+  rememberStorageGood,
+  storageCircuitOpen,
+} from './storage-health'
 import { ministries } from '@/app/data/ministries'
 import type { GroupInfo } from '@/lib/media'
 
@@ -275,40 +282,81 @@ function storageError(operation: StorageOperation, timeout = false) {
   )
 }
 
+// Only inspect transport codes. Error messages and request details may contain
+// authentication headers, so never include them in logs.
+function connectionCodes(error: unknown, depth = 0): string[] {
+  if (!error || typeof error !== 'object' || depth > 3) return []
+  const details = error as { code?: unknown; cause?: unknown; errors?: unknown[] }
+  const own = typeof details.code === 'string' && /^[A-Z0-9_]+$/.test(details.code)
+    ? [details.code] : []
+  return [...new Set([
+    ...own,
+    ...connectionCodes(details.cause, depth + 1),
+    ...(Array.isArray(details.errors)
+      ? details.errors.slice(0, 4).flatMap((item) => connectionCodes(item, depth + 1))
+      : []),
+  ])]
+}
+
 async function storageRequest(
   url: string,
   init: RequestInit,
   operation: StorageOperation,
   allowMissing = false,
+  cacheRead = false,
 ) {
-  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 15000)
-  try {
-    const response = await fetch(url, { ...init, cache: 'no-store', signal })
-    if (allowMissing && response.status === 404) {
-      await response.body?.cancel()
-      return null
-    }
-    if (!response.ok) {
-      // Log status only; SDK errors can contain credentials and request bodies.
-      console.error('Community storage request rejected', {
-        operation,
-        status: response.status,
+  const startedAt = Date.now()
+  const budget = operation === 'save' ? 20000 : 15000
+  for (let attempt = 0; attempt < 2; attempt++) {
+    // Both read attempts share one deadline; saves are never retried.
+    const signal = AbortSignal.timeout(Math.max(1, budget - (Date.now() - startedAt)))
+    try {
+      const response = await fetch(url, {
+        ...init,
+        signal,
+        // Public reads cache successful responses. Admin reads always go to
+        // storage so an outdated group list cannot overwrite newer changes.
+        ...(operation === 'read' && cacheRead
+          ? { cache: 'force-cache', next: { revalidate: 600, tags: ['community-groups'] } } as const
+          : { cache: 'no-store' } as const),
       })
-      await response.body?.cancel()
-      if (response.status === 401 || response.status === 403)
-        throw new CommunityStorageError(
-          'Cloudinary denied access to the group data. Check the configured API key and its permissions.',
-          502,
-        )
-      throw storageError(operation, [408, 499, 504].includes(response.status))
+      if (allowMissing && response.status === 404) {
+        await response.body?.cancel()
+        return null
+      }
+      if (!response.ok) {
+        await response.body?.cancel()
+        // Retry a quick temporary upstream read failure once.
+        if (operation === 'read' && attempt === 0 &&
+          [408, 500, 502, 503, 504].includes(response.status) && Date.now() - startedAt < 4000)
+          continue
+        console.warn('Community storage request rejected', { operation, status: response.status })
+        if (response.status === 401 || response.status === 403)
+          throw new CommunityStorageError(
+            'Cloudinary denied access to the group data. Check the configured API key and its permissions.',
+            502,
+          )
+        if (response.status === 429)
+          throw new CommunityStorageError('Cloudinary is receiving too many requests. Please try again shortly.', 503)
+        throw storageError(operation, [408, 499, 504].includes(response.status))
+      }
+      return (await response.json()) as unknown
+    } catch (error) {
+      if (error instanceof CommunityStorageError) throw error
+      const codes = connectionCodes(error)
+      const timedOut = signal.aborted || codes.some((code) =>
+        ['ETIMEDOUT', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT'].includes(code))
+      const retryable = codes.some((code) =>
+        ['EAI_AGAIN', 'ENOTFOUND', 'ECONNRESET', 'ECONNREFUSED', 'UND_ERR_SOCKET', 'UND_ERR_CONNECT_TIMEOUT'].includes(code))
+      if (operation === 'read' && attempt === 0 && !signal.aborted && retryable && Date.now() - startedAt < 4000)
+        continue
+      // Expected storage outages are handled by the page's retry UI. Use a
+      // warning with useful diagnostics instead of triggering the dev overlay.
+      console.warn('Community storage request failed', { operation, codes, timedOut })
+      throw storageError(operation, timedOut)
     }
-    return (await response.json()) as unknown
-  } catch (error) {
-    if (error instanceof CommunityStorageError) throw error
-    const timedOut = signal.aborted
-    console.error('Community storage request failed', { operation, timedOut })
-    throw storageError(operation, timedOut)
   }
+  throw storageError(operation)
 }
 
 function authHeaders(config: NonNullable<ReturnType<typeof cloudinaryConfig>>) {
@@ -319,12 +367,14 @@ function authHeaders(config: NonNullable<ReturnType<typeof cloudinaryConfig>>) {
 
 async function fetchStoredGroups(
   config: NonNullable<ReturnType<typeof cloudinaryConfig>>,
+  cacheRead = false,
 ) {
   const resource = (await storageRequest(
     `https://api.cloudinary.com/v1_1/${config.cloud_name}/resources/raw/upload/${encodeURIComponent(COMMUNITY_DATA_ID)}`,
     { headers: authHeaders(config) },
     'read',
     true,
+    cacheRead,
   )) as { secure_url?: string } | null
   // Only a confirmed missing asset may start from the seeded groups.
   if (resource === null) return seedGroups
@@ -342,7 +392,7 @@ async function fetchStoredGroups(
     !parsed.pathname.startsWith(`/${config.cloud_name}/raw/upload/`)
   )
     throw storageError('read')
-  const data = await storageRequest(parsed.toString(), {}, 'read')
+  const data = await storageRequest(parsed.toString(), {}, 'read', false, cacheRead)
   if (!isGroupArray(data)) throw storageError('read')
   return data
 }
@@ -361,7 +411,7 @@ export function normalizeGroups(groups: LegacyGroup[]): CommunityGroup[] {
 }
 
 export async function readGroups(
-  options: { strict?: boolean } = {},
+  options: { strict?: boolean; cacheRead?: boolean } = {},
 ): Promise<CommunityGroup[]> {
   const config = cloudinaryConfig()
   if (!config) {
@@ -369,11 +419,28 @@ export async function readGroups(
       throw new CommunityStorageError('Cloudinary is not configured.', 503)
     return seedGroups
   }
+  // Fail fast while the network is known-bad, serving the last good list.
+  if (storageCircuitOpen('community-groups')) {
+    if (options.strict)
+      throw new CommunityStorageError(
+        'Cloudinary could not be reached just now. Try again in a minute.',
+        502,
+      )
+    return (
+      recallStorageGood<CommunityGroup[]>('community-groups') ?? seedGroups
+    )
+  }
   try {
-    return normalizeGroups(await fetchStoredGroups(config))
+    const groups = normalizeGroups(await fetchStoredGroups(config, options.cacheRead))
+    markStorageSuccess('community-groups')
+    rememberStorageGood('community-groups', groups)
+    return groups
   } catch (error) {
+    markStorageFailure('community-groups')
     if (options.strict) throw error
-    return seedGroups
+    return (
+      recallStorageGood<CommunityGroup[]>('community-groups') ?? seedGroups
+    )
   }
 }
 

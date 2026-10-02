@@ -1,18 +1,18 @@
 import 'server-only'
-import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
-import { normalizeGroups, readGroups, seedGroups } from './community'
+import { cache } from 'react'
+import { revalidatePath, revalidateTag } from 'next/cache'
+import { readGroups, seedGroups } from './community'
 import { cloudinaryConfig } from './admin/cloudinary'
 
-// Cached for ten minutes and invalidated by tag whenever a group is added or
-// removed, so public pages stay fast without waiting on Cloudinary.
+// Cache successful Cloudinary responses for ten minutes, and deduplicate the
+// read within a render. A failed read is handled here instead of escaping from
+// an unstable_cache background refresh into the development error overlay.
+const publicGroups = cache(() => readGroups({ strict: true, cacheRead: true }))
+
 export async function cachedGroups(options: { strict?: boolean } = {}) {
   if (!cloudinaryConfig()) return seedGroups
   try {
-    const groups = await unstable_cache(() => readGroups({ strict: true }), ['community-groups', 'stored-v2'], {
-      revalidate: 600,
-      tags: ['community-groups'],
-    })()
-    return normalizeGroups(groups)
+    return await publicGroups()
   } catch (error) {
     if (options.strict) throw error
     // A temporary storage failure must not cache the seed IDs over saved groups.

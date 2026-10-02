@@ -15,6 +15,7 @@ import {
   COMMUNITY_DATA_ID,
   CommunityStorageError,
 } from '../src/lib/community'
+import { resetStorageHealth } from '../src/lib/storage-health'
 
 const validInput = {
   title: 'Youths Fellowship',
@@ -121,10 +122,13 @@ async function withStorageFetch(fetchMock: typeof fetch, run: () => Promise<void
   process.env.CLOUDINARY_API_KEY = 'test-key'
   process.env.CLOUDINARY_API_SECRET = 'test-secret'
   globalThis.fetch = fetchMock
+  // Each scenario starts with the storage circuit closed.
+  resetStorageHealth()
   try {
     await run()
   } finally {
     globalThis.fetch = originalFetch
+    resetStorageHealth()
     keys.forEach((key, index) => {
       if (previous[index] === undefined) delete process.env[key]
       else process.env[key] = previous[index]

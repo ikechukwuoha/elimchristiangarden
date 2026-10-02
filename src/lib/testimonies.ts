@@ -1,5 +1,12 @@
 import 'server-only'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import {
+  markStorageFailure,
+  markStorageSuccess,
+  recallStorageGood,
+  rememberStorageGood,
+  storageCircuitOpen,
+} from './storage-health'
 import { testimonials } from '@/app/data/testimonies'
 
 // Testimonies are stored as a JSON document in Cloudinary (raw upload,
@@ -135,7 +142,7 @@ async function storageRequest(
   operation: StorageOperation,
   allowMissing = false,
 ) {
-  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 15000)
+  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 9000)
   try {
     const response = await fetch(url, { ...init, cache: 'no-store', signal })
     if (allowMissing && response.status === 404) {
@@ -208,11 +215,24 @@ export async function readTestimonies(
       throw new TestimonyStorageError('Cloudinary is not configured.', 503)
     return seedTestimonies
   }
+  // Fail fast while the network is known-bad, serving the last good list.
+  if (storageCircuitOpen('testimonies')) {
+    if (options.strict)
+      throw new TestimonyStorageError(
+        'Cloudinary could not be reached just now. Try again in a minute.',
+        502,
+      )
+    return recallStorageGood<Testimony[]>('testimonies') ?? seedTestimonies
+  }
   try {
-    return await fetchStoredTestimonies(config)
+    const testimonies = await fetchStoredTestimonies(config)
+    markStorageSuccess('testimonies')
+    rememberStorageGood('testimonies', testimonies)
+    return testimonies
   } catch (error) {
+    markStorageFailure('testimonies')
     if (options.strict) throw error
-    return seedTestimonies
+    return recallStorageGood<Testimony[]>('testimonies') ?? seedTestimonies
   }
 }
 
