@@ -1,183 +1,444 @@
-// pages/about.tsx
-import React from 'react'
-import Head from 'next/head'
+import type { Metadata } from 'next'
 import Image from 'next/image'
-import Layout from '../../components/Layout'
-import Link from 'next/link';
+import Link from 'next/link'
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  BookOpen,
+  ChevronRight,
+  Clock3,
+  HeartHandshake,
+  Leaf,
+  MapPin,
+  Sprout,
+  TreePalm,
+  Users,
+} from 'lucide-react'
+import Layout from '@/components/Layout'
+import { church } from '@/app/data/church'
+import styles from './about.module.css'
+
+export const metadata: Metadata = {
+  title: 'Our Church',
+  description:
+    'Discover the story, values, and people of Elim Christian Garden International. A family of faith in Bwari, Abuja, watering lives for fruitfulness since 2015.',
+}
+
+const values = [
+  {
+    number: '01',
+    Icon: BookOpen,
+    name: 'Rooted in the Word',
+    label: 'BIBLICAL TRUTH',
+    description:
+      'The Bible is the foundation of our faith. We are committed to teaching its truth and putting it into practice in the everyday moments of life.',
+    invitation: 'A faith that shapes how we live.',
+  },
+  {
+    number: '02',
+    Icon: Users,
+    name: 'Made for each other',
+    label: 'AUTHENTIC COMMUNITY',
+    description:
+      'We make room for real relationships. We celebrate together, walk through challenges together, and encourage one another to grow in Christ.',
+    invitation: 'A family where you can belong.',
+  },
+  {
+    number: '03',
+    Icon: HeartHandshake,
+    name: 'Love in action',
+    label: 'COMPASSIONATE SERVICE',
+    description:
+      'We believe the love of Jesus moves us to serve. Through practical care and compassion, we seek to bring hope to our neighbours and the world around us.',
+    invitation: 'A love that reaches beyond Sunday.',
+  },
+]
+
+const leaders = [
+  {
+    name: 'Rev. Dr. Emmanuel Olowononi',
+    role: 'FOUNDER & SENIOR PASTOR',
+    image: '/images/leader2.jpg',
+    position: '50% 30%',
+    description:
+      'Rev. Dr. Emmanuel Olowononi leads Elim with a passion for biblical teaching, spiritual growth, and community. His ministry connects the wisdom of Scripture with the practical challenges of everyday life.',
+    details:
+      'Alongside his pastoral calling, he brings an academic background in sports law and experience in public speaking. His work encourages people to pursue purpose in both their faith and their professional lives.',
+  },
+  {
+    name: 'Pastor Emmanuel Olorunmola',
+    role: 'ASSISTANT PASTOR',
+    image: '/images/leader1.jpg',
+    position: '58% 35%',
+    description:
+      'Pastor Emmanuel Olorunmola serves alongside the senior pastor, supporting the life and ministry of Elim Christian Garden International.',
+    details:
+      'As assistant pastor, he works with the leadership team to guide and support our church family in its journey of faith.',
+  },
+  {
+    name: 'Dr. Pastor Mrs Damilola Olowononi',
+    role: 'MOTHER IN ISRAEL',
+    image: '/images/leader3.jpg',
+    position: '40% 35%',
+    description:
+      'Dr. Pastor Mrs Damilola Olowononi is a medical doctor with a heart for helping people discover their purpose and grow in faith.',
+    details:
+      'She serves alongside her husband, Rev. Dr. Emmanuel Olowononi, bringing care and encouragement to the Elim church family.',
+  },
+]
 
 export default function About() {
   return (
     <Layout>
-      <Head>
-        <title>About Us | Elim Christian Garden Int</title>
-        <meta name="description" content="Learn more about Elim Christian Garden International" />
-      </Head>
-
-      <div className="bg-blue-900 pt-32 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">About Our Church</h1>
-          <p className="text-lg text-white max-w-3xl mx-auto">
-            Elim Christian Garden International is a place of worship, growth, and fellowship for people from all walks of life.
-          </p>
-        </div>
-      </div>
-
-      {/* Our Story Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gold-600 mb-6">Our Story</h2>
-              <p className="text-gray-700 mb-4">
-                Elim Christian Garden International was founded in 2005 with a vision to create a church that would be a place of spiritual refreshment and growth for all people.
-              </p>
-              <p className="text-gray-700 mb-4">
-                The name &ldquo;Elim&rdquo; comes from Exodus 15:27, which describes an oasis where the Israelites found &ldquo;twelve springs of water and seventy palm trees.&rdquo; Just as Elim was a place of refreshment for the Israelites, our church aims to be a place where people can find spiritual refreshment and renewal.
-              </p>
-              <p className="text-gray-700">
-                Over the years, we have grown from a small gathering to a vibrant community of believers dedicated to serving God and our community. Throughout our journey, we have remained committed to our core values of faith, community, and service.
-              </p>
-            </div>
-            <div className="relative h-96 rounded-lg overflow-hidden shadow-xl">
-              <Image 
-                src="/images/church-history.jpg" 
-                alt="Church History" 
-                fill
-                style={{ objectFit: 'cover' }}
-              />
+      <div className={styles.about}>
+        <section className={styles.hero} aria-labelledby="about-title">
+          <div className={styles.container}>
+            <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+              <Link href="/">Home</Link>
+              <ChevronRight size={13} aria-hidden="true" />
+              <span aria-current="page">Our church</span>
+            </nav>
+            <div className={styles.heroGrid}>
+              <div className={styles.heroCopy}>
+                <span className={styles.eyebrow}>
+                  <span /> THIS IS ELIM
+                </span>
+                <h1 id="about-title">
+                  Planted in faith.
+                  <br />
+                  <em>Rooted in love.</em>
+                </h1>
+                <p>
+                  We’re a family of believers in Bwari, Abuja, growing together
+                  in the love of Jesus. A place to find refreshing, discover
+                  purpose, and feel at home.
+                </p>
+                <Link href="#our-story" className={styles.greenButton}>
+                  Discover our story <ArrowDown size={17} aria-hidden="true" />
+                </Link>
+                <div className={styles.heroNote}>
+                  <span />
+                  <p>
+                    WATERING LIVES FOR FRUITFULNESS <span>SINCE 2015</span>
+                  </p>
+                </div>
+              </div>
+              <div className={styles.heroPhotos}>
+                <div className={styles.heroPhoto}>
+                  <Image
+                    src="/images/worship.jpg"
+                    alt="Our Elim church family worshipping together"
+                    fill
+                    sizes="(max-width: 760px) 90vw, 44vw"
+                    preload
+                    className={styles.cover}
+                  />
+                </div>
+                <div className={styles.heroInset}>
+                  <Image
+                    src="/images/church-history.jpg"
+                    alt="A shared moment in the life of Elim Christian Garden"
+                    fill
+                    sizes="(max-width: 760px) 48vw, 22vw"
+                    className={styles.cover}
+                  />
+                </div>
+                <div className={styles.heroSeal}>
+                  <Sprout size={27} strokeWidth={1.2} aria-hidden="true" />
+                  <span>
+                    ONE FAITH.
+                    <br />
+                    ONE FAMILY.
+                  </span>
+                </div>
+                <span className={styles.photoCaption}>
+                  REAL PEOPLE. A SHARED JOURNEY.
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Values Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-blue-600 mb-2">Our Core Values</h2>
-            <div className="w-24 h-1 bg-gold-500 mx-auto"></div>
-            <p className="mt-4 text-lg text-gray-700">The principles that guide everything we do</p>
+        <nav className={styles.pageNav} aria-label="On this page">
+          <div className={styles.container}>
+            <span>GET TO KNOW US</span>
+            <a href="#our-story">
+              Our story <ArrowDown size={14} aria-hidden="true" />
+            </a>
+            <a href="#our-values">
+              What guides us <ArrowDown size={14} aria-hidden="true" />
+            </a>
+            <a href="#our-leadership">
+              Our leadership <ArrowDown size={14} aria-hidden="true" />
+            </a>
+            <a href="#join-us">
+              Come and belong <ArrowDown size={14} aria-hidden="true" />
+            </a>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-blue-100 p-4 rounded-full inline-flex mb-6">
-                <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-blue-600 mb-4">Biblical Truth</h3>
-              <p className="text-gray-700">
-                We are committed to teaching and living according to the timeless truths of God&apos;s Word, the Bible, which guides all our beliefs and practices.
-              </p>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-green-100 p-4 rounded-full inline-flex mb-6">
-                <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-green-700 mb-4">Authentic Community</h3>
-              <p className="text-gray-700">
-                We believe in creating a welcoming, inclusive environment where people can form genuine relationships, share life&apos;s joys and challenges, and grow together.
-              </p>
-            </div>
-            
-            <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="bg-gold-100 p-4 rounded-full inline-flex mb-6">
-                <svg className="w-8 h-8 text-gold-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                </svg>
-              </div>
-              <h3 className="text-2xl font-bold text-gold-600 mb-4">Compassionate Service</h3>
-              <p className="text-gray-700">
-                We are dedicated to serving our community and world with the love of Christ, meeting practical needs and sharing hope with those around us.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </nav>
 
-      {/* Leadership Section */}
-      <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-green-700 mb-2">Our Leadership</h2>
-          <div className="w-24 h-1 bg-gold-500 mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-700">Meet the team that guides our church</p>
-        </div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              name: 'Pastor Emmanuel Olorunmola',
-              role: 'Assistant Pastor',
-              image: '/images/leader1.jpg',
-              bio: 'Pastor Emmanuel has been Holding the hands of Moses(Rev. Doctor Emmanuel Olowononi)in Elim Christian Garden International. He is the Assistant Pastor.'
-            },
-            {
-              name: 'Rev. Emmanuel Olowononi',
-              role: 'Senior Pastor',
-              image: '/images/leader2.jpg',
-              bio: 'Dr. Rev. Emmanuel Olowononi stands as a remarkable figure who seamlessly blends spiritual leadership with academic excellence. As the founder and senior pastor of Elim Christian Garden International, he leads the ministry with genuine passion and a heart for authentic connection to the divine. His unique background as a Doctor in Sport Law brings an intellectual depth to his ministry that sets him apart. This specialized expertise informs his approach to leadership and community building, offering thoughtful perspectives grounded in both faith and legal principles. As a public speaker, Dr. Rev. Olowononi captivates audiences with his compelling presence and insightful messages. His ability to weave together spiritual wisdom with practical application makes his teaching accessible and transformative. The impact of his ministry extends beyond the walls of his church, as his leadership inspires others to pursue excellence in both spiritual practice and professional endeavors.'
-            },
-            {
-              name: 'Dr. Pastor Mrs Damilola Olowononi',
-              role: 'Mother in Israel',
-              image: '/images/leader3.jpg',
-              bio: 'Dr. Pastor Mrs Damilola is the wife of Dr. rev. Emmanuel Olowononi, She is a Medical Doctor and she is dedicated to helping people discover their purpose and grow in faith.'
-            }
-          ].map((leader, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="h-64 relative">
-                <Image 
-                  src={leader.image} 
-                  alt={leader.name} 
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover"
-                />
+        <section
+          className={`${styles.container} ${styles.story}`}
+          id="our-story"
+          aria-labelledby="story-heading"
+        >
+          <div className={styles.storyCopy}>
+            <span className={styles.eyebrow}>
+              <span /> OUR STORY
+            </span>
+            <h2 id="story-heading">
+              A place of refreshing.
+              <br />
+              <em>A life of fruitfulness.</em>
+            </h2>
+            <p className={styles.intro}>
+              Every family has a story. Ours began with a simple vision: to
+              create a place where lives are refreshed and faith can flourish.
+            </p>
+            <p>
+              Founded in 2005, Elim Christian Garden International began as a
+              small gathering with a heart for worship, spiritual growth, and
+              fellowship. Today, that same heart continues to shape our church
+              family.
+            </p>
+            <p>
+              Our name comes from Elim, the place of rest and refreshment
+              described in Exodus 15:27. Just as those springs offered renewal
+              on a long journey, we want our church to be a place where people
+              find hope, encouragement, and new strength in God.
+            </p>
+            <div className={styles.storySignature}>
+              <Leaf size={24} strokeWidth={1.3} aria-hidden="true" />
+              <span>
+                Our roots are in Christ.
+                <br />
+                <strong>Our hearts are open to you.</strong>
+              </span>
+            </div>
+          </div>
+          <aside className={styles.originCard} aria-label="The meaning of Elim">
+            <TreePalm
+              className={styles.originPalm}
+              size={180}
+              strokeWidth={0.7}
+              aria-hidden="true"
+            />
+            <span className={styles.originLabel}>
+              THE HEART BEHIND OUR NAME
+            </span>
+            <h3>Elim.</h3>
+            <span className={styles.originSubtitle}>
+              A place to be refreshed.
+            </span>
+            <blockquote>
+              “And they came to Elim, where were twelve wells of water, and
+              threescore and ten palm trees.”
+            </blockquote>
+            <cite>EXODUS 15:27</cite>
+            <div className={styles.originNumbers}>
+              <div>
+                <span>12</span>
+                <p>WELLS OF WATER</p>
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-blue-600 mb-1">{leader.name}</h3>
-                <p className="text-gold-600 font-medium mb-4">{leader.role}</p>
-                <p className="text-gray-700">
-                  {leader.bio.length > 250 
-                    ? `${leader.bio.substring(0, 250)}...` 
-                    : leader.bio}
+              <div>
+                <span>70</span>
+                <p>PALM TREES</p>
+              </div>
+            </div>
+            <p className={styles.originFootnote}>
+              The biblical place that inspires our name and our heart for
+              spiritual renewal.
+            </p>
+          </aside>
+        </section>
+
+        <section
+          className={styles.values}
+          id="our-values"
+          aria-labelledby="values-heading"
+        >
+          <div className={styles.container}>
+            <div className={styles.sectionHeading}>
+              <div>
+                <span className={styles.eyebrow}>
+                  <span /> THE HEART OF OUR CHURCH
+                </span>
+                <h2 id="values-heading">
+                  What we believe.
+                  <br />
+                  <em>How we live.</em>
+                </h2>
+              </div>
+              <p>
+                Our values are more than words. They shape the way we worship,
+                build relationships, and care for the people around us.
+              </p>
+            </div>
+            <div className={styles.valuesGrid}>
+              {values.map(
+                ({ number, Icon, name, label, description, invitation }) => (
+                  <article key={number} className={styles.value}>
+                    <div className={styles.valueTop}>
+                      <span className={styles.valueIcon}>
+                        <Icon size={27} strokeWidth={1.3} aria-hidden="true" />
+                      </span>
+                      <span>{number}</span>
+                    </div>
+                    <span className={styles.valueLabel}>{label}</span>
+                    <h3>{name}</h3>
+                    <p>{description}</p>
+                    <div className={styles.valueInvitation}>{invitation}</div>
+                  </article>
+                ),
+              )}
+            </div>
+            <div className={styles.mission}>
+              <Sprout size={34} strokeWidth={1.2} aria-hidden="true" />
+              <div>
+                <span>OUR MISSION</span>
+                <p>
+                  To nourish faith, build community, and equip people to live
+                  out the love of Christ every day.
                 </p>
               </div>
             </div>
-          ))}
-        </div>
-        <div className="mt-12 text-center">
-          <Link 
-            href="/about/team" 
-            className="inline-block px-6 py-3 bg-gold-500 hover:bg-gold-600 text-white font-medium rounded-md transition-colors shadow-md"
-          >
-            See All Our Teams
-          </Link>
-        </div>
-      </div>
-    </section>
-      {/* Join Us CTA */}
-      <section className="py-16 bg-blue-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">Join Us This Sunday</h2>
-          <p className="text-xl mb-8 max-w-3xl mx-auto">
-            We&apos;d love to welcome you to our church family. Join us for worship every Sunday at 10:00 AM.
-          </p>
-          <div className="space-x-4">
-            <a href="#" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold py-3 px-6 rounded-md inline-flex items-center transition-colors">
-              Get Directions
-            </a>
-            <a href="#" className="bg-gold-500 hover:bg-gold-600 text-white font-semibold py-3 px-6 rounded-md inline-flex items-center transition-colors">
-              Service Times
+          </div>
+        </section>
+
+        <section
+          className={`${styles.container} ${styles.leadership}`}
+          id="our-leadership"
+          aria-labelledby="leadership-heading"
+        >
+          <div className={styles.sectionHeading}>
+            <div>
+              <span className={styles.eyebrow}>
+                <span /> PEOPLE WITH A HEART TO SERVE
+              </span>
+              <h2 id="leadership-heading">
+                Leading with faith.
+                <br />
+                <em>Serving with love.</em>
+              </h2>
+            </div>
+            <p>
+              Meet the people who guide and encourage our church family as we
+              follow Jesus together.
+            </p>
+          </div>
+          <div className={styles.leadersGrid}>
+            {leaders.map((leader) => (
+              <article className={styles.leader} key={leader.name}>
+                <div className={styles.leaderPhoto}>
+                  <Image
+                    src={leader.image}
+                    alt={leader.name}
+                    fill
+                    sizes="(max-width: 760px) 90vw, 33vw"
+                    className={styles.cover}
+                    style={{ objectPosition: leader.position }}
+                  />
+                </div>
+                <div className={styles.leaderCopy}>
+                  <span>{leader.role}</span>
+                  <h3>{leader.name}</h3>
+                  <p>{leader.description}</p>
+                  <details>
+                    <summary>
+                      More about{' '}
+                      {leader.name.includes('Damilola')
+                        ? 'Dr. Damilola'
+                        : leader.role === 'ASSISTANT PASTOR'
+                          ? 'Pastor Emmanuel'
+                          : 'our senior pastor'}
+                      <span className={styles.detailsIcon} aria-hidden="true">
+                        +
+                      </span>
+                    </summary>
+                    <p>{leader.details}</p>
+                  </details>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className={styles.leadershipNote}>
+            <p>We’d love to get to know you, too.</p>
+            <a
+              href={`mailto:${church.email}?subject=Hello%20to%20the%20Elim%20team`}
+              className={styles.textLink}
+            >
+              Say hello to our team{' '}
+              <ArrowUpRight size={18} aria-hidden="true" />
             </a>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section
+          className={styles.belong}
+          id="join-us"
+          aria-labelledby="belong-heading"
+        >
+          <div className={`${styles.container} ${styles.belongGrid}`}>
+            <div className={styles.belongImage}>
+              <Image
+                src="/images/teenagerandchildren.jpg"
+                alt="Different generations sharing life and fellowship at Elim"
+                fill
+                sizes="(max-width: 760px) 90vw, 40vw"
+                className={styles.cover}
+              />
+              <div>
+                <HeartHandshake
+                  size={20}
+                  strokeWidth={1.4}
+                  aria-hidden="true"
+                />
+                <span>THERE’S ROOM FOR YOUR STORY HERE.</span>
+              </div>
+            </div>
+            <div className={styles.belongCopy}>
+              <span className={styles.eyebrow}>
+                <span /> THE NEXT CHAPTER INCLUDES YOU
+              </span>
+              <h2 id="belong-heading">
+                Come as you are.
+                <br />
+                <em>Find your family.</em>
+              </h2>
+              <p>
+                You don’t have to have everything figured out to take a first
+                step. Join us for a Sunday of worship, encouragement, and
+                connection.
+              </p>
+              <div className={styles.visitDetails}>
+                <span>
+                  <Clock3 size={17} aria-hidden="true" /> Sundays at{' '}
+                  {church.sundayTime}
+                </span>
+                <span>
+                  <MapPin size={17} aria-hidden="true" /> Elim Garden, Bwari,
+                  Abuja
+                </span>
+              </div>
+              <div className={styles.belongActions}>
+                <Link href="/#visit" className={styles.greenButton}>
+                  Plan your first visit{' '}
+                  <ArrowUpRight size={18} aria-hidden="true" />
+                </Link>
+                <a
+                  href={church.directionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.textLink}
+                >
+                  Get directions <ArrowRight size={17} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </Layout>
   )
 }

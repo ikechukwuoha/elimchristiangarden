@@ -1,0 +1,802 @@
+.community {
+  --cream: #f9f8f3;
+  --green: #244c3b;
+  --ink: #243a30;
+  padding-top: 88px;
+  background: var(--cream);
+  color: var(--ink);
+}
+.community [id] {
+  scroll-margin-top: 112px;
+}
+.community :is(a, summary):focus-visible {
+  outline: 3px solid #a78b51;
+  outline-offset: 6px;
+}
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+.cover {
+  object-fit: cover;
+}
+.community :is(h1, h2, h3) {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+.community h1 {
+  font-size: clamp(49px, 5.25vw, 74px);
+  line-height: 1.1;
+  letter-spacing: -0.052em;
+}
+.community h2 {
+  font-size: clamp(36px, 3.6vw, 49px);
+  line-height: 1.18;
+}
+.community :is(h1, h2) em {
+  color: #687e5d;
+  font-weight: 400;
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 21px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.8;
+  color: #617253;
+}
+.eyebrow > span {
+  width: 24px;
+  height: 1px;
+  flex-shrink: 0;
+  background: #9ba387;
+}
+.greenButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  padding: 17px 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--green);
+  color: white;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.greenButton:hover {
+  background: #3c634b;
+  transform: translateY(-2px);
+}
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.textLink svg {
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.textLink:hover svg:last-child {
+  transform: translate(3px, -2px);
+}
+.hero {
+  padding: 30px 0 75px;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #757e6d;
+  font-size: 11px;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.breadcrumb > span {
+  color: #3a5341;
+}
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1.08fr 1fr;
+  gap: 62px;
+  align-items: center;
+  margin-top: 43px;
+}
+.heroCopy > p {
+  max-width: 410px;
+  margin: 24px 0 28px;
+  color: #717969;
+  font-size: 14px;
+  line-height: 1.95;
+}
+.heroNote {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  margin-top: 35px;
+  color: #738263;
+}
+.heroNote span {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1.8;
+}
+.heroPhotos {
+  position: relative;
+  height: 454px;
+}
+.heroPhoto {
+  position: absolute;
+  inset: 0 0 45px 35px;
+  overflow: hidden;
+  border-radius: 4px 110px 4px 4px;
+}
+.heroPhoto img {
+  object-position: 53% center;
+}
+.heroInset {
+  position: absolute;
+  left: -12px;
+  bottom: 0;
+  width: 48%;
+  height: 197px;
+  border: 7px solid var(--cream);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.heroSeal {
+  position: absolute;
+  top: 24px;
+  left: -10px;
+  width: 108px;
+  height: 108px;
+  border: 6px solid var(--cream);
+  border-radius: 50%;
+  background: #e8ecdc;
+  color: #5c7250;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transform: rotate(-8deg);
+}
+.heroSeal span {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.7;
+  text-align: center;
+}
+.photoCaption {
+  position: absolute;
+  bottom: 15px;
+  right: 0;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #79816c;
+}
+.pageNav {
+  background: #edeee5;
+  border-block: 1px solid #e0e3d6;
+}
+.pageNav > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  min-height: 80px;
+}
+.pageNav > div > span {
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  color: #7b856e;
+}
+.pageNav a {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 0;
+  font-size: 12px;
+  color: #42583e;
+}
+.pageNav a:hover {
+  color: #718a5c;
+}
+.fellowships {
+  padding-top: 90px;
+  padding-bottom: 90px;
+}
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 45px;
+  margin-bottom: 40px;
+}
+.sectionHeading > p {
+  max-width: 325px;
+  color: #727b6b;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.fellowshipGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.fellowshipCard {
+  display: flex;
+  flex-direction: column;
+  background: #fffef9;
+  border: 1px solid #e2e5d9;
+  border-radius: 4px;
+}
+.cardImage {
+  position: relative;
+  aspect-ratio: 1.6;
+  overflow: hidden;
+  border-radius: 3px 3px 0 0;
+  background: #e9ecdf;
+}
+.cardImage img {
+  transition: transform 0.4s;
+}
+.fellowshipCard:hover .cardImage img {
+  transform: scale(1.035);
+}
+.cardNumber {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: #f9f8f3ee;
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+}
+.cardCopy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 25px;
+}
+.smallLabel {
+  display: block;
+  color: #6d805e;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.8;
+}
+.cardCopy h3 {
+  font-size: 27px;
+  line-height: 1.25;
+  margin: 11px 0 15px;
+}
+.cardCopy p,
+.helpCard p {
+  color: #727b6b;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.cardCopy .textLink {
+  margin-top: auto;
+  padding-top: 22px;
+}
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  margin-top: auto;
+  padding-top: 22px;
+}
+.cardActions .textLink {
+  margin-top: 0;
+  padding-top: 0;
+}
+.cardPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  color: #8d9a79;
+}
+.cardPlaceholder > span:last-child {
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+.cardActivities {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.cardActivities li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #5c6b52;
+}
+.cardActivities svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: #748763;
+}
+.serveActivities {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.serveActivities li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: #c0cebb;
+}
+.serveActivities svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+  color: #d6bf91;
+}
+.serveTeam .cardActions {
+  margin-top: 10px;
+  padding-top: 0;
+}
+.helpCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 35px;
+  background: #e9edde;
+  border: 1px solid #dde3cf;
+  border-radius: 4px 4px 65px 4px;
+}
+.helpCard > svg {
+  margin-bottom: 25px;
+  color: #748763;
+}
+.helpCard h3 {
+  font-size: 35px;
+  line-height: 1.2;
+  margin: 15px 0 20px;
+}
+.helpCard h3 em {
+  color: #687e5d;
+}
+.helpCard .textLink {
+  margin-top: 18px;
+}
+.serve {
+  background: #1e4435;
+  color: #f5f4e9;
+  padding: 80px 0;
+}
+.serveGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 95px;
+  align-items: center;
+}
+.serve .eyebrow,
+.serve .smallLabel {
+  color: #bbc9a6;
+}
+.serve h2 em {
+  color: #d6bf91;
+}
+.serveCopy > p {
+  margin-top: 25px;
+  font-size: 14px;
+  line-height: 1.95;
+  color: #c0cebb;
+  max-width: 400px;
+}
+.serveNote {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  border-top: 1px solid #ffffff24;
+  padding-top: 24px;
+  margin-top: 30px;
+  color: #d6bf91;
+}
+.serveNote span {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.serveTeams {
+  display: grid;
+  gap: 20px;
+}
+.serveTeam {
+  display: flex;
+  align-items: flex-start;
+  gap: 23px;
+  padding: 30px;
+  border: 1px solid #ffffff24;
+  border-radius: 4px;
+  background: #ffffff05;
+}
+.serveTeam > svg {
+  flex-shrink: 0;
+  color: #d6bf91;
+}
+.serveTeam h3 {
+  font-size: 29px;
+  line-height: 1.25;
+  margin: 9px 0 13px;
+}
+.serveTeam p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #c0cebb;
+}
+.serveTeam .textLink {
+  color: #e6d3ab;
+  margin-top: 10px;
+}
+.connect {
+  padding-top: 88px;
+  padding-bottom: 85px;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 45px;
+  list-style: none;
+}
+.steps li {
+  border-top: 1px solid #dce1d2;
+  padding-top: 26px;
+}
+.stepNumber {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 34px;
+  color: #8d9a79;
+}
+.steps h3 {
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 18px 0 14px;
+}
+.steps p {
+  color: #727b6b;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.questions {
+  background: #efeee7;
+  padding: 75px 0;
+}
+.questionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 80px;
+}
+.questionsGrid > div > p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: #727b6b;
+  max-width: 320px;
+  margin-top: 22px;
+}
+.questionList details {
+  border-bottom: 1px solid #d5dbcd;
+}
+.questionList details:first-child {
+  border-top: 1px solid #d5dbcd;
+}
+.questionList summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  list-style: none;
+  padding: 23px 0;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+.questionList summary::-webkit-details-marker {
+  display: none;
+}
+.questionList summary svg {
+  flex-shrink: 0;
+  color: #728563;
+  transition: transform 0.2s;
+}
+.questionList details[open] summary svg {
+  transform: rotate(45deg);
+}
+.questionList details p {
+  color: #68745e;
+  font-size: 13px;
+  line-height: 1.95;
+  padding: 0 28px 23px 0;
+}
+.invitation {
+  background: #e9edde;
+  padding: 70px 0;
+}
+.invitationInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 45px;
+}
+.visitDetails {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 25px;
+  color: #586d48;
+  font-size: 12px;
+}
+.visitDetails span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.invitationActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+@media (max-width: 1100px) {
+  .container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .heroGrid {
+    gap: 35px;
+  }
+  .heroPhotos {
+    height: 420px;
+  }
+  .heroInset {
+    height: 175px;
+  }
+  .photoCaption {
+    max-width: 150px;
+    text-align: right;
+    line-height: 1.7;
+  }
+  .pageNav > div > span {
+    display: none;
+  }
+  .serveGrid {
+    gap: 50px;
+  }
+  .questionsGrid {
+    gap: 45px;
+  }
+  .fellowshipGrid {
+    gap: 20px;
+  }
+  .cardCopy {
+    padding: 22px;
+  }
+  .helpCard {
+    padding: 28px;
+  }
+}
+@media (max-width: 1000px) {
+  .fellowshipGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .steps {
+    gap: 28px;
+  }
+}
+@media (max-width: 760px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .hero {
+    padding: 24px 0 50px;
+  }
+  .heroGrid {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    margin-top: 35px;
+  }
+  .community h1 {
+    font-size: clamp(43px, 8.4vw, 62px);
+  }
+  .community h2 {
+    font-size: 38px;
+  }
+  .heroCopy > p {
+    max-width: 480px;
+    font-size: 15px;
+  }
+  .heroNote {
+    margin-top: 27px;
+  }
+  .heroPhotos {
+    width: 100%;
+    max-width: 470px;
+    height: 420px;
+    margin: auto;
+  }
+  .heroInset {
+    left: -7px;
+    height: 190px;
+  }
+  .heroSeal {
+    left: 0;
+  }
+  .photoCaption {
+    max-width: 165px;
+    font-size: 7px;
+  }
+  .pageNav > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 26px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .pageNav a {
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 0;
+  }
+  .sectionHeading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+  .sectionHeading > p {
+    max-width: 470px;
+  }
+  .fellowships,
+  .connect {
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+  .serve,
+  .questions {
+    padding: 60px 0;
+  }
+  .serveGrid,
+  .questionsGrid {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+  .serveCopy > p {
+    max-width: 480px;
+  }
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .steps h3 {
+    margin-top: 12px;
+  }
+  .steps p {
+    max-width: 470px;
+    font-size: 14px;
+  }
+  .invitation {
+    padding: 55px 0;
+  }
+  .invitationInner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+  }
+  .invitationActions {
+    align-items: flex-start;
+  }
+}
+@media (max-width: 600px) {
+  .community {
+    padding-top: 76px;
+  }
+  .community [id] {
+    scroll-margin-top: 96px;
+  }
+  .fellowshipGrid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  .cardCopy {
+    padding: 25px;
+  }
+  .cardCopy p,
+  .helpCard p {
+    font-size: 14px;
+  }
+  .helpCard {
+    padding: 32px;
+  }
+  .serveTeam {
+    gap: 17px;
+    padding: 25px;
+  }
+  .cardActions .textLink {
+    padding: 10px 0;
+  }
+}
+@media (max-width: 380px) {
+  .heroPhotos {
+    height: 350px;
+  }
+  .heroInset {
+    height: 160px;
+    width: 51%;
+  }
+  .heroSeal {
+    width: 90px;
+    height: 90px;
+  }
+  .heroSeal span {
+    font-size: 7px;
+  }
+  .photoCaption {
+    max-width: 115px;
+  }
+  .community h2 {
+    font-size: 34px;
+  }
+  .pageNav a {
+    font-size: 11px;
+  }
+  .heroNote {
+    gap: 9px;
+  }
+  .heroNote span {
+    font-size: 8px;
+  }
+  .serveTeam {
+    padding: 22px;
+    gap: 13px;
+  }
+  .serveTeam h3 {
+    font-size: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .community *,
+  .community *::before,
+  .community *::after {
+    transition: none !important;
+  }
+}

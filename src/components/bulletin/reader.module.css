@@ -1,0 +1,181 @@
+.reader {
+  overflow: hidden;
+  border: 1px solid #d8dccf;
+  border-radius: 8px;
+  background: #f9f8f3;
+  box-shadow: 0 18px 60px rgb(36 58 48 / 9%);
+}
+
+.toolbar, .controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  border-bottom: 1px solid #d8dccf;
+  color: #244c3b;
+}
+
+.reader button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid #d8dccf;
+  border-radius: 4px;
+  background: #fff;
+  color: #244c3b;
+  cursor: pointer;
+}
+
+.reader button:hover:not(:disabled) {
+  background: #edeee5;
+}
+
+.reader button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.reader :is(button, .viewport):focus-visible {
+  outline: 3px solid #a78b51;
+  outline-offset: -3px;
+}
+
+.pageNumber, .zoom {
+  min-width: 94px;
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom {
+  min-width: 45px;
+}
+
+.viewport {
+  overflow: auto;
+  height: min(1000px, 80vh);
+  min-height: 450px;
+  padding: 16px;
+  background: #e0e3da;
+  overscroll-behavior: contain;
+}
+
+.page {
+  position: relative;
+  margin: 0 auto;
+  background: #fff;
+  box-shadow: 0 3px 16px rgb(36 58 48 / 14%);
+}
+
+.page canvas {
+  display: block;
+}
+
+.textLayer {
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+  position: absolute;
+  inset: 0;
+  overflow: clip;
+  line-height: 1;
+  text-align: initial;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+}
+
+.textLayer :is(span, br) {
+  position: absolute;
+  color: transparent;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0 0;
+}
+
+.textLayer > :not(:global(.markedContent)),
+.textLayer :global(.markedContent) span:not(:global(.markedContent)) {
+  --font-height: 0;
+  --scale-x: 1;
+  --rotate: 0deg;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.textLayer :global(.markedContent) {
+  display: contents;
+}
+
+.textLayer ::selection {
+  background: rgb(113 138 92 / 35%);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 300px;
+  color: #42583e;
+  text-align: center;
+  font-size: 14px;
+}
+
+.status button {
+  padding: 0 16px;
+}
+
+.renderStatus {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f9f8f3;
+  color: #42583e;
+  font-size: 12px;
+}
+
+.hint {
+  padding: 13px 18px;
+  border-top: 1px solid #d8dccf;
+  color: #717969;
+  font-size: 12px;
+  text-align: center;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .toolbar {
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 8px;
+  }
+  .viewport {
+    height: 72vh;
+    min-height: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}

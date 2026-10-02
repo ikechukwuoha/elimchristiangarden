@@ -20,6 +20,12 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Media uploads
+
+The password-protected media room is at `/admin/media`. Follow the
+[setup guide](docs/media-admin.md) to connect Cloudinary, configure the shared
+admin password, and upload images, videos, and monthly PDF bulletins.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

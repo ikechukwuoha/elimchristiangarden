@@ -1,133 +1,121 @@
-'use client';
-import React, { useState, useEffect } from 'react'
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { ArrowUpRight, Menu, X } from 'lucide-react'
+import styles from './site.module.css'
 
-// Define types for the navigation link props
-type NavLinkProps = {
-  href: string;
-  label: string;
-}
-
-type MobileNavLinkProps = NavLinkProps & {
-  onClick: () => void;
-}
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'Our church' },
+  { href: '/sermons', label: 'Messages' },
+  { href: '/bulletin', label: 'Bulletin' },
+  { href: '/community', label: 'Community' },
+  { href: '/gallery', label: 'Gallery' },
+  { href: '/#contact', label: 'Contact' },
+]
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  
-  // Handle scroll effect
+  const pathname = usePathname()
+  const toggleRef = useRef<HTMLButtonElement>(null)
+
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true)
-      } else {
-        setScrolled(false)
+    if (!isMenuOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false)
+        toggleRef.current?.focus()
       }
     }
-    
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [isMenuOpen])
 
   return (
-    <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-black shadow-lg' : 'bg-black/90'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo and brand name */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/images/logo-removebg-preview.png"
-                alt="Elim Christian Garden Int Logo"
-                width={60}
-                height={60}
-                className="h-12 w-auto"
-              />
-              <div className="ml-3">
-                <span className="text-xl font-bold text-green-700">Elim Christian</span>
-                <span className="block text-sm text-green-500">Garden International</span>
-              </div>
-            </Link>
-          </div>
-          
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-1">
-            <NavLink href="/" label="Home" />
-            <NavLink href="/about" label="About" />
-            <NavLink href="/sermons" label="Sermons" />
-            <NavLink href="#contact" label="Contact" />
-            <button className="ml-4 bg-green-600 hover:bg-green-500 text-white py-2 px-5 rounded-full font-medium transition-all duration-300 hover:shadow-lg transform hover:-translate-y-0.5">
-              Donate
-            </button>
-          </div>
-          
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-green-700 hover:text-green-500 hover:bg-gray-100 focus:outline-none transition-colors duration-300"
-              aria-expanded={isMenuOpen}
-            >
-              <span className="sr-only">Open main menu</span>
-              {isMenuOpen ? (
-                <X className="h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="h-6 w-6" aria-hidden="true" />
-              )}
-            </button>
-          </div>
-        </div>
+    <header className={styles.header}>
+      <a href="#main-content" className={styles.skipLink}>
+        Skip to content
+      </a>
+      <div className={styles.navInner}>
+        <Link
+          href="/"
+          className={styles.brand}
+          aria-label="Elim Christian Garden International home"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <Image
+            src="/images/logo-removebg-preview.png"
+            alt=""
+            width={54}
+            height={54}
+          />
+          <span>
+            <strong>ELIM CHRISTIAN GARDEN</strong>
+            <small>INTERNATIONAL</small>
+          </span>
+        </Link>
+        <nav aria-label="Main navigation" className={styles.desktopNav}>
+          {links.map((link) => {
+            // Read published media instead of a page cached before an upload.
+            const NavLink = link.href === '/bulletin' || link.href === '/gallery' ? 'a' : Link
+            return (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
+              >
+                {link.label}
+              </NavLink>
+            )
+          })}
+        </nav>
+        <Link href="/#visit" className={styles.navCta}>
+          Plan your visit <ArrowUpRight size={17} aria-hidden="true" />
+        </Link>
+        <button
+          ref={toggleRef}
+          type="button"
+          className={styles.menuToggle}
+          aria-label={isMenuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
+          {isMenuOpen ? <X size={25} /> : <Menu size={25} />}
+        </button>
       </div>
-      
-      {/* Mobile Menu */}
-      <div 
-        className={`md:hidden absolute w-full bg-white shadow-lg transform transition-all duration-300 ease-in-out ${
-          isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
-        }`}
-      >
-        <div className="px-4 pt-2 pb-6 space-y-2 flex flex-col">
-          <MobileNavLink href="/" label="Home" onClick={() => setIsMenuOpen(false)} />
-          <MobileNavLink href="/about" label="About" onClick={() => setIsMenuOpen(false)} />
-          <MobileNavLink href="/sermons" label="Sermons" onClick={() => setIsMenuOpen(false)} />
-          <MobileNavLink href="#contact" label="Contact" onClick={() => setIsMenuOpen(false)} />
-          <div className="pt-2">
-            <button className="w-full bg-green-600 hover:bg-green-500 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center space-x-2">
-              <span>Donate Now</span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
-  )
-}
-
-// Desktop navigation link component
-function NavLink({ href, label }: NavLinkProps) {
-  return (
-    <Link href={href} className="relative group px-3 py-2">
-      <span className="text-gray-600 font-medium group-hover:text-green-600 transition-colors duration-300">
-        {label}
-      </span>
-      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-    </Link>
-  )
-}
-
-// Mobile navigation link component
-function MobileNavLink({ href, label, onClick }: MobileNavLinkProps) {
-  return (
-    <Link 
-      href={href} 
-      className="text-gray-600 hover:text-green-600 hover:bg-gray-50 font-medium py-3 px-4 rounded-md block transition-colors duration-300"
-      onClick={onClick}
-    >
-      {label}
-    </Link>
+      {isMenuOpen && (
+        <nav
+          id="mobile-navigation"
+          aria-label="Mobile navigation"
+          className={styles.mobileNav}
+        >
+          {links.map((link) => {
+            const NavLink = link.href === '/bulletin' || link.href === '/gallery' ? 'a' : Link
+            return (
+              <NavLink
+                key={link.href}
+                href={link.href}
+                aria-current={pathname === link.href ? 'page' : undefined}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.label}
+                <ArrowUpRight size={17} aria-hidden="true" />
+              </NavLink>
+            )
+          })}
+          <Link
+            href="/#visit"
+            className={styles.mobileCta}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Plan your visit <ArrowUpRight size={17} aria-hidden="true" />
+          </Link>
+        </nav>
+      )}
+    </header>
   )
 }

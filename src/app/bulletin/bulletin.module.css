@@ -1,0 +1,353 @@
+.bulletinPage {
+  --cream: #f9f8f3;
+  --green: #244c3b;
+  --ink: #243a30;
+  padding-top: 88px;
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.bulletinPage :is(a, button):focus-visible {
+  outline: 3px solid #a78b51;
+  outline-offset: 5px;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.bulletinPage :is(h1, h2) {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: -0.045em;
+}
+
+.hero {
+  padding: 30px 0 82px;
+}
+
+.emptyState {
+  display: flex;
+  min-height: 440px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 0;
+  text-align: center;
+}
+
+.emptyState h1 {
+  max-width: 650px;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.2;
+}
+
+.emptyState p {
+  max-width: 470px;
+  margin-top: 22px;
+  color: #717969;
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #757e6d;
+  font-size: 11px;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.breadcrumb > span {
+  color: #3a5341;
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 64px;
+  align-items: center;
+  margin-top: 55px;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 21px;
+  color: #617253;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  line-height: 1.8;
+}
+
+.eyebrow > span {
+  width: 24px;
+  height: 1px;
+  flex-shrink: 0;
+  background: #9ba387;
+}
+
+.heroCopy h1 {
+  font-size: clamp(48px, 5.2vw, 72px);
+  line-height: 1.12;
+}
+
+.heroCopy h1 em {
+  color: #687e5d;
+  font-weight: 400;
+}
+
+.heroCopy > p {
+  max-width: 480px;
+  margin: 24px 0 29px;
+  color: #717969;
+  font-size: 14px;
+  line-height: 1.95;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.primaryButton {
+  padding: 0 21px;
+  border-radius: 4px;
+  background: var(--green);
+  color: white;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  background: #3c634b;
+}
+
+.secondaryButton {
+  color: #42583e;
+}
+
+.secondaryButton:hover {
+  color: #718a5c;
+}
+
+.monthCard {
+  min-height: 287px;
+  padding: 32px;
+  border: 1px solid #e2e5d9;
+  border-radius: 4px 70px 4px 4px;
+  background: #edeee5;
+}
+
+.monthIcon {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  margin-bottom: 26px;
+  border: 1px solid #d5dacb;
+  border-radius: 50%;
+  color: #617253;
+}
+
+.cardLabel {
+  color: #718066;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+}
+
+.monthCard h2 {
+  margin-top: 9px;
+  font-size: 31px;
+  line-height: 1.2;
+}
+
+.monthCard p {
+  margin-top: 15px;
+  color: #687e5d;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 20px;
+  font-style: italic;
+}
+
+.reference {
+  display: block;
+  margin-top: 7px;
+  color: #717969;
+  font-size: 11px;
+}
+
+.readerSection {
+  padding: 76px 0 100px;
+  background: #edeee5;
+}
+
+.readerHeading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.readerHeading .eyebrow {
+  margin-bottom: 12px;
+}
+
+.readerHeading h2 {
+  font-size: clamp(35px, 4vw, 48px);
+  line-height: 1.18;
+}
+
+.readerHeading > p {
+  max-width: 250px;
+  color: #717969;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.notice {
+  margin-bottom: 28px;
+  padding: 18px 22px;
+  border: 1px solid #d5dacb;
+  border-radius: 4px;
+  background: var(--cream);
+  color: #42583e;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.archive {
+  margin-top: 48px;
+}
+
+.editions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+}
+
+.edition {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border: 1px solid #d5dacb;
+  border-radius: 4px;
+  background: var(--cream);
+  font-size: 14px;
+}
+
+.edition[aria-current='page'],
+.edition:hover {
+  border-color: #687e5d;
+  background: #fffef9;
+}
+
+.edition > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.edition small {
+  display: block;
+  margin-top: 5px;
+  color: #717969;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.edition svg {
+  flex-shrink: 0;
+}
+
+.heroCopy h1, .monthCard h2, .readerHeading h2 {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .container {
+    padding: 0 22px;
+  }
+
+  .hero {
+    padding-bottom: 60px;
+  }
+
+  .heroGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: 39px;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(43px, 11vw, 61px);
+  }
+
+  .monthCard {
+    min-height: auto;
+    padding: 27px;
+    border-top-right-radius: 50px;
+  }
+
+  .monthIcon {
+    margin-bottom: 20px;
+  }
+
+  .readerSection {
+    padding: 60px 0 75px;
+  }
+
+  .readerHeading {
+    display: block;
+  }
+
+  .readerHeading > p {
+    margin-top: 12px;
+  }
+
+}
+
+@media (max-width: 600px) {
+  .bulletinPage {
+    padding-top: 76px;
+  }
+  .bulletinPage [id] {
+    scroll-margin-top: 96px;
+  }
+}
+
+@media (max-width: 430px) {
+  .actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .primaryButton {
+    width: 100%;
+  }
+}

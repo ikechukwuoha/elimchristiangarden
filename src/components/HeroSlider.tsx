@@ -1,113 +1,235 @@
-import React, { useState, useEffect } from 'react'
-import Image from 'next/image'
+'use client'
 
-const heroImages = [
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+} from 'lucide-react'
+import { church } from '@/app/data/church'
+import styles from '@/app/home.module.css'
+
+type HeroPhoto = {
+  id: string
+  src: string
+  alt: string
+}
+
+type Slide = {
+  eyebrow: string
+  title: [string, string, string]
+  subtitle: string
+}
+
+const slides: Slide[] = [
   {
-    src: '/images/hero1.jpg',
-    alt: 'Church service',
-    title: 'Welcome to Elim Christian Garden International',
-    subtitle: 'A place of worship, growth and fellowship'
+    eyebrow: 'A FAMILY OF FAITH. A PLACE TO BELONG.',
+    title: ['Rooted in faith.', 'Growing', 'together.'],
+    subtitle:
+      'Wherever you are on your journey, you are welcome here. Discover a life of purpose in the love of Jesus.',
   },
   {
-    src: '/images/hero2.jpg',
-    alt: 'Bible study',
-    title: 'Grow in Faith',
-    subtitle: 'Join us for life-changing messages and spiritual growth'
+    eyebrow: 'SUNDAYS AT ELIM',
+    title: ['Come as you are.', 'Leave', 'renewed.'],
+    subtitle:
+      'Worship, the Word, and a warm welcome — a fresh start for your week, every single week.',
   },
   {
-    src: '/images/hero3.jpg',
-    alt: 'Community service',
-    title: 'Serving Our Community',
-    subtitle: 'Extending the love of Christ to everyone'
-  }
+    eyebrow: 'LIFE IS BETTER TOGETHER',
+    title: ['Find your people.', 'Grow your', 'purpose.'],
+    subtitle:
+      'From fellowships to serving teams, there is a place for every age and every season of life.',
+  },
+  {
+    eyebrow: 'THE NEXT GENERATION',
+    title: ['Raising a', 'generation that', 'loves God.'],
+    subtitle:
+      'Children and teenagers discover Jesus, build friendships, and grow a faith of their own.',
+  },
+  {
+    eyebrow: 'WATERING LIVES FOR FRUITFULNESS',
+    title: ['A place of', 'refreshing and', 'fruitfulness.'],
+    subtitle:
+      'Like Elim of old — twelve wells of water and seventy palm trees — there is room for you here.',
+  },
+  {
+    eyebrow: 'YOUR NEXT STEP STARTS HERE',
+    title: ['There’s a seat', 'for you this', 'Sunday.'],
+    subtitle: `Join us at Elim Garden, Bwari, Abuja — Sundays at ${church.sundayTime}. Come and see.`,
+  },
 ]
 
-export default function HeroSlider() {
-  const [currentSlide, setCurrentSlide] = useState(0)
+// Slides are shuffled after mount so every visit meets the hero in a different
+// order, without breaking server rendering (which shows the first slide).
+function shuffledOrder(length: number) {
+  const order = Array.from({ length }, (_, index) => index)
+  for (let index = order.length - 1; index > 0; index--) {
+    const swap = Math.floor(Math.random() * (index + 1))
+    ;[order[index], order[swap]] = [order[swap], order[index]]
+  }
+  return order
+}
 
-  // Auto slide effect
+export default function HeroSlider({ photos }: { photos: HeroPhoto[] }) {
+  const slideCount = Math.max(photos.length, 1)
+  const [order, setOrder] = useState<number[]>(() =>
+    Array.from({ length: slideCount }, (_, index) => index),
+  )
+  const [position, setPosition] = useState(0)
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1))
-    }, 5000)
+    // Deferred with a timeout so the shuffled order lands after hydration.
+    const timeout = window.setTimeout(() => setOrder(shuffledOrder(slideCount)), 0)
+    return () => window.clearTimeout(timeout)
+  }, [slideCount])
+
+  useEffect(() => {
+    if (order.length < 2) return
+    const interval = setInterval(
+      () => setPosition((value) => (value + 1) % order.length),
+      6000,
+    )
     return () => clearInterval(interval)
-  }, [])
+  }, [order.length])
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev === heroImages.length - 1 ? 0 : prev + 1))
-  }
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? heroImages.length - 1 : prev - 1))
-  }
-
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-  }
+  const move = (step: number) =>
+    setPosition((value) => (value + step + order.length) % order.length)
 
   return (
-    <div className="relative h-[70vh] w-full overflow-hidden">
-      {/* Slides */}
-      {heroImages.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          <div className="relative w-full h-full">
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              style={{ objectFit: 'cover' }}
-              priority={index === 0}
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center px-4">
-              <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                {image.title}
-              </h1>
-              <p className="text-xl md:text-2xl text-white mb-8">
-                {image.subtitle}
-              </p>
-              <button className="bg-gold-500 hover:bg-gold-600 text-white py-3 px-8 rounded-md font-semibold transition-colors">
-                Join Us Sunday
-              </button>
+    <section className={styles.hero} aria-labelledby="welcome-title">
+      <h1 id="welcome-title" className="sr-only">
+        Rooted in faith. Growing together. Elim Christian Garden International,
+        Bwari, Abuja.
+      </h1>
+      <div className={styles.heroSlides}>
+        {order.map((slideIndex, slidePosition) => {
+          const photo = photos[slideIndex]
+          if (!photo) return null
+          const active = slidePosition === position
+          // Keep adjacent photos ready without loading the entire library at once.
+          if (
+            !active &&
+            slidePosition !== (position + 1) % order.length &&
+            slidePosition !== (position + order.length - 1) % order.length
+          ) return null
+          return (
+            <div
+              key={photo.id}
+              className={`${styles.heroSlide} ${active ? styles.heroSlideActive : ''}`}
+              aria-hidden={!active}
+            >
+              <div className={styles.heroImage}>
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  unoptimized
+                  sizes="(max-width: 700px) 100vw, 72vw"
+                  loading="eager"
+                  fetchPriority={active ? 'high' : 'auto'}
+                  className={styles.cover}
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
-
-      {/* Navigation buttons */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full z-10 hover:bg-opacity-75"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full z-10 hover:bg-opacity-75"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-
-      {/* Slide indicators */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-        {heroImages.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`h-3 w-3 rounded-full ${
-              index === currentSlide ? 'bg-gold-500' : 'bg-white bg-opacity-50'
-            }`}
-          />
-        ))}
+          )
+        })}
       </div>
-    </div>
+      <div className={styles.heroShade} />
+      <div className={styles.heroContent}>
+        <div className={styles.heroWriteups}>
+          {order.map((slideIndex, slidePosition) => {
+            const slide = slides[slideIndex % slides.length]
+            const active = slidePosition === position
+            const [first, second, em] = slide.title
+            return (
+              <div
+                key={slideIndex}
+                className={`${styles.heroWriteup} ${active ? styles.heroWriteupActive : ''}`}
+                aria-hidden={!active}
+              >
+                <div className={styles.heroEyebrow}>
+                  <span /> {slide.eyebrow}
+                </div>
+                <p className={styles.heroWriteupTitle}>
+                  {first}
+                  <br />
+                  {second}
+                  <br />
+                  <em>{em}</em>
+                </p>
+                <p>{slide.subtitle}</p>
+              </div>
+            )
+          })}
+        </div>
+        <div className={styles.heroActions}>
+          <a href="#visit" className={styles.goldButton}>
+            Join us this Sunday <ArrowUpRight size={19} aria-hidden="true" />
+          </a>
+          <a href="#welcome" className={styles.heroLink}>
+            Get to know us <ArrowRight size={17} aria-hidden="true" />
+          </a>
+        </div>
+        <div className={styles.heroLocation}>
+          <MapPin size={14} aria-hidden="true" /> BWARI, ABUJA{' '}
+          <span>•</span> ONE FAMILY IN CHRIST
+        </div>
+      </div>
+      <a
+        className={styles.heroScroll}
+        href="#welcome"
+        aria-label="Discover our church"
+      >
+        <span>DISCOVER ELIM</span>
+        <ArrowDown size={17} aria-hidden="true" />
+      </a>
+      {photos.length > 0 && (
+        <div className={styles.photoCaption}>
+          <span className={styles.captionLine} /> REAL PEOPLE. SHARED FAITH.
+        </div>
+      )}
+      {photos.length > 1 && (
+        <div className={styles.heroControls}>
+          <button
+            type="button"
+            className={styles.heroArrow}
+            onClick={() => move(-1)}
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={20} aria-hidden="true" />
+          </button>
+          {order.length <= 12 ? (
+            <div className={styles.heroDots} role="group" aria-label="Slides">
+              {order.map((slideIndex, slidePosition) => (
+                <button
+                  key={slideIndex}
+                  type="button"
+                  className={styles.heroDot}
+                  aria-current={slidePosition === position}
+                  aria-label={`Go to slide ${slidePosition + 1}`}
+                  onClick={() => setPosition(slidePosition)}
+                />
+              ))}
+            </div>
+          ) : (
+            <span className={styles.heroCount} aria-live="polite">
+              {position + 1} / {order.length}
+            </span>
+          )}
+          <button
+            type="button"
+            className={styles.heroArrow}
+            onClick={() => move(1)}
+            aria-label="Next slide"
+          >
+            <ChevronRight size={20} aria-hidden="true" />
+          </button>
+        </div>
+      )}
+    </section>
   )
 }

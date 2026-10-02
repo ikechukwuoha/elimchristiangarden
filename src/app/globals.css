@@ -1,12 +1,10 @@
-/* Correct order */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather&family=Open+Sans&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Hide horizontal overflow globally */
-html, body {
+html,
+body {
   overflow-x: hidden;
 }
 
@@ -15,9 +13,12 @@ main {
   overflow-x: hidden;
 }
 
-/* Remove or modify this */
-::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+html {
+  scroll-behavior: smooth;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
