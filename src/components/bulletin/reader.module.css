@@ -1,9 +1,11 @@
 .reader {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
   overflow: hidden;
-  border: 1px solid #d8dccf;
-  border-radius: 8px;
   background: #f9f8f3;
-  box-shadow: 0 18px 60px rgb(36 58 48 / 9%);
 }
 
 .toolbar, .controls {
@@ -13,6 +15,7 @@
 }
 
 .toolbar {
+  flex-shrink: 0;
   justify-content: space-between;
   flex-wrap: wrap;
   padding: 14px 18px;
@@ -25,8 +28,8 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid #d8dccf;
   border-radius: 4px;
   background: #fff;
@@ -60,12 +63,70 @@
 }
 
 .viewport {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
-  height: min(1000px, 80vh);
-  min-height: 450px;
   padding: 16px;
   background: #e0e3da;
   overscroll-behavior: contain;
+}
+
+.modes {
+  display: flex;
+  gap: 4px;
+}
+
+.pages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 100%;
+  width: max-content;
+}
+
+.textViewport .pages { width: 100%; }
+
+.pageSection { min-width: 0; }
+
+.pageLabel {
+  margin-bottom: 8px;
+  color: #617253;
+  font-size: 12px;
+  text-align: center;
+}
+
+.modes button {
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.modes button[aria-pressed='true'] {
+  border-color: #244c3b;
+  background: #244c3b;
+  color: #fff;
+}
+
+.modes button[aria-pressed='true']:hover:not(:disabled) {
+  background: #3c634b;
+}
+
+.textViewport {
+  background: #edeee5;
+}
+
+.textPage {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: clamp(24px, 5vw, 64px);
+  background: #fffef9;
+  color: #243a30;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+  box-shadow: 0 3px 16px rgb(36 58 48 / 9%);
+}
+
+.textPage p + p {
+  margin-top: 1.2em;
 }
 
 .page {
@@ -77,6 +138,11 @@
 
 .page canvas {
   display: block;
+}
+
+.surface {
+  position: absolute;
+  inset: 0;
 }
 
 .textLayer {
@@ -134,6 +200,13 @@
   padding: 0 16px;
 }
 
+.page .status {
+  position: relative;
+  min-height: 0;
+  height: 100%;
+  padding: 16px;
+}
+
 .renderStatus {
   position: sticky;
   top: 0;
@@ -149,7 +222,8 @@
 }
 
 .hint {
-  padding: 13px 18px;
+  flex-shrink: 0;
+  padding: 10px 18px max(10px, env(safe-area-inset-bottom));
   border-top: 1px solid #d8dccf;
   color: #717969;
   font-size: 12px;
@@ -170,10 +244,40 @@
     gap: 12px;
     padding: 12px 8px;
   }
-  .viewport {
-    height: 72vh;
-    min-height: 360px;
+  .modes {
+    justify-content: center;
+    width: 100%;
   }
+  .controls { gap: 4px; }
+  .zoom { display: none; }
+  .textViewport {
+    padding: 12px;
+  }
+  .textPage {
+    padding: 24px 18px;
+    line-height: 1.75;
+  }
+  .hint {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 370px) {
+  .toolbar { gap: 8px; }
+  .controls { gap: 4px; }
+  .pageNumber { min-width: 80px; }
+  .fitControl { display: none; }
+}
+
+@media (max-height: 500px) and (max-width: 900px) {
+  .toolbar {
+    gap: 8px;
+    padding: 6px 8px;
+  }
+  .modes {
+    width: auto;
+  }
+  .hint { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

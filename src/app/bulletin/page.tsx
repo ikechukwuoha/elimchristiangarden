@@ -7,9 +7,8 @@ import {
   FileText,
 } from 'lucide-react'
 import Layout from '@/components/Layout'
-import BulletinReader from '@/components/bulletin/BulletinReader'
 import { cachedBulletins } from '@/lib/bulletin-cache'
-import { bulletinDownloadUrl, bulletinPdfUrl, type Bulletin } from '@/lib/bulletins'
+import { bulletinDownloadUrl, type Bulletin } from '@/lib/bulletins'
 import { formatMonth } from '@/lib/media'
 import styles from './bulletin.module.css'
 
@@ -70,7 +69,7 @@ export default async function BulletinPage({
     )
   }
   const month = formatMonth(bulletin.month)
-  const bulletinUrl = bulletinPdfUrl(bulletin)
+  const readerUrl = `/bulletin/${bulletin.month}/read`
   return (
     <Layout>
       <div className={styles.bulletinPage}>
@@ -96,21 +95,19 @@ export default async function BulletinPage({
                   {bulletin.description || 'Read the latest from our church family: this month’s message, celebrations, and programme of services.'}
                 </p>
                 <div className={styles.actions}>
-                  <a
+                  <Link
                     className={styles.primaryButton}
+                    href={readerUrl}
+                  >
+                    Read bulletin{' '}
+                    <FileText size={17} aria-hidden="true" />
+                  </Link>
+                  <a
+                    className={styles.secondaryButton}
                     href={bulletinDownloadUrl(bulletin)}
                     download={`Elim-${bulletin.month}-Bulletin.pdf`}
                   >
-                    Download bulletin{' '}
-                    <ArrowDownToLine size={17} aria-hidden="true" />
-                  </a>
-                  <a
-                    className={styles.secondaryButton}
-                    href={bulletinUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open PDF <ArrowUpRight size={17} aria-hidden="true" />
+                    Download PDF <ArrowDownToLine size={17} aria-hidden="true" />
                   </a>
                 </div>
               </div>
@@ -144,7 +141,16 @@ export default async function BulletinPage({
               </div>
               <p>Encouragement and news from Elim. Read, share, or keep a copy.</p>
             </div>
-            <BulletinReader key={bulletin.id} url={bulletinUrl} title={`Elim Christian Garden ${month} bulletin`} />
+            <div className={styles.readCard}>
+              <FileText size={32} strokeWidth={1.4} aria-hidden="true" />
+              <div>
+                <h3>Read at your own pace.</h3>
+                <p>Open the bulletin in a reader made for your screen, with adjustable text and the original PDF.</p>
+              </div>
+              <Link className={styles.primaryButton} href={readerUrl}>
+                Read bulletin <ArrowUpRight size={17} aria-hidden="true" />
+              </Link>
+            </div>
             <nav className={styles.archive} aria-label="Bulletin editions">
               <span className={styles.eyebrow}><span /> BROWSE BY MONTH</span>
               <div className={styles.editions}>

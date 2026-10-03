@@ -244,6 +244,22 @@
   margin-top: 48px;
 }
 
+.readCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  border: 1px solid #d5dacb;
+  border-radius: 8px;
+  background: var(--cream);
+}
+
+.readCard > svg { flex-shrink: 0; color: #617253; }
+.readCard > div { flex: 1; }
+.readCard h3 { font-family: Georgia, 'Times New Roman', serif; font-size: 25px; }
+.readCard p { max-width: 540px; margin-top: 8px; color: #717969; font-size: 14px; line-height: 1.8; }
+.readCard > a { flex-shrink: 0; }
+
 .editions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
@@ -327,6 +343,12 @@
 
   .readerHeading > p {
     margin-top: 12px;
+  }
+
+  .readCard {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 24px;
   }
 
 }

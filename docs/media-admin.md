@@ -132,7 +132,18 @@ one minute as visitors request it, so changes made in Cloudinary are picked up
 without a redeployment. If Cloudinary is unavailable, the page explains that
 the bulletins couldn't be loaded and asks visitors to try again.
 
-The on-page PDF reader, Open PDF, and Download buttons use the app's PDF
+**Read bulletin** opens a dedicated reading screen at `/bulletin/<month>/read`.
+The reader starts in **Original PDF** on every device, with fit-to-width pages
+and zoom controls. All pages are stacked vertically so visitors simply scroll
+through the whole bulletin. Nearby PDF pages render ahead of scrolling, while
+distant canvases are released to keep memory use manageable on phones.
+**Text view** also scrolls continuously, wraps selectable PDF text to the screen,
+and offers adjustable text sizes. Visitors can switch views on any device,
+return to the edition, open the PDF, or download it. Pages without
+selectable text offer a button to read the original PDF; text view does not
+perform OCR or include the PDF's images and layout.
+
+The reader, Open PDF, and Download buttons use the app's PDF
 endpoint. It retrieves published files through Cloudinary's authenticated
 download API, keeping credentials on the server.
 

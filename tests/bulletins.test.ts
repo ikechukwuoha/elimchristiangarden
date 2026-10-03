@@ -9,6 +9,8 @@ import {
 } from '../src/lib/bulletins'
 import { validateUpload } from '../src/lib/media'
 import { uploadTicket } from '../src/lib/admin/cloudinary'
+import { bulletinTextParagraphs } from '../src/lib/bulletin-text'
+import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api'
 
 const cloudName = 'test-cloud'
 process.env.CLOUDINARY_CLOUD_NAME = cloudName
@@ -96,4 +98,44 @@ test('bulletin listing follows Cloudinary cursors and propagates failures', asyn
   } finally {
     cloudinary.api.resources_by_tag = original
   }
+})
+
+function textItem(str: string, x: number, y: number, height = 12, hasEOL = true): TextItem {
+  return { str, transform: [height, 0, 0, height, x, y], height,
+    width: str.length * height / 2, dir: 'ltr', fontName: 'test', hasEOL }
+}
+
+function textContent(items: TextContent['items']): TextContent {
+  return { items, styles: {}, lang: 'en' }
+}
+
+test('text view reflows wrapped body text while preserving headings and paragraph gaps', () => {
+  const content = textContent([
+    textItem('Monthly encouragement', 40, 760, 24),
+    textItem('We gather in hope', 40, 724),
+    textItem('and grow together.', 40, 709),
+    textItem('Join us this Sunday.', 40, 675),
+    textItem('• Morning service', 40, 660),
+    textItem('• Evening service', 40, 645),
+  ])
+  assert.deepEqual(bulletinTextParagraphs(content), [
+    'Monthly encouragement', 'We gather in hope and grow together.',
+    'Join us this Sunday.', '• Morning service', '• Evening service',
+  ])
+})
+
+test('text view keeps word fragments together, inserts word gaps, and retains column order', () => {
+  assert.deepEqual(bulletinTextParagraphs(textContent([
+    { type: 'beginMarkedContent', id: 'section' },
+    textItem('Wel', 40, 700, 12, false),
+    textItem('come', 58, 700, 12, false),
+    textItem('home.', 94, 700),
+    textItem('A second column', 300, 700),
+    textItem('continues here.', 300, 685),
+  ])), ['Welcome home.', 'A second column continues here.'])
+})
+
+test('text view returns no paragraphs for image-only or blank pages', () => {
+  assert.deepEqual(bulletinTextParagraphs(textContent([])), [])
+  assert.deepEqual(bulletinTextParagraphs(textContent([textItem('   ', 0, 0)])), [])
 })
