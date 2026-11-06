@@ -30,6 +30,10 @@ html {
   scroll-behavior: smooth;
 }
 
+@media (max-width: 760px) {
+  body { padding-bottom: calc(var(--conference-countdown-space, 0px) + env(safe-area-inset-bottom, 0px)); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import {
   CalendarClock,
+  Timer,
   CakeSlice,
   MessageSquareHeart,
   Users,
@@ -15,12 +16,13 @@ const tabs = [
   { href: '/admin/fellowships', label: 'Fellowships & units', icon: Users },
   { href: '/admin/testimonies', label: 'Testimonies', icon: MessageSquareHeart },
   { href: '/admin/events', label: 'Events', icon: CalendarClock },
+  { href: '/admin/countdown', label: 'Countdown', icon: Timer },
 ]
 
 export default function AdminTabs({
   active,
 }: {
-  active: 'media' | 'youtube' | 'fellowships' | 'testimonies' | 'events' | 'birthdays'
+  active: 'media' | 'youtube' | 'fellowships' | 'testimonies' | 'events' | 'birthdays' | 'countdown'
 }) {
   return (
     <nav className={styles.adminTabs} aria-label="Admin sections">

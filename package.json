@@ -16,6 +16,9 @@
     "test:content": "node --conditions=react-server --import tsx --test tests/content.test.ts",
     "test:birthdays": "node --conditions=react-server --import tsx tests/birthdays.test.ts",
     "test:popup": "node --conditions=react-server --import tsx tests/popup-items.test.ts",
+    "test:events": "node --conditions=react-server --import tsx tests/event-schedule.test.ts",
+    "test:event-storage": "node --conditions=react-server --import tsx tests/event-storage.test.ts",
+    "test:countdown": "node --conditions=react-server --import tsx tests/countdown.test.ts",
     "admin:totp": "node scripts/generate-totp.mjs",
     "test:bulletins": "node --conditions=react-server --import tsx --test tests/bulletins.test.ts"
   },

@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import type { ChurchEvent } from '@/lib/events'
 import { eventDetails } from '@/lib/event-details'
+import { programmeToday } from '@/lib/event-schedule'
 import styles from './admin.module.css'
 
 function formatEventDate(date: string) {
@@ -232,7 +233,9 @@ export default function EventsAdmin({
                   onChange={(event) => setTime(event.target.value)}
                   maxLength={40}
                   placeholder="5:30 PM"
+                  aria-describedby="event-time-hint"
                 />
+                <p id="event-time-hint" className={styles.fieldHint}>Use 5:30 PM or 17:30 (Abuja time). The conference countdown uses this start time.</p>
               </div>
               <div>
                 <label htmlFor="event-location">
@@ -249,8 +252,9 @@ export default function EventsAdmin({
               <p className={styles.uploadNote}>
                 Upcoming programmes appear in the events bar and the site-wide
                 popup. Programme cards stay for 12 seconds, alongside birthday
-                and anniversary cards at six seconds each. Past programme dates
-                leave the popup automatically — remove them here to keep the list tidy.
+                and anniversary cards at six seconds each. Past programmes leave
+                both displays automatically at midnight after their event date (Abuja time).
+                You can keep them here as an archive.
               </p>
               <button
                 type="submit"
@@ -326,12 +330,12 @@ export default function EventsAdmin({
                   <article className={`${styles.groupRow} ${styles.eventRow}`} key={event.id}>
                     <span
                       className={`${styles.kindBadge} ${
-                        event.date < new Date().toISOString().slice(0, 10)
+                        event.date < programmeToday()
                           ? styles.pastBadge
                           : ''
                       }`}
                     >
-                      {formatEventDate(event.date)}
+                      {formatEventDate(event.date)}{event.date < programmeToday() ? ' · Past — hidden automatically' : ''}
                     </span>
                     <div className={styles.groupRowCopy}>
                       <h3>{details.title}</h3>

@@ -2,15 +2,13 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { CakeSlice, CalendarDays } from 'lucide-react'
-import { birthdayPeriod, celebrationKind, celebrationSummary, nextCelebrationMidnight, visibleCelebrations, type Birthday } from '@/lib/birthdays'
-import type { ChurchEvent } from '@/lib/events'
-import { popupDuration, popupItems, programmeToday, upcomingProgrammes } from '@/lib/popup-items'
+import { celebrationKind, celebrationSummary } from '@/lib/birthdays'
+import { popupDuration, popupItems, programmeToday } from '@/lib/popup-items'
+import { useAnnouncements } from '@/components/announcements/AnnouncementsProvider'
 import { CelebrationContent } from './BirthdayCard'
 import ProgrammeCardContent from './ProgrammeCardContent'
 import PopupCard from './PopupCard'
 import styles from './birthdays.module.css'
-
-type Celebration = { period: ReturnType<typeof birthdayPeriod>; birthdays: Birthday[]; events?: ChurchEvent[] }
 
 function subscribeVisibility(callback: () => void) {
   document.addEventListener('visibilitychange', callback)
@@ -23,7 +21,7 @@ function subscribeMotion(callback: () => void) {
 }
 
 export default function BirthdayCelebration() {
-  const [data, setData] = useState<Celebration | null>(null)
+  const { data } = useAnnouncements()
   const [open, setOpen] = useState(true)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -40,46 +38,6 @@ export default function BirthdayCelebration() {
   const active = items[safeIndex]
   const duration = popupDuration(active)
   const activeId = active?.id
-
-  useEffect(() => {
-    let controller: AbortController | undefined
-    let disposed = false
-    let midnightTimer: ReturnType<typeof setTimeout>
-    async function load() {
-      if (document.hidden) return
-      controller?.abort()
-      controller = new AbortController()
-      const currentPeriod = birthdayPeriod()
-      // Expire celebrations and past programmes even if storage is unavailable.
-      // Keep genuinely upcoming programmes across the month boundary.
-      setData((current) => {
-        if (!current) return null
-        if (current.period.key === currentPeriod.key && current.period.day === currentPeriod.day) return current
-        return { ...current, period: currentPeriod, birthdays: visibleCelebrations(current.birthdays, currentPeriod), events: upcomingProgrammes(current.events ?? [], currentPeriod) }
-      })
-      try {
-        const response = await fetch('/api/birthdays', { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) })
-        if (!response.ok) return
-        const result: Celebration = await response.json()
-        if (!disposed) setData({ ...result, birthdays: visibleCelebrations(result.birthdays, result.period), events: upcomingProgrammes(result.events ?? [], result.period) })
-      } catch { /* A celebration never interrupts the rest of the page. */ }
-    }
-    function onVisibility() {
-      if (!document.hidden) { void load(); scheduleMidnight() }
-    }
-    function scheduleMidnight() {
-      clearTimeout(midnightTimer)
-      midnightTimer = setTimeout(() => {
-        void load()
-        scheduleMidnight()
-      }, Math.max(1, nextCelebrationMidnight() - Date.now()))
-    }
-    void load()
-    scheduleMidnight()
-    const refresh = window.setInterval(() => { void load(); scheduleMidnight() }, 60000)
-    document.addEventListener('visibilitychange', onVisibility)
-    return () => { disposed = true; controller?.abort(); clearTimeout(midnightTimer); window.clearInterval(refresh); document.removeEventListener('visibilitychange', onVisibility) }
-  }, [])
 
   const stopped = paused || keyboardFocused || reducedMotion
   useEffect(() => {

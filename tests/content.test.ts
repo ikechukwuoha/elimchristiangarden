@@ -119,7 +119,7 @@ test('upcoming events keep future dates sorted and drop the past', () => {
     ['d', 'c', 'b'],
   )
   assert.equal(upcomingEvents(events, '2027-01-01').length, 0)
-  assert.match(todayIso(new Date('2026-10-02T23:30:00Z')), /^2026-10-02$/)
+  assert.equal(todayIso(new Date('2026-10-02T23:30:00Z')), '2026-10-03')
 })
 
 test('event themes and comma-separated Bible passages retain legacy event support', () => {

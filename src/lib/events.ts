@@ -1,6 +1,8 @@
 import 'server-only'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
 import { eventDetails } from './event-details'
+import { birthdayPeriod } from './birthdays'
+import { programmeToday } from './event-schedule'
 import {
   markStorageFailure,
   markStorageSuccess,
@@ -140,9 +142,9 @@ export function removeEvent(items: ChurchEvent[], id: string) {
   return remaining
 }
 
-// Today in UTC, so the server and the ticker agree regardless of timezone.
+// Abuja's calendar day keeps the ticker and popup on the same expiry date.
 export function todayIso(now = new Date()) {
-  return now.toISOString().slice(0, 10)
+  return programmeToday(birthdayPeriod(now))
 }
 
 export function upcomingEvents(
@@ -156,6 +158,9 @@ export function upcomingEvents(
 }
 
 type StorageOperation = 'read' | 'save'
+// Metadata and the JSON document share this deadline. Slow TLS connections
+// can use most of eight seconds before the document download even begins.
+const EVENT_READ_TIMEOUT_MS = 14000
 
 export class EventStorageError extends Error {
   constructor(
@@ -177,40 +182,64 @@ function storageError(operation: StorageOperation, timeout = false) {
   )
 }
 
+// Only transport codes are safe to log; upstream errors can contain request
+// URLs, authentication headers, and response bodies.
+function connectionCodes(error: unknown, depth = 0): string[] {
+  if (!error || typeof error !== 'object' || depth > 3) return []
+  const details = error as { code?: unknown; cause?: unknown; errors?: unknown[] }
+  const own = typeof details.code === 'string' && /^[A-Z0-9_]+$/.test(details.code) ? [details.code] : []
+  return [...new Set([
+    ...own, ...connectionCodes(details.cause, depth + 1),
+    ...(Array.isArray(details.errors) ? details.errors.slice(0, 4).flatMap((item) => connectionCodes(item, depth + 1)) : []),
+  ])]
+}
+
 async function storageRequest(
   url: string,
   init: RequestInit,
   operation: StorageOperation,
   allowMissing = false,
   readSignal?: AbortSignal,
+  cacheRead = false,
 ) {
-  const signal = readSignal ?? AbortSignal.timeout(operation === 'save' ? 20000 : 8000)
-  try {
-    const response = await fetch(url, { ...init, cache: 'no-store', signal })
-    if (allowMissing && response.status === 404) {
-      await response.body?.cancel()
-      return null
-    }
-    if (!response.ok) {
-      console.error('Event storage request rejected', {
-        operation,
-        status: response.status,
+  const signal = readSignal ?? AbortSignal.timeout(operation === 'save' ? 20000 : EVENT_READ_TIMEOUT_MS)
+  const startedAt = Date.now()
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const response = await fetch(url, {
+        ...init, signal,
+        ...(operation === 'read' && cacheRead && process.env.NODE_ENV === 'production'
+          ? { cache: 'force-cache', next: { revalidate: 300, tags: ['events'] } } as const
+          : { cache: 'no-store' } as const),
       })
-      await response.body?.cancel()
-      if (response.status === 401 || response.status === 403)
-        throw new EventStorageError(
-          'Cloudinary denied access to the event data. Check the configured API key and its permissions.',
-          502,
-        )
-      throw storageError(operation, [408, 499, 504].includes(response.status))
+      if (allowMissing && response.status === 404) {
+        await response.body?.cancel()
+        return null
+      }
+      if (!response.ok) {
+        await response.body?.cancel()
+        if (operation === 'read' && attempt === 0 && !signal.aborted && Date.now() - startedAt < 2000 && [408, 500, 502, 503, 504].includes(response.status)) continue
+        console.warn('Event storage request rejected', { operation, status: response.status })
+        if (response.status === 401 || response.status === 403)
+          throw new EventStorageError('Cloudinary denied access to the event data. Check the configured API key and its permissions.', 502)
+        if (response.status === 429)
+          throw new EventStorageError('Cloudinary is receiving too many requests. Please try again shortly.', 503)
+        throw storageError(operation, [408, 499, 504].includes(response.status))
+      }
+      return (await response.json()) as unknown
+    } catch (error) {
+      if (error instanceof EventStorageError) throw error
+      const codes = connectionCodes(error)
+      const timedOut = signal.aborted || codes.some((code) => ['ETIMEDOUT', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_HEADERS_TIMEOUT', 'UND_ERR_BODY_TIMEOUT'].includes(code))
+      const retryable = codes.some((code) => ['EAI_AGAIN', 'ENOTFOUND', 'ECONNRESET', 'ECONNREFUSED', 'UND_ERR_SOCKET', 'UND_ERR_CONNECT_TIMEOUT'].includes(code))
+      // Retry only a quick failed read, within the original shared deadline.
+      // A save is never retried automatically.
+      if (operation === 'read' && attempt === 0 && !signal.aborted && retryable && Date.now() - startedAt < 2000) continue
+      console.warn('Event storage request failed', { operation, codes, timedOut })
+      throw storageError(operation, timedOut)
     }
-    return (await response.json()) as unknown
-  } catch (error) {
-    if (error instanceof EventStorageError) throw error
-    const timedOut = signal.aborted
-    console.error('Event storage request failed', { operation, timedOut })
-    throw storageError(operation, timedOut)
   }
+  throw storageError(operation)
 }
 
 function authHeaders(config: NonNullable<ReturnType<typeof cloudinaryConfig>>) {
@@ -221,14 +250,16 @@ function authHeaders(config: NonNullable<ReturnType<typeof cloudinaryConfig>>) {
 
 async function fetchStoredEvents(
   config: NonNullable<ReturnType<typeof cloudinaryConfig>>,
+  cacheRead = false,
 ) {
-  const readSignal = AbortSignal.timeout(8000)
+  const readSignal = AbortSignal.timeout(EVENT_READ_TIMEOUT_MS)
   const resource = (await storageRequest(
     `https://api.cloudinary.com/v1_1/${config.cloud_name}/resources/raw/upload/${encodeURIComponent(EVENTS_DATA_ID)}`,
     { headers: authHeaders(config) },
     'read',
     true,
     readSignal,
+    cacheRead,
   )) as { secure_url?: string } | null
   if (resource === null) return []
   const url = resource?.secure_url
@@ -245,13 +276,13 @@ async function fetchStoredEvents(
     !parsed.pathname.startsWith(`/${config.cloud_name}/raw/upload/`)
   )
     throw storageError('read')
-  const data = await storageRequest(parsed.toString(), {}, 'read', false, readSignal)
+  const data = await storageRequest(parsed.toString(), {}, 'read', false, readSignal, cacheRead)
   if (!isEventArray(data)) throw storageError('read')
   return data
 }
 
 export async function readEvents(
-  options: { strict?: boolean } = {},
+  options: { strict?: boolean; cacheRead?: boolean } = {},
 ): Promise<ChurchEvent[]> {
   const config = cloudinaryConfig()
   if (!config) {
@@ -269,7 +300,7 @@ export async function readEvents(
     return recallStorageGood<ChurchEvent[]>('events') ?? []
   }
   try {
-    const events = await fetchStoredEvents(config)
+    const events = await fetchStoredEvents(config, options.cacheRead)
     markStorageSuccess('events')
     rememberStorageGood('events', events)
     return events

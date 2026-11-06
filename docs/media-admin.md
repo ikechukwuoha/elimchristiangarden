@@ -226,8 +226,11 @@ and future programmes join immediately, ordered by date and alternated with
 celebrations. Each programme stays on screen for **12 seconds**; celebration
 cards stay for **6 seconds**. All upcoming programmes are included.
 
-Programme dates use Abuja time in the popup. An event remains visible through
-its date and leaves at 00:00 the next day. Upcoming programmes in the next month
+Programme dates use Abuja time in both the popup and navbar scroller. An event
+remains visible through its date and leaves both displays at 00:00 the next day,
+even on an already-open page or during a storage outage. No manual disabling or
+deleting is needed; past records remain in admin as an archive.
+Upcoming programmes in the next month
 remain visible when the previous month's birthdays and anniversaries expire.
 Use **Edit** beside a saved event to load its details into the form, then
 **Save changes**. Editing preserves the event's identity and updates its existing
@@ -238,6 +241,56 @@ into the title and theme fields when edited; no re-entry is needed.
 Adding, editing, or removing an event refreshes the existing events cache; open pages
 pick up changes on their next one-minute refresh. Pause, arrows, close/reopen,
 keyboard focus, and reduced-motion support apply to the whole mixed slideshow.
+Public event reads keep the last successful list during a temporary storage outage;
+they do not cache a failed read as an empty calendar. Development reads handle
+failures directly, without `unstable_cache` background errors reaching the error
+overlay. Production caches successful upstream reads for five minutes. Admin
+refreshes and changes always read storage directly, and still report failures.
+Read failures log a warning with safe transport codes; a quick transient read
+failure may retry once within the original deadline. Saves never retry automatically.
+The metadata lookup and document download share a 14-second read deadline;
+the public feed allows 20 seconds so it does not abort a valid storage response early.
+
+### Countdown controls and TV display
+
+Open the **Countdown** admin tab at `/admin/countdown`. Choose **Show countdown**
+or **Hide countdown**, select a saved programme, and customize the invitation
+message. The live TV preview shows the draft before **Save countdown** publishes
+it. The preview stays inside the admin page and never reserves public-page space.
+Refresh loads current programmes and settings without discarding an unsaved draft.
+
+Programme titles, themes, dates, and times come from **Events**; add or edit them
+there first, then refresh the countdown list. Any upcoming programme, in any year,
+can be selected. Use a time such as `5:30 PM` or `17:30` in Abuja time. Enabling a
+programme with a missing or unrecognised start time is rejected. Turning the timer
+off does not disable the programme's normal popup or scroller entry.
+
+Before the first settings save, the existing **Destiny Conference 2026** remains
+the default. Once settings are saved, only the selected programme can show the
+countdown. A hidden, expired, or deleted selection never falls back to a different
+programme. Choose the next programme in this tab when ready. Settings persist in
+`elim/data/countdown.json` in the existing Cloudinary account, with the same admin
+authentication and same-origin checks as Events. No additional credentials are needed.
+
+The panel shows days, hours, minutes, and seconds on desktop, with a compact
+days/hours/minutes layout on smaller screens. Visitors can minimize and expand
+it. Mobile spacing keeps it clear of the announcement popup and the final page
+content. There is no sound or flashing animation. The timer becomes **Happening
+today** when the event starts and disappears at midnight after its date. It is
+excluded from admin pages along with the public popup. The scroller, popup, and
+countdown share one feed, refreshed every minute and when the tab becomes visible.
+Temporary storage failures preserve the last confirmed selection and visibility;
+an unknown settings read is never treated as permission to enable a timer.
+
+A miniature TV above the conference title has a dark bezel, glass reflection,
+stand, HD marking, and a steady power indicator. Its screen rotates through the saved theme
+(seven seconds), the invitation message (**Don’t miss out** by default, four seconds), and the saved date/time
+(five seconds). A blank theme is skipped. Its dots select individual messages;
+pause/play affects the message screen while the numerical countdown continues.
+Keyboard focus and hidden tabs pause message rotation. Reduced-motion preferences
+disable automatic message rotation and sliding, with manual selection available.
+The panel reserves its measured height on small screens so longer themes remain
+readable without overlapping the announcement popup.
 
 ## Sessions and hosting
 
@@ -284,6 +337,9 @@ library before retrying: Cloudinary may have received the file.
 Run `npm run test:admin`, `npm run lint`, and `npm run build`.
 Birthday validation and storage checks run with `npm run test:birthdays`.
 Mixed popup ordering, timing, and programme scheduling run with `npm run test:popup`.
+Abuja event expiry and countdown checks run with `npm run test:events`.
+Event outage fallback, read recovery, and save failure checks run with `npm run test:event-storage`.
+Countdown settings validation, future programme selection, and persistence run with `npm run test:countdown`.
 The automated tests cover session expiry/tampering, credential rotation, upload
 validation, signature restrictions, and rate limiting. A live account is still
 needed to verify uploads against your account's formats, limits, and PDF policy.

@@ -8,6 +8,8 @@ import { ArrowUpRight, CalendarClock, Menu, X } from 'lucide-react'
 import { church } from '@/app/data/church'
 import type { ChurchEvent } from '@/lib/events'
 import { eventDetails } from '@/lib/event-details'
+import { upcomingProgrammes } from '@/lib/event-schedule'
+import { useAnnouncements } from './announcements/AnnouncementsProvider'
 import styles from './site.module.css'
 
 const links = [
@@ -35,6 +37,10 @@ function formatTickerDate(date: string) {
 export default function Navbar({ events = [] }: { events?: ChurchEvent[] }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { data, period } = useAnnouncements()
+  // The shared feed refreshes saved edits and expires cached/initial records
+  // locally at midnight, including when a visitor leaves this page open.
+  const currentEvents = (period ? upcomingProgrammes(data?.events ?? events, period) : events).slice(0, 8)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const headerRef = useRef<HTMLElement>(null)
 
@@ -74,8 +80,8 @@ export default function Navbar({ events = [] }: { events?: ChurchEvent[] }) {
     }
   }, [isMenuOpen])
 
-  const tickerItems = events.length
-    ? events.map((event) => ({
+  const tickerItems = currentEvents.length
+    ? currentEvents.map((event) => ({
         id: event.id,
         lead: formatTickerDate(event.date),
         title: eventDetails(event).title,
@@ -186,7 +192,7 @@ export default function Navbar({ events = [] }: { events?: ChurchEvent[] }) {
         <div className={styles.ticker} role="region" aria-label="Upcoming events">
           <span className={styles.tickerLabel}>
             <CalendarClock size={14} aria-hidden="true" />
-            {events.length > 0 ? 'UPCOMING EVENTS' : 'WORSHIP WITH US'}
+            {currentEvents.length > 0 ? 'UPCOMING EVENTS' : 'WORSHIP WITH US'}
           </span>
           <div className={styles.tickerViewport}>
             {/* Two identical halves make the marquee loop seamless. */}

@@ -1,20 +1,12 @@
 import type { Birthday } from './birthdays'
 import { birthdayPeriod, visibleCelebrations } from './birthdays'
 import type { ChurchEvent } from './events'
+import { upcomingProgrammes } from './event-schedule'
+export { programmeToday, upcomingProgrammes } from './event-schedule'
 
 export type PopupItem =
   | { id: string; kind: 'celebration'; celebration: Birthday }
   | { id: string; kind: 'programme'; programme: ChurchEvent }
-
-export function programmeToday(period = birthdayPeriod()) {
-  return `${period.key}-${String(period.day).padStart(2, '0')}`
-}
-
-export function upcomingProgrammes(events: ChurchEvent[], period = birthdayPeriod()) {
-  const today = programmeToday(period)
-  return events.filter((event) => event.date >= today)
-    .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title))
-}
 
 export function popupItems(birthdays: Birthday[], events: ChurchEvent[], period = birthdayPeriod()): PopupItem[] {
   const celebrations = visibleCelebrations(birthdays, period)

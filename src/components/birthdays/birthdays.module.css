@@ -139,3 +139,8 @@
 @media (prefers-reduced-motion: reduce) {
   .popup, .slide { animation: none; }
 }
+
+@media (max-width: 760px) {
+  .widget { bottom: calc(max(12px, env(safe-area-inset-bottom)) + var(--conference-countdown-space, 0px)); }
+  .card { max-height: calc(100dvh - var(--site-header-height, 113px) - 32px - var(--conference-countdown-space, 0px)); }
+}

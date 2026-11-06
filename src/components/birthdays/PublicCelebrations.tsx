@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import BirthdayCelebration from './BirthdayCelebration'
+import DestinyCountdown from '@/components/announcements/DestinyCountdown'
 
 export default function PublicCelebrations() {
   const pathname = usePathname()
@@ -9,5 +10,5 @@ export default function PublicCelebrations() {
 
   // Each public page opens its own card. Query/filter changes on the same page
   // preserve a visitor's dismissal, while navigating to another page resets it.
-  return <BirthdayCelebration key={pathname} />
+  return <><BirthdayCelebration key={pathname} /><DestinyCountdown /></>
 }
