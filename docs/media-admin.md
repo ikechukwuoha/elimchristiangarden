@@ -170,30 +170,34 @@ earlier, using the Africa/Lagos time zone. On the 6th, only entries from the
 stays through month-end. At 00:00 on the 1st of the next month, the old month’s
 entries leave the popup. Future dates remain saved in the admin calendar and
 can still be previewed; they are not returned by the public endpoint early.
-Eligible entries are ordered by day, mixing both types in one slideshow. A green, cream,
+Eligible entries are ordered by day, mixing both types with upcoming programmes
+in one slideshow. A green, cream,
 and gold corner card opens by default on every public page as soon as the
 eligible records load, including the dedicated bulletin reader. It
-slides to the next person every six seconds, looping through all celebrants.
-It leaves the page scrollable and has no backdrop or sound. With no birthdays
-or anniversaries whose dates have arrived this month, nothing is displayed. Closing the card leaves
-the **Celebrate with us** button available to reopen it on that page. Navigating
+shows birthday and anniversary cards for six seconds each, and programme cards
+for twelve seconds each, looping through all cards. It leaves the page scrollable
+and has no backdrop or sound. With no eligible celebrations or upcoming programmes,
+nothing is displayed. Closing the card leaves a small button available to reopen
+it on that page (**Life at Elim** when programmes are included). Navigating
 to another public page or reloading opens it again. Filter and query changes on
 the same page keep the visitor’s current choice. Admin pages use their own
 preview and do not show the public popup.
 
-`/api/birthdays` still serves both types for compatibility. A confirmed empty
-month returns `200` with an empty list and `unavailable: false`. A storage
-failure with no usable current-month records returns `503` with
+`/api/birthdays` serves both celebration types and an `events` list for compatibility.
+A confirmed empty feed returns `200` with empty lists and `unavailable: false`.
+The two sources load independently; a failed events read does not hide available
+celebrations, and a failed celebrations read does not hide available programmes.
+A storage failure with no usable cards returns `503` with
 `unavailable: true`; it no longer silently reports a successful empty calendar.
 The admin also distinguishes a failed calendar read from an empty calendar.
 `UND_ERR_CONNECT_TIMEOUT` means the server could not connect to Cloudinary in
 time, not that the collection is empty. Check the server’s network/DNS access
 to `api.cloudinary.com` and `res.cloudinary.com` before retrying.
 
-Visitors can pause, move between celebrants, close the card, or reopen it from
-the small birthday button. Opening or reopening the card starts automatic rotation; hovering and
+Visitors can pause, move between cards, close the card, or reopen it from
+the small launcher button. Opening or reopening the card starts automatic rotation; hovering and
 using the arrows keep it running. The pause button, keyboard focus, and hidden
-tabs pause rotation. The play button resumes it. With one current-month entry,
+tabs pause rotation. The play button resumes it. With one eligible card,
 the single card stays visible; rotation needs at least two entries. Reduced-motion
 preferences disable automatic rotation and transitions while keeping the
 previous/next controls available. A dedicated timer refreshes the calendar at
@@ -208,6 +212,32 @@ and the `elim-birthday-portrait` tag, so they do not enter the gallery or hero
 slideshow. They use public Cloudinary delivery URLs. Removing a celebrant
 removes their card; their portrait file remains available in Cloudinary.
 Uploads use the existing Cloudinary account, with no additional setup.
+
+### Upcoming programme cards
+
+Add programmes through the existing **Events** admin tab at `/admin/events`.
+The popup uses the saved title, theme, Bible passages, date, optional time, and
+venue, with a distinct calendar-style card. The theme sits beneath the title;
+each Bible reference appears separately beneath the theme. Enter references
+in **Bible passages**, separated by commas, for example
+`1 Peter 5:10, Psalm 126:1–3`. Blank optional fields stay hidden.
+No duplicate entry or image upload is required. Today's
+and future programmes join immediately, ordered by date and alternated with
+celebrations. Each programme stays on screen for **12 seconds**; celebration
+cards stay for **6 seconds**. All upcoming programmes are included.
+
+Programme dates use Abuja time in the popup. An event remains visible through
+its date and leaves at 00:00 the next day. Upcoming programmes in the next month
+remain visible when the previous month's birthdays and anniversaries expire.
+Use **Edit** beside a saved event to load its details into the form, then
+**Save changes**. Editing preserves the event's identity and updates its existing
+card. **Cancel editing** returns to adding a new event. Existing titles containing
+`Theme:` are displayed with the theme separated automatically and are split
+into the title and theme fields when edited; no re-entry is needed.
+
+Adding, editing, or removing an event refreshes the existing events cache; open pages
+pick up changes on their next one-minute refresh. Pause, arrows, close/reopen,
+keyboard focus, and reduced-motion support apply to the whole mixed slideshow.
 
 ## Sessions and hosting
 
@@ -253,6 +283,7 @@ library before retrying: Cloudinary may have received the file.
 
 Run `npm run test:admin`, `npm run lint`, and `npm run build`.
 Birthday validation and storage checks run with `npm run test:birthdays`.
+Mixed popup ordering, timing, and programme scheduling run with `npm run test:popup`.
 The automated tests cover session expiry/tampering, credential rotation, upload
 validation, signature restrictions, and rate limiting. A live account is still
 needed to verify uploads against your account's formats, limits, and PDF policy.

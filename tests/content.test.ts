@@ -16,7 +16,9 @@ import {
   slugifyEventTitle,
   todayIso,
   upcomingEvents,
+  updateEvent,
 } from '../src/lib/events'
+import { eventDetails } from '../src/lib/event-details'
 
 const validTestimony = {
   quote:
@@ -118,4 +120,50 @@ test('upcoming events keep future dates sorted and drop the past', () => {
   )
   assert.equal(upcomingEvents(events, '2027-01-01').length, 0)
   assert.match(todayIso(new Date('2026-10-02T23:30:00Z')), /^2026-10-02$/)
+})
+
+test('event themes and comma-separated Bible passages retain legacy event support', () => {
+  const legacy = { id: 'destiny', ...validEvent, title: 'Destiny Conference 2026... Theme: Divine Settlement for a New Beginning' }
+  assert.equal(isEventArray([legacy]), true)
+  assert.deepEqual(eventDetails(legacy), { title: 'Destiny Conference 2026', theme: 'Divine Settlement for a New Beginning', texts: [] })
+  const event = parseEventInput({ ...validEvent, theme: '  Divine Settlement  ', texts: '1 Peter 5:10, Psalm 126:1–3, , 1 Peter 5:10, ' }, [])
+  assert.equal(event.theme, 'Divine Settlement')
+  assert.deepEqual(event.texts, ['1 Peter 5:10', 'Psalm 126:1–3'])
+  assert.equal(isEventArray([event]), true)
+  const split = parseEventInput(legacy, [])
+  assert.equal(split.title, 'Destiny Conference 2026')
+  assert.equal(split.theme, 'Divine Settlement for a New Beginning')
+  assert.equal(eventDetails({ title: legacy.title, theme: 'A new theme' }).theme, 'A new theme')
+  assert.deepEqual(eventDetails({ title: 'Prayer night' }), { title: 'Prayer night', theme: '', texts: [] })
+  assert.equal(eventDetails({ title: 'Theme: worship' }).title, 'Theme: worship')
+  for (const change of [
+    { theme: 'x'.repeat(161) }, { theme: 42 }, { texts: ['x'.repeat(121)] },
+    { texts: [42] }, { texts: {} }, { texts: null },
+    { texts: Array.from({ length: 13 }, (_, index) => `Passage ${index}`) },
+  ]) assert.throws(() => parseEventInput({ ...validEvent, ...change }, []), Error, JSON.stringify(change))
+  assert.equal(isEventArray([{ ...event, theme: 42 }]), false)
+  assert.equal(isEventArray([{ ...event, texts: [null] }]), false)
+  assert.equal(isEventArray([{ ...event, texts: [''] }]), false)
+})
+
+test('editing an event keeps its ID and list position without duplicating or changing other events', () => {
+  const first = parseEventInput(validEvent, [])
+  const second = parseEventInput({ ...validEvent, title: 'Prayer meeting' }, [first])
+  const events = [first, second]
+  const original = JSON.stringify(events)
+  const updated = updateEvent(events, first.id, { ...validEvent, title: 'Destiny Conference', theme: 'Divine Settlement', texts: '1 Peter 5:10, Psalm 126:1–3' })
+  assert.equal(updated.length, 2)
+  assert.equal(updated[0].id, first.id)
+  assert.equal(updated[0].title, 'Destiny Conference')
+  assert.deepEqual(updated[0].texts, ['1 Peter 5:10', 'Psalm 126:1–3'])
+  assert.equal(updated[1], second)
+  assert.equal(JSON.stringify(events), original)
+  assert.throws(() => updateEvent(events, 'missing', validEvent), /could not be found/)
+  assert.throws(() => updateEvent(events, first.id, { ...validEvent, date: 'invalid' }))
+  const full = Array.from({ length: 100 }, (_, index) => ({ ...first, id: `event-${index}` }))
+  assert.throws(() => parseEventInput(validEvent, full), /maximum/)
+  assert.equal(updateEvent(full, 'event-50', validEvent).length, 100)
+  const cleared = updateEvent(updated, first.id, { ...validEvent, theme: '', texts: '' })[0]
+  assert.equal(cleared.theme, '')
+  assert.deepEqual(cleared.texts, [])
 })

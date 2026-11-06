@@ -9,6 +9,7 @@ import {
   readEvents,
   removeEvent,
   saveEvents,
+  updateEvent,
 } from '@/lib/events'
 
 export const runtime = 'nodejs'
@@ -67,6 +68,37 @@ export async function POST(request: Request) {
     return json({ event: record, events })
   } catch (error) {
     return failure(error, 'This event could not be saved. Please try again.')
+  }
+}
+
+export async function PUT(request: Request) {
+  if (!sameOrigin(request))
+    return json({ error: 'This request is not allowed.' }, 403)
+  if (!(await isAdmin()))
+    return json({ error: 'Your session has expired. Please sign in again.' }, 401)
+  if (!cloudinaryConfig())
+    return json({ error: 'Cloudinary hasn’t been connected yet, so changes can’t be saved. Contact the site administrator.' }, 503)
+  let input
+  let id: string
+  try {
+    input = await readSmallJson(request)
+    id = input && typeof input === 'object' && typeof (input as { id?: unknown }).id === 'string'
+      ? (input as { id: string }).id : ''
+    if (!id || id.length > 80) throw new Error('Choose an event to update.')
+    parseEventInput(input, [])
+  } catch (error) {
+    return failure(error, 'Invalid request.')
+  }
+  try {
+    const current = await readEvents({ strict: true })
+    const events = updateEvent(current, id, input)
+    const record = events.find((event) => event.id === id)!
+    await saveEvents(events)
+    invalidateEventPages()
+    logAdminEvent('event_updated', { id, date: record.date })
+    return json({ event: record, events })
+  } catch (error) {
+    return failure(error, 'This event could not be updated. Please try again.')
   }
 }
 

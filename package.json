@@ -15,6 +15,7 @@
     "test:community": "node --conditions=react-server --import tsx --test tests/community.test.ts",
     "test:content": "node --conditions=react-server --import tsx --test tests/content.test.ts",
     "test:birthdays": "node --conditions=react-server --import tsx tests/birthdays.test.ts",
+    "test:popup": "node --conditions=react-server --import tsx tests/popup-items.test.ts",
     "admin:totp": "node scripts/generate-totp.mjs",
     "test:bulletins": "node --conditions=react-server --import tsx --test tests/bulletins.test.ts"
   },

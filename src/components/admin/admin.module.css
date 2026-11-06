@@ -241,7 +241,10 @@
   font-size: 11px;
   letter-spacing: 0.04em;
   color: #7c896c;
+  overflow-wrap: anywhere;
 }
+.eventActions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+.eventRow .groupRowCopy { flex-basis: 220px; }
 .kindBadge {
   flex-shrink: 0;
   font-size: 9px;
@@ -773,6 +776,9 @@
   .groupRow .removeButton {
     padding: 12px 0;
   }
+  .eventRow { display: grid; grid-template-columns: minmax(0, 1fr); padding-bottom: 12px; }
+  .eventRow .kindBadge { justify-self: start; }
+  .eventRow .eventActions { gap: 24px; }
 }
 @media (max-width: 600px) {
   .assetGrid {

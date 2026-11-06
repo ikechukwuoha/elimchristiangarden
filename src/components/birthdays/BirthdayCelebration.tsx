@@ -1,12 +1,16 @@
 'use client'
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
-import { CakeSlice } from 'lucide-react'
-import { birthdayPeriod, celebrationSummary, nextCelebrationMidnight, visibleCelebrations, type Birthday } from '@/lib/birthdays'
-import BirthdayCard from './BirthdayCard'
+import { CakeSlice, CalendarDays } from 'lucide-react'
+import { birthdayPeriod, celebrationKind, celebrationSummary, nextCelebrationMidnight, visibleCelebrations, type Birthday } from '@/lib/birthdays'
+import type { ChurchEvent } from '@/lib/events'
+import { popupDuration, popupItems, programmeToday, upcomingProgrammes } from '@/lib/popup-items'
+import { CelebrationContent } from './BirthdayCard'
+import ProgrammeCardContent from './ProgrammeCardContent'
+import PopupCard from './PopupCard'
 import styles from './birthdays.module.css'
 
-type Celebration = { period: ReturnType<typeof birthdayPeriod>; birthdays: Birthday[] }
+type Celebration = { period: ReturnType<typeof birthdayPeriod>; birthdays: Birthday[]; events?: ChurchEvent[] }
 
 function subscribeVisibility(callback: () => void) {
   document.addEventListener('visibilitychange', callback)
@@ -30,7 +34,12 @@ export default function BirthdayCelebration() {
   const panel = useRef<HTMLDivElement>(null)
   const restoreFocus = useRef(false)
   const focusOnOpen = useRef(false)
-  const count = data?.birthdays.length ?? 0
+  const items = data ? popupItems(data.birthdays, data.events ?? [], data.period) : []
+  const count = items.length
+  const safeIndex = count ? index % count : 0
+  const active = items[safeIndex]
+  const duration = popupDuration(active)
+  const activeId = active?.id
 
   useEffect(() => {
     let controller: AbortController | undefined
@@ -41,18 +50,18 @@ export default function BirthdayCelebration() {
       controller?.abort()
       controller = new AbortController()
       const currentPeriod = birthdayPeriod()
-      // Retire the old month immediately, even if the next network read fails.
-      // Same-month day changes also remove the old "Today" badge at midnight.
+      // Expire celebrations and past programmes even if storage is unavailable.
+      // Keep genuinely upcoming programmes across the month boundary.
       setData((current) => {
-        if (!current || current.period.key !== currentPeriod.key) return null
-        if (current.period.day === currentPeriod.day) return current
-        return { ...current, period: currentPeriod, birthdays: visibleCelebrations(current.birthdays, currentPeriod) }
+        if (!current) return null
+        if (current.period.key === currentPeriod.key && current.period.day === currentPeriod.day) return current
+        return { ...current, period: currentPeriod, birthdays: visibleCelebrations(current.birthdays, currentPeriod), events: upcomingProgrammes(current.events ?? [], currentPeriod) }
       })
       try {
         const response = await fetch('/api/birthdays', { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) })
         if (!response.ok) return
         const result: Celebration = await response.json()
-        if (!disposed) setData({ ...result, birthdays: visibleCelebrations(result.birthdays, result.period) })
+        if (!disposed) setData({ ...result, birthdays: visibleCelebrations(result.birthdays, result.period), events: upcomingProgrammes(result.events ?? [], result.period) })
       } catch { /* A celebration never interrupts the rest of the page. */ }
     }
     function onVisibility() {
@@ -75,9 +84,9 @@ export default function BirthdayCelebration() {
   const stopped = paused || keyboardFocused || reducedMotion
   useEffect(() => {
     if (!open || stopped || !visible || count < 2) return
-    const timer = window.setInterval(() => setIndex((current) => (current + 1) % count), 6000)
-    return () => window.clearInterval(timer)
-  }, [open, stopped, visible, count, index])
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % count), duration)
+    return () => window.clearTimeout(timer)
+  }, [open, stopped, visible, count, index, activeId, duration])
 
   useEffect(() => {
     if (open && focusOnOpen.current) {
@@ -96,22 +105,29 @@ export default function BirthdayCelebration() {
     setKeyboardFocused(false)
   }
 
-  if (!data || count === 0) return null
-  const safeIndex = index % count
-  return <aside className={styles.widget} aria-label="Church celebrations">
+  if (!data || !active) return null
+  const hasProgrammes = (data.events?.length ?? 0) > 0
+  const LauncherIcon = hasProgrammes ? CalendarDays : CakeSlice
+  const summary = hasProgrammes ? data.birthdays.length ? 'Celebrations & programmes' : 'Upcoming programmes' : `${data.period.label} · ${celebrationSummary(data.birthdays)}`
+  return <aside className={styles.widget} aria-label="Church announcements">
     <button ref={launcher} type="button" className={styles.launcher} hidden={open} aria-expanded={open} aria-controls="birthday-celebration" onClick={() => { focusOnOpen.current = true; setOpen(true); setPaused(false); setKeyboardFocused(false); setIndex(0) }}>
-      <span><CakeSlice size={19} strokeWidth={1.5} aria-hidden="true" /></span>
-      <span>Celebrate with us<small>{data.period.label} · {celebrationSummary(data.birthdays)}</small></span>
+      <span><LauncherIcon size={19} strokeWidth={1.5} aria-hidden="true" /></span>
+      <span>{hasProgrammes ? 'Life at Elim' : 'Celebrate with us'}<small>{summary}</small></span>
       <span className={styles.launcherCount}>{count}</span>
     </button>
     {open && <div id="birthday-celebration" ref={panel} className={styles.popup}
       onFocus={(event) => { if (event.target.matches(':focus-visible')) setKeyboardFocused(true) }}
       onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setKeyboardFocused(false) }}
       onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); close() } }}>
-      <BirthdayCard birthdays={data.birthdays} index={safeIndex} monthLabel={data.period.label} today={data.period.day} paused={stopped} allowAutoplay={!reducedMotion}
+      <PopupCard variant={active.kind === 'programme' ? 'programme' : celebrationKind(active.celebration)} slideKey={active.id}
+        index={safeIndex} count={count} paused={stopped} allowAutoplay={!reducedMotion}
         onPrevious={(event) => { if (event.detail > 0) setKeyboardFocused(false); setIndex((safeIndex - 1 + count) % count) }}
         onNext={(event) => { if (event.detail > 0) setKeyboardFocused(false); setIndex((safeIndex + 1) % count) }}
-        onPause={() => { if (stopped) { setPaused(false); setKeyboardFocused(false) } else setPaused(true) }} onClose={close} />
+        onPause={() => { if (stopped) { setPaused(false); setKeyboardFocused(false) } else setPaused(true) }} onClose={close}>
+        {active.kind === 'programme'
+          ? <ProgrammeCardContent programme={active.programme} today={programmeToday(data.period)} />
+          : <CelebrationContent birthday={active.celebration} monthLabel={data.period.label} today={data.period.day} />}
+      </PopupCard>
     </div>}
   </aside>
 }

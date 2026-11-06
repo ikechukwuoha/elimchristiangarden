@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation'
 import { ArrowUpRight, CalendarClock, Menu, X } from 'lucide-react'
 import { church } from '@/app/data/church'
 import type { ChurchEvent } from '@/lib/events'
+import { eventDetails } from '@/lib/event-details'
 import styles from './site.module.css'
 
 const links = [
@@ -77,7 +78,7 @@ export default function Navbar({ events = [] }: { events?: ChurchEvent[] }) {
     ? events.map((event) => ({
         id: event.id,
         lead: formatTickerDate(event.date),
-        title: event.title,
+        title: eventDetails(event).title,
         detail: [event.time, event.location].filter(Boolean).join(' · '),
       }))
     : Array.from({ length: 3 }, (_, index) => ({

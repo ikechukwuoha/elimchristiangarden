@@ -1,5 +1,6 @@
 import 'server-only'
 import { cloudinaryConfig } from '@/lib/admin/cloudinary'
+import { eventDetails } from './event-details'
 import {
   markStorageFailure,
   markStorageSuccess,
@@ -15,6 +16,8 @@ export const EVENTS_DATA_ID = 'elim/data/events.json'
 export type ChurchEvent = {
   id: string
   title: string
+  theme?: string
+  texts?: string[]
   date: string // YYYY-MM-DD
   time: string
   location: string
@@ -55,6 +58,9 @@ export function isEventArray(value: unknown): value is ChurchEvent[] {
         typeof event.title === 'string' &&
         event.title.trim().length > 0 &&
         event.title.length <= 80 &&
+        (event.theme === undefined || (typeof event.theme === 'string' && event.theme.length <= 160)) &&
+        (event.texts === undefined || (Array.isArray(event.texts) && event.texts.length <= 12 &&
+          event.texts.every((text) => typeof text === 'string' && text.trim().length > 0 && text.length <= 120))) &&
         typeof event.date === 'string' &&
         isValidDate(event.date) &&
         typeof event.time === 'string' &&
@@ -75,9 +81,20 @@ export function parseEventInput(
   if (!value || typeof value !== 'object')
     throw new Error('Enter the event details.')
   const data = value as Record<string, unknown>
-  const title = typeof data.title === 'string' ? data.title.trim() : ''
-  if (!title || title.length > 80)
+  const rawTitle = typeof data.title === 'string' ? data.title.trim() : ''
+  if (!rawTitle || rawTitle.length > 80)
     throw new Error('Enter an event name between 1 and 80 characters.')
+  if (data.theme !== undefined && typeof data.theme !== 'string')
+    throw new Error('Enter the theme as text.')
+  const { title, theme } = eventDetails({ title: rawTitle, theme: data.theme as string | undefined })
+  if (theme.length > 160)
+    throw new Error('Keep the theme under 160 characters.')
+  const rawTexts = typeof data.texts === 'string' ? data.texts.split(',') : data.texts === undefined ? [] : data.texts
+  if (!Array.isArray(rawTexts) || rawTexts.some((text) => typeof text !== 'string'))
+    throw new Error('Enter Bible passages separated by commas.')
+  const texts = [...new Set(rawTexts.map((text: string) => text.trim()).filter(Boolean))]
+  if (texts.length > 12 || texts.some((text) => text.length > 120))
+    throw new Error('Add up to 12 Bible passages, with no more than 120 characters each.')
   const date = typeof data.date === 'string' ? data.date.trim() : ''
   if (!isValidDate(date))
     throw new Error('Choose a valid event date.')
@@ -102,11 +119,18 @@ export function parseEventInput(
     suffix++
   )
     id = `${base}-${suffix}`
-  return { id, title, date, time, location }
+  return { id, title, theme, texts, date, time, location }
 }
 
 export function addEvent(items: ChurchEvent[], record: ChurchEvent) {
   return [...items, record]
+}
+
+export function updateEvent(items: ChurchEvent[], id: string, input: unknown) {
+  if (!items.some((event) => event.id === id))
+    throw new Error('That event could not be found. Refresh the list before trying again.')
+  const record = { ...parseEventInput(input, items.filter((event) => event.id !== id)), id }
+  return items.map((event) => event.id === id ? record : event)
 }
 
 export function removeEvent(items: ChurchEvent[], id: string) {
@@ -158,8 +182,9 @@ async function storageRequest(
   init: RequestInit,
   operation: StorageOperation,
   allowMissing = false,
+  readSignal?: AbortSignal,
 ) {
-  const signal = AbortSignal.timeout(operation === 'save' ? 20000 : 9000)
+  const signal = readSignal ?? AbortSignal.timeout(operation === 'save' ? 20000 : 8000)
   try {
     const response = await fetch(url, { ...init, cache: 'no-store', signal })
     if (allowMissing && response.status === 404) {
@@ -197,11 +222,13 @@ function authHeaders(config: NonNullable<ReturnType<typeof cloudinaryConfig>>) {
 async function fetchStoredEvents(
   config: NonNullable<ReturnType<typeof cloudinaryConfig>>,
 ) {
+  const readSignal = AbortSignal.timeout(8000)
   const resource = (await storageRequest(
     `https://api.cloudinary.com/v1_1/${config.cloud_name}/resources/raw/upload/${encodeURIComponent(EVENTS_DATA_ID)}`,
     { headers: authHeaders(config) },
     'read',
     true,
+    readSignal,
   )) as { secure_url?: string } | null
   if (resource === null) return []
   const url = resource?.secure_url
@@ -218,7 +245,7 @@ async function fetchStoredEvents(
     !parsed.pathname.startsWith(`/${config.cloud_name}/raw/upload/`)
   )
     throw storageError('read')
-  const data = await storageRequest(parsed.toString(), {}, 'read')
+  const data = await storageRequest(parsed.toString(), {}, 'read', false, readSignal)
   if (!isEventArray(data)) throw storageError('read')
   return data
 }
@@ -273,4 +300,10 @@ export async function saveEvents(events: ChurchEvent[]) {
     'save',
   )) as { public_id?: string } | null
   if (resource?.public_id !== EVENTS_DATA_ID) throw storageError('save')
+  markStorageSuccess('events')
+  rememberStorageGood('events', events)
+}
+
+export function lastGoodEvents() {
+  return recallStorageGood<ChurchEvent[]>('events') ?? []
 }

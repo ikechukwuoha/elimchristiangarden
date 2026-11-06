@@ -45,8 +45,8 @@ export default async function AdminEventsPage() {
             Upcoming <em>events.</em>
           </h1>
           <p>
-            Events added here scroll beneath the navbar on every page, so the
-            whole church family sees what is coming.
+            Events added here appear beneath the navbar and as programme cards
+            in the site-wide popup, so the whole church family sees what is coming.
           </p>
         </div>
         {authenticated ? (

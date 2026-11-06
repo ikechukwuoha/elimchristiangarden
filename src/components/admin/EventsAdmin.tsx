@@ -1,16 +1,18 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useRef, useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   CalendarClock,
   Check,
   LoaderCircle,
+  Pencil,
   Plus,
   RefreshCw,
   Trash2,
 } from 'lucide-react'
 import type { ChurchEvent } from '@/lib/events'
+import { eventDetails } from '@/lib/event-details'
 import styles from './admin.module.css'
 
 function formatEventDate(date: string) {
@@ -33,6 +35,9 @@ export default function EventsAdmin({
   const router = useRouter()
   const [events, setEvents] = useState(initialEvents)
   const [title, setTitle] = useState('')
+  const [theme, setTheme] = useState('')
+  const [texts, setTexts] = useState('')
+  const [editing, setEditing] = useState('')
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
   const [location, setLocation] = useState('')
@@ -40,34 +45,39 @@ export default function EventsAdmin({
   const [removing, setRemoving] = useState('')
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
-  const [added, setAdded] = useState('')
-  const saved = events.some((event) => event.id === added)
+  const [success, setSuccess] = useState('')
+  const formRef = useRef<HTMLFormElement>(null)
+  const titleInput = useRef<HTMLInputElement>(null)
 
   function resetForm() {
     setTitle('')
+    setTheme('')
+    setTexts('')
+    setEditing('')
     setDate('')
     setTime('')
     setLocation('')
   }
 
-  async function addEvent(event: FormEvent<HTMLFormElement>) {
+  async function saveEvent(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (busy || refreshing) return
+    if (busy || refreshing || removing) return
     setBusy(true)
     setError('')
-    setAdded('')
+    setSuccess('')
     try {
       const response = await fetch('/api/admin/events', {
-        method: 'POST',
+        method: editing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title, date, time, location }),
+        body: JSON.stringify({ id: editing, title, theme, texts, date, time, location }),
+        signal: AbortSignal.timeout(60000),
       })
       const result = await response.json()
       if (response.status === 401) router.refresh()
       if (!response.ok)
         throw new Error(result.error || 'This event could not be saved.')
       setEvents(result.events)
-      setAdded(result.event.id)
+      setSuccess(editing ? 'Event updated.' : 'Event added.')
       resetForm()
     } catch (requestError) {
       setError(
@@ -80,11 +90,28 @@ export default function EventsAdmin({
     }
   }
 
+  function editEvent(event: ChurchEvent) {
+    if (busy || removing || refreshing) return
+    const details = eventDetails(event)
+    setEditing(event.id)
+    setTitle(details.title)
+    setTheme(details.theme)
+    setTexts(details.texts.join(', '))
+    setDate(event.date)
+    setTime(event.time)
+    setLocation(event.location)
+    setError('')
+    setSuccess('')
+    formRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' })
+    titleInput.current?.focus({ preventScroll: true })
+  }
+
   async function removeEvent(event: ChurchEvent) {
     if (removing || busy || refreshing) return
-    if (!window.confirm(`Remove “${event.title}” from the ticker?`)) return
+    if (!window.confirm(`Remove “${eventDetails(event).title}” from the events bar and popup?`)) return
     setRemoving(event.id)
     setError('')
+    setSuccess('')
     try {
       const response = await fetch('/api/admin/events', {
         method: 'DELETE',
@@ -96,6 +123,7 @@ export default function EventsAdmin({
       if (!response.ok)
         throw new Error(result.error || 'This event could not be removed.')
       setEvents(result.events)
+      if (editing === event.id) resetForm()
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -140,19 +168,19 @@ export default function EventsAdmin({
       <section className={styles.uploadPanel} aria-labelledby="add-heading">
         <div className={styles.panelHeading}>
           <div>
-            <span className={styles.eyebrow}>ADD AN EVENT</span>
+            <span className={styles.eyebrow}>{editing ? 'EDIT EVENT' : 'ADD AN EVENT'}</span>
             <h2 id="add-heading">
-              Something to <em>look forward to.</em>
+              {editing ? <>Update the <em>programme.</em></> : <>Something to <em>look forward to.</em></>}
             </h2>
           </div>
           <CalendarClock size={32} strokeWidth={1.2} aria-hidden="true" />
         </div>
-        <form onSubmit={addEvent}>
+        <form ref={formRef} onSubmit={saveEvent}>
           <fieldset
-            disabled={busy || refreshing || !cloudinaryReady}
+            disabled={busy || refreshing || Boolean(removing) || !cloudinaryReady}
             className={styles.uploadFields}
           >
-            <legend className="sr-only">Add an upcoming event</legend>
+            <legend className="sr-only">{editing ? 'Edit event details' : 'Add an upcoming event'}</legend>
             <div className={styles.detailsFields}>
               <div>
                 <label htmlFor="event-title">
@@ -160,12 +188,27 @@ export default function EventsAdmin({
                 </label>
                 <input
                   id="event-title"
+                  ref={titleInput}
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
                   required
                   maxLength={80}
                   placeholder="December thanksgiving service"
                 />
+              </div>
+              <div>
+                <label htmlFor="event-theme">Theme <span>(optional)</span></label>
+                <input id="event-theme" value={theme} onChange={(event) => setTheme(event.target.value)}
+                  maxLength={160} placeholder="Divine Settlement for a New Beginning" />
+              </div>
+              <div>
+                <label htmlFor="event-texts">Bible passages <span>(optional)</span></label>
+                <textarea id="event-texts" value={texts} onChange={(event) => setTexts(event.target.value)}
+                  rows={3} maxLength={1600} aria-describedby="event-texts-hint"
+                  placeholder="1 Peter 5:10, Psalm 126:1–3" />
+                <p id="event-texts-hint" className={styles.fieldHint}>
+                  Separate passages with commas. Each reference appears separately beneath the theme. Add up to 12 passages.
+                </p>
               </div>
               <div>
                 <label htmlFor="event-date">
@@ -204,9 +247,10 @@ export default function EventsAdmin({
                 />
               </div>
               <p className={styles.uploadNote}>
-                Upcoming events scroll beneath the navbar on every page. Past
-                dates stop scrolling automatically — remove them here to keep
-                the list tidy.
+                Upcoming programmes appear in the events bar and the site-wide
+                popup. Programme cards stay for 12 seconds, alongside birthday
+                and anniversary cards at six seconds each. Past programme dates
+                leave the popup automatically — remove them here to keep the list tidy.
               </p>
               <button
                 type="submit"
@@ -220,10 +264,11 @@ export default function EventsAdmin({
                     aria-hidden="true"
                   />
                 ) : (
-                  <Plus size={18} aria-hidden="true" />
+                  editing ? <Check size={18} aria-hidden="true" /> : <Plus size={18} aria-hidden="true" />
                 )}
-                {busy ? 'Saving…' : 'Add event'}
+                {busy ? 'Saving…' : editing ? 'Save changes' : 'Add event'}
               </button>
+              {editing && <button type="button" className={styles.textButton} onClick={() => { resetForm(); setError(''); setSuccess('') }}>Cancel editing</button>}
             </div>
           </fieldset>
           {error && (
@@ -231,12 +276,12 @@ export default function EventsAdmin({
               {error}
             </p>
           )}
-          {saved && (
+          {success && (
             <div className={styles.success} role="status">
               <Check size={21} aria-hidden="true" />
               <div>
-                <strong>Event added.</strong>
-                <span>It now scrolls in the events bar across the site.</span>
+                <strong>{success}</strong>
+                <span>Upcoming dates appear in the events bar and the popup across the site.</span>
               </div>
             </div>
           )}
@@ -275,43 +320,55 @@ export default function EventsAdmin({
           <div className={styles.groupList}>
             {[...events]
               .sort((a, b) => b.date.localeCompare(a.date))
-              .map((event) => (
-                <article className={styles.groupRow} key={event.id}>
-                  <span
-                    className={`${styles.kindBadge} ${
-                      event.date < new Date().toISOString().slice(0, 10)
-                        ? styles.pastBadge
-                        : ''
-                    }`}
-                  >
-                    {formatEventDate(event.date)}
-                  </span>
-                  <div className={styles.groupRowCopy}>
-                    <h3>{event.title}</h3>
-                    <p>
-                      {[event.time, event.location].filter(Boolean).join(' · ')}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    className={styles.removeButton}
-                    onClick={() => removeEvent(event)}
-                    disabled={Boolean(removing) || busy || refreshing}
-                    aria-label={`Remove ${event.title}`}
-                  >
-                    {removing === event.id ? (
-                      <LoaderCircle
-                        size={16}
-                        className={styles.spinning}
-                        aria-hidden="true"
-                      />
-                    ) : (
-                      <Trash2 size={16} aria-hidden="true" />
-                    )}
-                    Remove
-                  </button>
-                </article>
-              ))}
+              .map((event) => {
+                const details = eventDetails(event)
+                return (
+                  <article className={`${styles.groupRow} ${styles.eventRow}`} key={event.id}>
+                    <span
+                      className={`${styles.kindBadge} ${
+                        event.date < new Date().toISOString().slice(0, 10)
+                          ? styles.pastBadge
+                          : ''
+                      }`}
+                    >
+                      {formatEventDate(event.date)}
+                    </span>
+                    <div className={styles.groupRowCopy}>
+                      <h3>{details.title}</h3>
+                      {details.theme && <p>Theme: {details.theme}</p>}
+                      {details.texts.length > 0 && <p>Bible passages: {details.texts.join(' · ')}</p>}
+                      <p>
+                        {[event.time, event.location].filter(Boolean).join(' · ')}
+                      </p>
+                    </div>
+                    <div className={styles.eventActions}>
+                      <button type="button" className={styles.textButton} onClick={() => editEvent(event)}
+                        disabled={Boolean(removing) || busy || refreshing || !cloudinaryReady}
+                        aria-label={`Edit ${details.title}`}>
+                        <Pencil size={15} aria-hidden="true" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.removeButton}
+                        onClick={() => removeEvent(event)}
+                        disabled={Boolean(removing) || busy || refreshing}
+                        aria-label={`Remove ${details.title}`}
+                      >
+                        {removing === event.id ? (
+                          <LoaderCircle
+                            size={16}
+                            className={styles.spinning}
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <Trash2 size={16} aria-hidden="true" />
+                        )}
+                        Remove
+                      </button>
+                    </div>
+                  </article>
+                )
+              })}
           </div>
         )}
       </section>
