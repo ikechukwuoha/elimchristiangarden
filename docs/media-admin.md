@@ -158,18 +158,24 @@ to 10 MB. An optional blessing replaces the default birthday message. The live
 preview shows the card before publishing. **Preview popup** opens the corner
 card without saving or uploading the selected photo. This local preview works
 even when Cloudinary is disconnected. You can edit or remove entries and filter
-the calendar by month. Anniversary cards have a heart accent, a wider photo
-frame for couples, and their own greeting and default blessing.
+the calendar by month. Birthday cards use a cream portrait design. Anniversary
+cards have a distinct forest-green and gold design, interlocking ring accents,
+a landscape photo, and their own greeting and default blessing.
 
 Both celebration types recur every year; no birth year is stored. Existing
 birthday entries continue to work without changes. The website automatically
-selects the current month in the Africa/Lagos time zone and orders celebrants
-by day, mixing birthdays and anniversaries in the same slideshow. A green, cream,
+selects entries whose month matches the current month and whose day is today or
+earlier, using the Africa/Lagos time zone. On the 6th, only entries from the
+1st through the 6th are eligible. Each entry joins at **00:00 on its date** and
+stays through month-end. At 00:00 on the 1st of the next month, the old month’s
+entries leave the popup. Future dates remain saved in the admin calendar and
+can still be previewed; they are not returned by the public endpoint early.
+Eligible entries are ordered by day, mixing both types in one slideshow. A green, cream,
 and gold corner card opens by default on every public page as soon as the
-current-month records load, including the dedicated bulletin reader. It
+eligible records load, including the dedicated bulletin reader. It
 slides to the next person every six seconds, looping through all celebrants.
 It leaves the page scrollable and has no backdrop or sound. With no birthdays
-or anniversaries for the month, nothing is displayed. Closing the card leaves
+or anniversaries whose dates have arrived this month, nothing is displayed. Closing the card leaves
 the **Celebrate with us** button available to reopen it on that page. Navigating
 to another public page or reloading opens it again. Filter and query changes on
 the same page keep the visitor’s current choice. Admin pages use their own
@@ -190,8 +196,10 @@ using the arrows keep it running. The pause button, keyboard focus, and hidden
 tabs pause rotation. The play button resumes it. With one current-month entry,
 the single card stays visible; rotation needs at least two entries. Reduced-motion
 preferences disable automatic rotation and transitions while keeping the
-previous/next controls available. The calendar refreshes every minute while
-the page is visible, including after a month changes. Published changes
+previous/next controls available. A dedicated timer refreshes the calendar at
+Abuja midnight, including pages left open overnight. It also refreshes every
+minute and when a background tab becomes visible. Month-end expiration removes
+the old month immediately even if storage is temporarily unreachable. Published changes
 clear the server cache immediately; already open pages pick them up on
 their next refresh.
 

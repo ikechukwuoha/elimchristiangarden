@@ -30,24 +30,26 @@ export default function BirthdayCard({
         <span><Icon size={16} strokeWidth={1.5} aria-hidden="true" /> THE ELIM FAMILY</span>
         {onClose ? <button type="button" onClick={onClose} aria-label="Close celebrations"><X size={18} aria-hidden="true" /></button> : <Leaf size={18} aria-hidden="true" />}
       </header>
-      <div className={styles.intro}>
-        <p>A little joy. A lot of love.</p>
-        <h2>{anniversary ? <>A beautiful <em>milestone.</em></> : <>Celebrating <em>you.</em></>}</h2>
-        <span>{monthLabel} · {anniversary ? 'Anniversary' : 'Birthday'}</span>
-      </div>
       <div className={styles.slideViewport}>
-      <div className={styles.slide} key={`${birthday.id}-${birthday.kind ?? 'birthday'}`} role="group" aria-live={paused ? 'polite' : 'off'} aria-atomic="true" aria-roledescription="slide" aria-label={`${index + 1} of ${birthdays.length}`}>
-        <div className={styles.portrait}>
-          <Image src={birthday.photoUrl} alt={`Portrait of ${birthday.name}`} fill unoptimized sizes="180px" />
-          <span className={styles.portraitLeaf}>{anniversary ? <Heart size={20} strokeWidth={1.3} aria-hidden="true" /> : <Leaf size={20} strokeWidth={1.3} aria-hidden="true" />}</span>
-          <span className={styles.date}>{birthday.day === today ? 'Today · ' : ''}{birthday.day} {monthLabel}</span>
+        <div className={styles.slide} key={`${birthday.id}-${birthday.kind ?? 'birthday'}`} role="group" aria-live={paused ? 'polite' : 'off'} aria-atomic="true" aria-roledescription="slide" aria-label={`${index + 1} of ${birthdays.length}`}>
+          {anniversary ? <AnniversaryContent celebration={birthday} monthLabel={monthLabel} today={today} /> : <>
+            <div className={styles.intro}>
+              <p>A little joy. A lot of love.</p>
+              <h2>Celebrating <em>you.</em></h2>
+              <span>{monthLabel} · Birthday</span>
+            </div>
+            <div className={styles.portrait}>
+              <Image src={birthday.photoUrl} alt={`Portrait of ${birthday.name}`} fill unoptimized sizes="180px" />
+              <span className={styles.portraitLeaf}><Leaf size={20} strokeWidth={1.3} aria-hidden="true" /></span>
+              <span className={styles.date}>{birthday.day === today ? 'Today · ' : ''}{birthday.day} {monthLabel}</span>
+            </div>
+            <div className={styles.copy}>
+              <p className={styles.celebrate}>HAPPY BIRTHDAY</p>
+              <h3>{birthday.name}</h3>
+              <p className={styles.blessing}>{birthday.message || birthdayBlessing}</p>
+            </div>
+          </>}
         </div>
-        <div className={styles.copy}>
-          <p className={styles.celebrate}>{anniversary ? 'HAPPY ANNIVERSARY' : 'HAPPY BIRTHDAY'}</p>
-          <h3>{birthday.name}</h3>
-          <p className={styles.blessing}>{birthday.message || (anniversary ? anniversaryBlessing : birthdayBlessing)}</p>
-        </div>
-      </div>
       </div>
       <footer className={styles.footer}>
         <span className={styles.withLove}><Heart size={12} strokeWidth={1.5} aria-hidden="true" /> With love, your Elim family</span>
@@ -60,4 +62,24 @@ export default function BirthdayCard({
       </footer>
     </section>
   )
+}
+
+function AnniversaryContent({ celebration, monthLabel, today }: { celebration: Birthday; monthLabel: string; today?: number }) {
+  return <>
+    <div className={styles.anniversaryIntro}>
+      <span className={styles.rings} aria-hidden="true"><span /><span /></span>
+      <p>A JOURNEY BLESSED BY GRACE</p>
+      <h2>Happy <em>Anniversary.</em></h2>
+    </div>
+    <div className={styles.anniversaryPhoto}>
+      <Image src={celebration.photoUrl} alt={`Anniversary photograph of ${celebration.name}`} fill unoptimized sizes="310px" />
+      <span className={styles.anniversaryDate}><Heart size={12} strokeWidth={1.5} aria-hidden="true" />{celebration.day === today ? 'Celebrating today' : `${celebration.day} ${monthLabel}`}</span>
+    </div>
+    <div className={styles.anniversaryCopy}>
+      <p className={styles.anniversaryLabel}>WITH LOVE, WE CELEBRATE</p>
+      <h3>{celebration.name}</h3>
+      <span className={styles.anniversaryRule} aria-hidden="true" />
+      <p className={styles.anniversaryBlessing}>{celebration.message || anniversaryBlessing}</p>
+    </div>
+  </>
 }

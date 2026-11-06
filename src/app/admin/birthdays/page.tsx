@@ -28,7 +28,7 @@ export default async function AdminBirthdaysPage() {
       <Link href="/" className={styles.backLink}>View website <ArrowUpRight size={16} aria-hidden="true" /></Link>
     </header>
     <main id="main-content" className={styles.main}>
-      <div className={styles.intro}><span className={styles.eyebrow}><LockKeyhole size={14} aria-hidden="true" /> FOR OUR TEAM</span><h1>Life is worth <em>celebrating.</em></h1><p>Birthdays, anniversaries, and a little love from the Elim family. Add a celebration once; the website remembers its month every year.</p></div>
+      <div className={styles.intro}><span className={styles.eyebrow}><LockKeyhole size={14} aria-hidden="true" /> FOR OUR TEAM</span><h1>Life is worth <em>celebrating.</em></h1><p>Birthdays, anniversaries, and a little love from the Elim family. Add a celebration once; it appears from its date through the end of that month, every year.</p></div>
       {authenticated ? <><AdminTabs active="birthdays" /><BirthdaysAdmin initialBirthdays={birthdays} initialError={error} cloudinaryReady={Boolean(cloudinaryConfig())} /></> : <AdminLogin configured={Boolean(authConfig())} twoFactorEnabled={Boolean(totpConfig())} />}
     </main>
     <footer className={styles.footer}>Elim Christian Garden International <span>Rooted in Christ. Growing together.</span></footer>

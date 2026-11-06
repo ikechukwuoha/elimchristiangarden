@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import { CakeSlice } from 'lucide-react'
-import { birthdayPeriod, celebrationSummary, type Birthday } from '@/lib/birthdays'
+import { birthdayPeriod, celebrationSummary, nextCelebrationMidnight, visibleCelebrations, type Birthday } from '@/lib/birthdays'
 import BirthdayCard from './BirthdayCard'
 import styles from './birthdays.module.css'
 
@@ -35,27 +35,41 @@ export default function BirthdayCelebration() {
   useEffect(() => {
     let controller: AbortController | undefined
     let disposed = false
+    let midnightTimer: ReturnType<typeof setTimeout>
     async function load() {
       if (document.hidden) return
       controller?.abort()
       controller = new AbortController()
-      // Clear last month's card even if this month's request cannot complete.
-      const currentKey = birthdayPeriod().key
-      setData((current) => current && current.period.key !== currentKey ? null : current)
+      const currentPeriod = birthdayPeriod()
+      // Retire the old month immediately, even if the next network read fails.
+      // Same-month day changes also remove the old "Today" badge at midnight.
+      setData((current) => {
+        if (!current || current.period.key !== currentPeriod.key) return null
+        if (current.period.day === currentPeriod.day) return current
+        return { ...current, period: currentPeriod, birthdays: visibleCelebrations(current.birthdays, currentPeriod) }
+      })
       try {
         const response = await fetch('/api/birthdays', { cache: 'no-store', signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]) })
         if (!response.ok) return
         const result: Celebration = await response.json()
-        if (!disposed) setData(result)
+        if (!disposed) setData({ ...result, birthdays: visibleCelebrations(result.birthdays, result.period) })
       } catch { /* A celebration never interrupts the rest of the page. */ }
     }
     function onVisibility() {
-      if (!document.hidden) void load()
+      if (!document.hidden) { void load(); scheduleMidnight() }
+    }
+    function scheduleMidnight() {
+      clearTimeout(midnightTimer)
+      midnightTimer = setTimeout(() => {
+        void load()
+        scheduleMidnight()
+      }, Math.max(1, nextCelebrationMidnight() - Date.now()))
     }
     void load()
-    const refresh = window.setInterval(load, 60000)
+    scheduleMidnight()
+    const refresh = window.setInterval(() => { void load(); scheduleMidnight() }, 60000)
     document.addEventListener('visibilitychange', onVisibility)
-    return () => { disposed = true; controller?.abort(); window.clearInterval(refresh); document.removeEventListener('visibilitychange', onVisibility) }
+    return () => { disposed = true; controller?.abort(); clearTimeout(midnightTimer); window.clearInterval(refresh); document.removeEventListener('visibilitychange', onVisibility) }
   }, [])
 
   const stopped = paused || keyboardFocused || reducedMotion

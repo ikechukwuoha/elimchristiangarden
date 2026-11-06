@@ -62,14 +62,28 @@
 .launcherCount { color: #75613e; font-size: 10px; }
 .launcher:hover { background: #f6f5ed; }
 
-.anniversary { border-color: #d4c49f; }
-.anniversary .header { background: #40513a; color: #f0d8aa; }
-.anniversary .intro h2 { font-size: 32px; }
-.anniversary .intro h2 em { color: #947342; }
-.anniversary .portrait { width: 200px; height: 164px; border-radius: 80px 80px 6px 6px; }
-.anniversary .portrait img { border-radius: 80px 80px 2px 2px; }
-.anniversary .portraitLeaf { color: #947342; }
-.anniversary .celebrate { color: #856630; }
+.anniversary { border-color: #b79a62; border-radius: 8px 8px 34px 34px; background: radial-gradient(ellipse at 50% 10%, #46634455, transparent 60%), #173c30; color: #fbf6e9; }
+.anniversary .header { background: #123629; color: #e4c991; border-bottom: 1px solid #c5a76a2e; }
+.anniversaryIntro { padding: 20px 24px 18px; text-align: center; }
+.rings { position: relative; display: block; width: 54px; height: 30px; margin: 0 auto 13px; }
+.rings > span { position: absolute; top: 0; width: 30px; height: 30px; border: 1px solid #d8bd84; border-radius: 50%; }
+.rings > span:first-child { left: 3px; }
+.rings > span:last-child { right: 3px; box-shadow: inset 0 0 0 3px #173c30; }
+.anniversaryIntro > p { color: #d3c49f; font-size: 8px; line-height: 1.7; letter-spacing: .17em; }
+.anniversaryIntro h2 { margin: 7px 0 0; font: 400 34px/1.05 Georgia, 'Times New Roman', serif; letter-spacing: -.035em; }
+.anniversaryIntro h2 em { display: block; color: #ead09a; font-size: 42px; font-weight: 400; }
+.anniversaryPhoto { position: relative; aspect-ratio: 16 / 10; margin: 0 24px 23px; border: 1px solid #c6aa72; border-radius: 5px 5px 30px 5px; background: #294c3a; }
+.anniversaryPhoto img { object-fit: cover; object-position: center 35%; border-radius: 4px 4px 29px 4px; }
+.anniversaryDate { position: absolute; z-index: 1; bottom: -13px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; padding: 7px 14px; border: 1px solid #d1b579; border-radius: 3px; background: #ecdbb5; color: #3b4a2c; font-size: 10px; font-weight: 600; }
+.anniversaryCopy { padding: 2px 28px 23px; text-align: center; }
+.anniversaryLabel { font-size: 8px; letter-spacing: .17em; color: #d8c69c; line-height: 1.7; }
+.anniversaryCopy h3 { margin: 8px 0 12px; font: 400 26px/1.15 Georgia, 'Times New Roman', serif; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.anniversaryRule { display: block; width: 34px; height: 1px; margin: 0 auto 12px; background: #c4a971; }
+.anniversaryBlessing { color: #d7dfcf; font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
+.anniversary .footer { background: #123629; border-top-color: #c5a76a2e; }
+.anniversary .withLove, .anniversary .controls { color: #e0d1ac; }
+.anniversary .controls > span > span { color: #b9c6ad; }
+.anniversary .controls button:hover { background: #ffffff12; }
 
 @keyframes arrive { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slide { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
@@ -79,7 +93,11 @@
   .popup { width: min(340px, calc(100vw - 24px)); }
   .intro { padding-top: 17px; }
   .portrait { width: 138px; height: 150px; }
-  .anniversary .portrait { width: 180px; height: 150px; }
+  .anniversaryIntro { padding-top: 16px; }
+  .anniversaryIntro h2 { font-size: 30px; }
+  .anniversaryIntro h2 em { font-size: 37px; }
+  .anniversaryPhoto { margin-left: 22px; margin-right: 22px; }
+  .anniversaryCopy { padding-bottom: 18px; }
   .copy { padding-bottom: 16px; }
   .intro h2 { font-size: 34px; }
 }

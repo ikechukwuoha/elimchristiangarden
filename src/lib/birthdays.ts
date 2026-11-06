@@ -32,7 +32,8 @@ export function celebrationSummary(items: Birthday[]) {
 }
 
 export function daysInBirthdayMonth(month: number) {
-  // Leap-day birthdays belong to February every year; no birth year is stored.
+  // Allow leap-day entries without storing a birth year. Their exact date
+  // becomes eligible on February 29 in leap years.
   return [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1] ?? 0
 }
 
@@ -48,6 +49,17 @@ export function birthdayPeriod(now = new Date()) {
 export function monthlyBirthdays(items: Birthday[], month: number) {
   return items.filter((item) => item.month === month)
     .sort((a, b) => a.day - b.day || a.name.localeCompare(b.name))
+}
+
+export function visibleCelebrations(items: Birthday[], period = birthdayPeriod()) {
+  return monthlyBirthdays(items, period.month).filter((item) => item.day <= period.day)
+}
+
+export function nextCelebrationMidnight(now = new Date()) {
+  const period = birthdayPeriod(now)
+  const [year, month] = period.key.split('-').map(Number)
+  // Abuja stays on UTC+1. Date.UTC also handles month/year and leap-day rollovers.
+  return Date.UTC(year, month - 1, period.day + 1) - 60 * 60 * 1000
 }
 
 export function validBirthdayPhoto(photoId: unknown, photoUrl: unknown, cloudName: string) {

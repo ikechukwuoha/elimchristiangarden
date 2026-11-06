@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { v2 as cloudinary } from 'cloudinary'
-import { birthdayPeriod, celebrationKind, celebrationSummary, isBirthdayArray, monthlyBirthdays, parseBirthdayInput, validBirthdayPhoto } from '../src/lib/birthdays'
+import { birthdayPeriod, celebrationKind, celebrationSummary, isBirthdayArray, monthlyBirthdays, nextCelebrationMidnight, parseBirthdayInput, validBirthdayPhoto, visibleCelebrations } from '../src/lib/birthdays'
 import { birthdayUploadTicket, validateBirthdayUpload } from '../src/lib/admin/birthday-upload'
 import { BIRTHDAYS_DATA_ID, readBirthdays, saveBirthdays } from '../src/lib/birthday-store'
 import { resetStorageHealth } from '../src/lib/storage-health'
@@ -49,6 +49,41 @@ test('month rollover follows Abuja time, including the year boundary', () => {
   assert.deepEqual(monthlyBirthdays([later, other, birthday], 11).map((item) => item.id), [birthday.id, 'later'])
   assert.equal(monthlyBirthdays([birthday], 1).length, 0)
   assert.equal(monthlyBirthdays([birthday], birthdayPeriod(new Date('2027-11-06T12:00:00Z')).month).length, 1)
+})
+
+test('only this month’s past and today’s celebrations are visible, without deleting scheduled records', () => {
+  const items = [
+    { ...birthday, id: 'tomorrow', kind: 'anniversary' as const, day: 7 },
+    { ...birthday, id: 'first', day: 1 },
+    { ...birthday, id: 'next-month', month: 12, day: 1 },
+    { ...birthday, id: 'last-month', month: 10, day: 31 },
+    { ...birthday, id: 'today', kind: 'anniversary' as const, day: 6 },
+    { ...birthday, id: 'month-end', day: 30 },
+  ]
+  const original = JSON.stringify(items)
+  const visibleAt = (timestamp: string) => visibleCelebrations(items, birthdayPeriod(new Date(timestamp))).map((item) => item.id)
+  assert.deepEqual(visibleAt('2026-11-06T12:00:00Z'), ['first', 'today'])
+  assert.deepEqual(visibleAt('2026-11-06T22:59:59.999Z'), ['first', 'today'])
+  assert.deepEqual(visibleAt('2026-11-06T23:00:00.000Z'), ['first', 'today', 'tomorrow'])
+  assert.deepEqual(visibleAt('2026-11-30T22:59:59.999Z'), ['first', 'today', 'tomorrow', 'month-end'])
+  assert.deepEqual(visibleAt('2026-11-30T23:00:00.000Z'), ['next-month'])
+  assert.deepEqual(visibleAt('2027-11-06T12:00:00Z'), ['first', 'today'])
+  assert.equal(JSON.stringify(items), original)
+})
+
+test('midnight refreshes use Abuja time across month ends, year ends, and leap days', () => {
+  for (const [now, expected] of [
+    ['2026-11-06T22:59:59.999Z', '2026-11-06T23:00:00.000Z'],
+    ['2026-11-06T23:00:00.000Z', '2026-11-07T23:00:00.000Z'],
+    ['2026-11-30T22:59:59.999Z', '2026-11-30T23:00:00.000Z'],
+    ['2026-12-31T22:59:59.999Z', '2026-12-31T23:00:00.000Z'],
+    ['2028-02-28T12:00:00.000Z', '2028-02-28T23:00:00.000Z'],
+  ]) assert.equal(new Date(nextCelebrationMidnight(new Date(now))).toISOString(), expected)
+
+  const leapBirthday = [{ ...birthday, month: 2, day: 29 }]
+  assert.equal(visibleCelebrations(leapBirthday, birthdayPeriod(new Date('2028-02-28T22:59:59.999Z'))).length, 0)
+  assert.equal(visibleCelebrations(leapBirthday, birthdayPeriod(new Date('2028-02-28T23:00:00.000Z'))).length, 1)
+  assert.equal(visibleCelebrations(leapBirthday, birthdayPeriod(new Date('2027-02-28T12:00:00.000Z'))).length, 0)
 })
 
 test('only birthday portraits from the configured Cloudinary account are accepted', () => {
