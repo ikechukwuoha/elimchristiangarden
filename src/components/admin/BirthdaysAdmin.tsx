@@ -177,16 +177,16 @@ export default function BirthdaysAdmin({ initialBirthdays, initialError, cloudin
             </div>
             <div className={birthdayStyles.photoField}><label htmlFor="birthday-photo">{anniversary ? 'Celebration photo' : 'Portrait photo'} <span>{editing ? '(choose a file to replace)' : '(required)'}</span></label><input ref={fileInput} id="birthday-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => choosePhoto(event.target.files?.[0])} required={!photo.photoUrl} /><p className={styles.uploadNote}>JPG, PNG, or WebP, up to 10 MB. {anniversary ? 'A photo with both faces near the centre works well for couples.' : 'A clear portrait with the face near the centre works best.'}</p></div>
             <div><label htmlFor="birthday-message">{anniversary ? 'Anniversary blessing' : 'Birthday blessing'} <span>(optional)</span></label><textarea id="birthday-message" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={240} placeholder={`Leave blank to use our family ${kind} blessing.`} rows={3} /></div>
-            <p className={styles.uploadNote}>Add once and celebrate every year. Only the month and day are needed. The homepage automatically shows this month’s celebrants; future months stay scheduled.</p>
+            <p className={styles.uploadNote}>Add once and celebrate every year. Only the month and day are needed. Every public page automatically shows this month’s celebrants; future months stay scheduled.</p>
             <div className={birthdayStyles.actions}><button type="submit" className={styles.primaryButton} disabled={!cloudinaryReady}>{busy ? <LoaderCircle size={17} className={styles.spinning} aria-hidden="true" /> : editing ? <Check size={17} aria-hidden="true" /> : <Plus size={17} aria-hidden="true" />}{busy || (editing ? 'Save changes' : `Publish ${kind}`)}</button>{editing && <button type="button" className={styles.secondaryButton} onClick={resetForm}>Cancel edit</button>}</div>
           </fieldset>
         </form>
         <div className={birthdayStyles.preview}>
-          <span className={styles.eyebrow}>YOUR HOMEPAGE PREVIEW</span>
+          <span className={styles.eyebrow}>YOUR WEBSITE PREVIEW</span>
           {preview.photoUrl ? <BirthdayCard birthdays={[preview]} index={0} monthLabel={birthdayMonths[preview.month - 1]} paused onNext={() => {}} onPrevious={() => {}} onPause={() => {}} /> : <div className={birthdayStyles.previewEmpty}><ImagePlus size={34} strokeWidth={1.2} aria-hidden="true" /><h3>A face to celebrate.</h3><p>Choose a portrait to see how your birthday card will look.</p></div>}
-          <p className={styles.uploadNote}>A gentle, sliding card in the homepage corner. Visitors can pause, close, and reopen it.</p>
+          <p className={styles.uploadNote}>A gentle, sliding card opens in the corner of every public page. Visitors can pause, close, and reopen it.</p>
           <button ref={previewButton} type="button" className={styles.secondaryButton} disabled={!preview.photoUrl || Boolean(busy)} onClick={() => setPreviewOpen(true)}>Preview popup</button>
-          <p className={styles.uploadNote}>The preview stays on this device and works before publishing. The public homepage shows a popup only after a celebration for the current month is published.</p>
+          <p className={styles.uploadNote}>The preview stays on this device and works before publishing. Public pages show a popup once a celebration for the current month is published.</p>
         </div>
       </div>
       {error && <p className={styles.error} role="alert">{error}</p>}

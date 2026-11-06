@@ -20,7 +20,7 @@ function subscribeMotion(callback: () => void) {
 
 export default function BirthdayCelebration() {
   const [data, setData] = useState<Celebration | null>(null)
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const [keyboardFocused, setKeyboardFocused] = useState(false)
@@ -30,8 +30,6 @@ export default function BirthdayCelebration() {
   const panel = useRef<HTMLDivElement>(null)
   const restoreFocus = useRef(false)
   const focusOnOpen = useRef(false)
-  const openedPeriod = useRef('')
-  const periodKey = data?.period.key ?? ''
   const count = data?.birthdays.length ?? 0
 
   useEffect(() => {
@@ -49,7 +47,7 @@ export default function BirthdayCelebration() {
         if (!response.ok) return
         const result: Celebration = await response.json()
         if (!disposed) setData(result)
-      } catch { /* A celebration never interrupts the rest of the homepage. */ }
+      } catch { /* A celebration never interrupts the rest of the page. */ }
     }
     function onVisibility() {
       if (!document.hidden) void load()
@@ -59,23 +57,6 @@ export default function BirthdayCelebration() {
     document.addEventListener('visibilitychange', onVisibility)
     return () => { disposed = true; controller?.abort(); window.clearInterval(refresh); document.removeEventListener('visibilitychange', onVisibility) }
   }, [])
-
-  useEffect(() => {
-    if (open || !visible || !periodKey || count === 0) return
-    // Only one automatic opening per month in this tab, even after navigation.
-    let dismissed = false
-    try { dismissed = Boolean(sessionStorage.getItem(`elim-birthdays:${periodKey}`)) } catch { /* Storage may be blocked. */ }
-    if (dismissed || openedPeriod.current === periodKey) return
-    const timeout = window.setTimeout(() => {
-      openedPeriod.current = periodKey
-      try { sessionStorage.setItem(`elim-birthdays:${periodKey}`, 'seen') } catch { /* Storage may be blocked. */ }
-      setIndex(0)
-      setPaused(false)
-      setKeyboardFocused(false)
-      setOpen(true)
-    }, 2500)
-    return () => window.clearTimeout(timeout)
-  }, [periodKey, count, open, visible])
 
   const stopped = paused || keyboardFocused || reducedMotion
   useEffect(() => {
@@ -99,7 +80,6 @@ export default function BirthdayCelebration() {
     restoreFocus.current = Boolean(panel.current?.contains(document.activeElement))
     setOpen(false)
     setKeyboardFocused(false)
-    try { sessionStorage.setItem(`elim-birthdays:${periodKey}`, 'dismissed') } catch { /* Dismissal still works without storage. */ }
   }
 
   if (!data || count === 0) return null

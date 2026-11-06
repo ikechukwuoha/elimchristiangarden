@@ -1,6 +1,7 @@
 import '@/app/globals.css'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import PublicCelebrations from '@/components/birthdays/PublicCelebrations'
 
 const inter = localFont({
   src: './fonts/inter-latin-variable.woff2',
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} data-scroll-behavior="smooth">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <PublicCelebrations />
+      </body>
     </html>
   )
 }

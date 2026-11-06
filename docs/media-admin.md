@@ -162,14 +162,18 @@ the calendar by month. Anniversary cards have a heart accent, a wider photo
 frame for couples, and their own greeting and default blessing.
 
 Both celebration types recur every year; no birth year is stored. Existing
-birthday entries continue to work without changes. The homepage automatically
+birthday entries continue to work without changes. The website automatically
 selects the current month in the Africa/Lagos time zone and orders celebrants
 by day, mixing birthdays and anniversaries in the same slideshow. A green, cream,
-and gold corner card appears after a short delay and
+and gold corner card opens by default on every public page as soon as the
+current-month records load, including the dedicated bulletin reader. It
 slides to the next person every six seconds, looping through all celebrants.
 It leaves the page scrollable and has no backdrop or sound. With no birthdays
-or anniversaries for the month, nothing is displayed. A previous dismissal in
-the same tab leaves the **Celebrate with us** button available to reopen it.
+or anniversaries for the month, nothing is displayed. Closing the card leaves
+the **Celebrate with us** button available to reopen it on that page. Navigating
+to another public page or reloading opens it again. Filter and query changes on
+the same page keep the visitor’s current choice. Admin pages use their own
+preview and do not show the public popup.
 
 `/api/birthdays` still serves both types for compatibility. A confirmed empty
 month returns `200` with an empty list and `unavailable: false`. A storage
@@ -181,15 +185,14 @@ time, not that the collection is empty. Check the server’s network/DNS access
 to `api.cloudinary.com` and `res.cloudinary.com` before retrying.
 
 Visitors can pause, move between celebrants, close the card, or reopen it from
-the small birthday button. Automatic opening happens once per month per tab
-session. Opening or reopening the card starts automatic rotation; hovering and
+the small birthday button. Opening or reopening the card starts automatic rotation; hovering and
 using the arrows keep it running. The pause button, keyboard focus, and hidden
 tabs pause rotation. The play button resumes it. With one current-month entry,
 the single card stays visible; rotation needs at least two entries. Reduced-motion
 preferences disable automatic rotation and transitions while keeping the
 previous/next controls available. The calendar refreshes every minute while
-the homepage is visible, including after a month changes. Published changes
-clear the server cache immediately; already open homepages pick them up on
+the page is visible, including after a month changes. Published changes
+clear the server cache immediately; already open pages pick them up on
 their next refresh.
 
 Records live in `elim/data/birthdays.json`. Portraits use `elim/birthdays/`
