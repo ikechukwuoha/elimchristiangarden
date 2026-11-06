@@ -8,7 +8,6 @@ import { cloudinaryConfig } from '@/lib/admin/cloudinary'
 import { groupOptions, readGroups } from '@/lib/community'
 import AdminTabs from '@/components/admin/AdminTabs'
 import MediaAdmin from '@/components/admin/MediaAdmin'
-import YoutubeMessageAdmin from '@/components/admin/YoutubeMessageAdmin'
 import AdminLogin from '@/components/admin/AdminLogin'
 import styles from '@/components/admin/admin.module.css'
 
@@ -46,7 +45,7 @@ export default async function AdminMediaPage() {
             Share the life of <em>our church.</em>
           </h1>
           <p>
-            A home for our photographs, videos, audio, YouTube messages, and monthly bulletins.
+            A home for our photographs, videos, audio, and monthly bulletins.
           </p>
         </div>
         {authenticated ? (
@@ -56,7 +55,6 @@ export default async function AdminMediaPage() {
               cloudinaryReady={Boolean(cloudinaryConfig())}
               groups={groupOptions(await readGroups())}
             />
-            <YoutubeMessageAdmin cloudinaryReady={Boolean(cloudinaryConfig())} />
           </>
         ) : (
           <AdminLogin

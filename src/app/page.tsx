@@ -27,6 +27,7 @@ import { church, whatsappLink } from './data/church'
 import { cachedMessageLibrary } from '@/lib/message-cache'
 import MessageArtwork from '@/components/sermons/MessageArtwork'
 import CommunityRefresh from '@/components/community/CommunityRefresh'
+import BirthdayCelebration from '@/components/birthdays/BirthdayCelebration'
 import styles from './home.module.css'
 
 export const metadata: Metadata = {
@@ -76,6 +77,7 @@ export default async function Home() {
 
   return (
     <Layout>
+      <BirthdayCelebration />
       <div className={styles.home}>
         <HeroSlider key={photos.map((photo) => photo.id).join(',')} photos={photos} />
 

@@ -94,7 +94,8 @@ contain only values from published recordings. Cloudinary's recording duration
 is used when available; without a message date, the upload date is displayed.
 Audio files are playable directly on their message pages.
 
-For YouTube, use **Publish YouTube message** on `/admin/media`. Paste a video
+For YouTube, open the **YouTube messages** admin tab at `/admin/youtube`.
+The publishing form has its own page, separate from the media upload library. Paste a video
 link and choose **Use title from YouTube**, or enter the title yourself. Add any
 optional message details and publish. The video thumbnail and embedded player
 come from YouTube. Videos must allow embedding; an **Open on YouTube** link is
@@ -147,6 +148,53 @@ The reader, Open PDF, and Download buttons use the app's PDF
 endpoint. It retrieves published files through Cloudinary's authenticated
 download API, keeping credentials on the server.
 
+### Birthdays and anniversaries
+
+Open **Birthdays & anniversaries** in the admin tabs, or visit `/admin/birthdays` using the
+same admin sign-in. Choose **Birthday** or **Anniversary**. Enter the celebrant’s
+name or couple’s names (including a title such as Bro. or Sis.), month and day,
+and a JPG, PNG, or WebP photo up
+to 10 MB. An optional blessing replaces the default birthday message. The live
+preview shows the card before publishing. **Preview popup** opens the corner
+card without saving or uploading the selected photo. This local preview works
+even when Cloudinary is disconnected. You can edit or remove entries and filter
+the calendar by month. Anniversary cards have a heart accent, a wider photo
+frame for couples, and their own greeting and default blessing.
+
+Both celebration types recur every year; no birth year is stored. Existing
+birthday entries continue to work without changes. The homepage automatically
+selects the current month in the Africa/Lagos time zone and orders celebrants
+by day, mixing birthdays and anniversaries in the same slideshow. A green, cream,
+and gold corner card appears after a short delay and
+slides to the next person every six seconds, looping through all celebrants.
+It leaves the page scrollable and has no backdrop or sound. With no birthdays
+or anniversaries for the month, nothing is displayed. A previous dismissal in
+the same tab leaves the **Celebrate with us** button available to reopen it.
+
+`/api/birthdays` still serves both types for compatibility. A confirmed empty
+month returns `200` with an empty list and `unavailable: false`. A storage
+failure with no usable current-month records returns `503` with
+`unavailable: true`; it no longer silently reports a successful empty calendar.
+The admin also distinguishes a failed calendar read from an empty calendar.
+`UND_ERR_CONNECT_TIMEOUT` means the server could not connect to Cloudinary in
+time, not that the collection is empty. Check the server’s network/DNS access
+to `api.cloudinary.com` and `res.cloudinary.com` before retrying.
+
+Visitors can pause, move between celebrants, close the card, or reopen it from
+the small birthday button. Automatic opening happens once per month per tab
+session. Hover, keyboard focus, and hidden tabs pause rotation. Reduced-motion
+preferences disable automatic rotation and transitions while keeping the
+previous/next controls available. The calendar refreshes every minute while
+the homepage is visible, including after a month changes. Published changes
+clear the server cache immediately; already open homepages pick them up on
+their next refresh.
+
+Records live in `elim/data/birthdays.json`. Portraits use `elim/birthdays/`
+and the `elim-birthday-portrait` tag, so they do not enter the gallery or hero
+slideshow. They use public Cloudinary delivery URLs. Removing a celebrant
+removes their card; their portrait file remains available in Cloudinary.
+Uploads use the existing Cloudinary account, with no additional setup.
+
 ## Sessions and hosting
 
 Sessions are signed, expire after eight hours, and use HttpOnly, SameSite=Strict
@@ -190,6 +238,7 @@ library before retrying: Cloudinary may have received the file.
 ## Validation
 
 Run `npm run test:admin`, `npm run lint`, and `npm run build`.
+Birthday validation and storage checks run with `npm run test:birthdays`.
 The automated tests cover session expiry/tampering, credential rotation, upload
 validation, signature restrictions, and rate limiting. A live account is still
 needed to verify uploads against your account's formats, limits, and PDF policy.

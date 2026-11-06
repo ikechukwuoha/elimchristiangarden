@@ -1,0 +1,18 @@
+.editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 354px); gap: 48px; align-items: start; }
+.fields { display: grid; gap: 22px; min-width: 0; }
+.fields:disabled { opacity: .65; }
+.dateFields { display: grid; grid-template-columns: minmax(0, 1fr) 100px; gap: 16px; }
+.photoField input { max-width: 100%; font-size: 12px; }
+.photoField input::file-selector-button { padding: 10px 14px; margin-right: 12px; border: 1px solid #ccd4c4; border-radius: 4px; background: #e9edde; color: #244c3b; cursor: pointer; }
+.photoField p { margin-top: 10px; }
+.actions { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.preview { min-width: 0; }
+.preview > p { margin-top: 15px; }
+.preview > button { margin-top: 16px; }
+.previewLabel { display: block; padding: 9px 12px; font-size: 9px; font-weight: 600; letter-spacing: .1em; color: #244c3b; background: #f1eadb; border: 1px solid #d4c49f; border-radius: 4px; margin-bottom: 8px; }
+.previewEmpty { display: grid; justify-items: center; padding: 85px 26px; border: 1px dashed #cdd4c1; border-radius: 6px 6px 36px 6px; background: #f4f3e9; color: #768468; text-align: center; }
+.previewEmpty h3 { font-size: 27px; margin-top: 20px; color: #42583e; }
+.previewEmpty p { font-size: 12px; line-height: 1.8; margin-top: 12px; }
+.filter { max-width: 320px; margin: 24px 0; }
+.thumbnail { flex-shrink: 0; width: 52px; height: 62px; object-fit: cover; object-position: center 30%; border-radius: 26px 26px 3px 3px; }
+@media (max-width: 899px) { .editor { grid-template-columns: minmax(0, 1fr); gap: 36px; } .preview { max-width: 354px; width: 100%; margin: auto; } }

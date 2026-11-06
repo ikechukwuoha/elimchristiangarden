@@ -304,12 +304,14 @@ async function storageRequest(
   operation: StorageOperation,
   allowMissing = false,
   cacheRead = false,
+  readSignal?: AbortSignal,
 ) {
   const startedAt = Date.now()
   const budget = operation === 'save' ? 20000 : 15000
   for (let attempt = 0; attempt < 2; attempt++) {
     // Both read attempts share one deadline; saves are never retried.
-    const signal = AbortSignal.timeout(Math.max(1, budget - (Date.now() - startedAt)))
+    const attemptSignal = AbortSignal.timeout(Math.max(1, budget - (Date.now() - startedAt)))
+    const signal = readSignal ? AbortSignal.any([readSignal, attemptSignal]) : attemptSignal
     try {
       const response = await fetch(url, {
         ...init,
@@ -369,12 +371,16 @@ async function fetchStoredGroups(
   config: NonNullable<ReturnType<typeof cloudinaryConfig>>,
   cacheRead = false,
 ) {
+  // The metadata lookup and JSON download share one deadline. Otherwise a
+  // failing connection can hold the homepage for two consecutive timeouts.
+  const readSignal = AbortSignal.timeout(cacheRead ? 8000 : 15000)
   const resource = (await storageRequest(
     `https://api.cloudinary.com/v1_1/${config.cloud_name}/resources/raw/upload/${encodeURIComponent(COMMUNITY_DATA_ID)}`,
     { headers: authHeaders(config) },
     'read',
     true,
     cacheRead,
+    readSignal,
   )) as { secure_url?: string } | null
   // Only a confirmed missing asset may start from the seeded groups.
   if (resource === null) return seedGroups
@@ -392,7 +398,7 @@ async function fetchStoredGroups(
     !parsed.pathname.startsWith(`/${config.cloud_name}/raw/upload/`)
   )
     throw storageError('read')
-  const data = await storageRequest(parsed.toString(), {}, 'read', false, cacheRead)
+  const data = await storageRequest(parsed.toString(), {}, 'read', false, cacheRead, readSignal)
   if (!isGroupArray(data)) throw storageError('read')
   return data
 }

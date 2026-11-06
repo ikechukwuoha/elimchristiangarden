@@ -243,6 +243,30 @@ test('timeouts return a 504 storage error and never retry an ambiguous save', as
   }
 })
 
+test('metadata and file reads share a deadline rather than restarting it for the download', async () => {
+  const originalTimeout = AbortSignal.timeout
+  const deadline = new AbortController()
+  let timers = 0
+  let calls = 0
+  AbortSignal.timeout = () => ++timers === 1 ? deadline.signal : new AbortController().signal
+  try {
+    await withStorageFetch(async (_url, init) => {
+      calls++
+      if (calls === 1) return Response.json({ secure_url: 'https://res.cloudinary.com/test-cloud/raw/upload/v1/elim/data/community.json' })
+      deadline.abort(new DOMException('Timed out during download', 'TimeoutError'))
+      assert.ok(init?.signal?.aborted)
+      throw init.signal.reason
+    }, async () => {
+      await assert.rejects(readGroups({ strict: true, cacheRead: true }), (error: unknown) => {
+        assert.ok(error instanceof CommunityStorageError)
+        assert.equal(error.status, 504)
+        return true
+      })
+      assert.equal(calls, 2)
+    })
+  } finally { AbortSignal.timeout = originalTimeout }
+})
+
 test('storage rejections are service errors and an unconfirmed upload is never reported as saved', async () => {
   for (const status of [401, 403, 499, 500]) {
     await withStorageFetch(async () => Response.json({ error: { message: 'Request Timeout' } }, { status }), async () => {
