@@ -328,26 +328,15 @@
   font-size: 11px;
   margin-right: 4px;
 }
-.filterRow label {
-  min-width: 0;
-}
-.filterRow select {
-  background: transparent;
-  border: 1px solid #dbe1d0;
-  border-radius: 4px;
-  padding: 10px 28px 10px 12px;
-  font-size: 11px;
-  color: #516649;
-  max-width: 225px;
-  cursor: pointer;
-}
+.filterSelect { min-width: 0; width: 200px; flex: 0 1 200px; }
+.sortLabel .sortControl { width: 180px; min-width: 0; }
 .sortLabel {
   margin-left: auto;
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.sortLabel > span {
+.sortLabel > label {
   font-size: 11px;
   color: #7a846e;
   white-space: nowrap;
@@ -1172,10 +1161,7 @@
     gap: 10px;
     flex-wrap: wrap;
   }
-  .filterRow select {
-    max-width: 210px;
-  }
-  .sortLabel > span {
+  .sortLabel > label {
     display: none;
   }
   .cardImage {
@@ -1332,23 +1318,17 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 11px;
   }
-  .filterRow select {
-    width: 100%;
-    max-width: 100%;
-    height: 43px;
-    padding-left: 9px;
-    font-size: 11px;
-  }
+  .filterSelect { width: 100%; }
   .sortLabel {
     grid-column: 1 / -1;
     margin-left: 0;
   }
-  .sortLabel > span {
+  .sortLabel > label {
     display: block;
     flex-shrink: 0;
   }
-  .sortLabel select {
-    max-width: 170px;
+  .sortLabel .sortControl {
+    width: 180px;
     margin-left: auto;
   }
   .messageGrid {

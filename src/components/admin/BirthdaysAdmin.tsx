@@ -9,6 +9,7 @@ import BirthdayCard from '@/components/birthdays/BirthdayCard'
 import styles from './admin.module.css'
 import birthdayStyles from './birthdays-admin.module.css'
 import cardStyles from '@/components/birthdays/birthdays.module.css'
+import Select from '@/components/ui/Select'
 
 export default function BirthdaysAdmin({ initialBirthdays, initialError, cloudinaryReady }: {
   initialBirthdays: Birthday[]; initialError: string; cloudinaryReady: boolean
@@ -165,11 +166,14 @@ export default function BirthdaysAdmin({ initialBirthdays, initialError, cloudin
         <form onSubmit={save} ref={formRef}>
           <fieldset disabled={Boolean(busy)} className={birthdayStyles.fields}>
             <legend className="sr-only">Celebration details</legend>
-            <div><label htmlFor="celebration-kind">Celebration type</label><select id="celebration-kind" value={kind} onChange={(event) => setKind(event.target.value as CelebrationKind)}><option value="birthday">Birthday</option><option value="anniversary">Anniversary</option></select></div>
+            <div><label htmlFor="celebration-kind">Celebration type</label><Select id="celebration-kind" value={kind} onChange={(value) => setKind(value as CelebrationKind)} menuLabel="A reason to celebrate" options={[
+              { value: 'birthday', label: 'Birthday', description: 'Celebrate another year of life.' },
+              { value: 'anniversary', label: 'Anniversary', description: 'Honour a beautiful milestone.' },
+            ]} /></div>
             <div><label htmlFor="birthday-name">{anniversary ? 'Celebrant or couple’s names' : 'Celebrant’s name'} <span>(include Bro., Sis., or another title)</span></label><input ref={nameInput} id="birthday-name" value={name} onChange={(event) => setName(event.target.value)} placeholder={anniversary ? 'Bro. John & Sis. Jane Doe' : 'Bro. John Doe'} maxLength={80} required /></div>
             <div className={birthdayStyles.dateFields}>
-              <div><label htmlFor="birthday-month">{anniversary ? 'Anniversary month' : 'Birthday month'}</label><select id="birthday-month" value={month} onChange={(event) => { setMonth(event.target.value); if (Number(day) > daysInBirthdayMonth(Number(event.target.value))) setDay('') }} required><option value="">Choose a month</option>{birthdayMonths.map((label, index) => <option key={label} value={index + 1}>{label}</option>)}</select></div>
-              <div><label htmlFor="birthday-day">Day</label><select id="birthday-day" value={day} onChange={(event) => setDay(event.target.value)} required disabled={!month}><option value="">Day</option>{Array.from({ length: daysInBirthdayMonth(Number(month)) }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}</select></div>
+              <div><label htmlFor="birthday-month">{anniversary ? 'Anniversary month' : 'Birthday month'}</label><Select id="birthday-month" value={month} onChange={(value) => { setMonth(value); if (Number(day) > daysInBirthdayMonth(Number(value))) setDay('') }} placeholder="Choose a month" menuLabel="Choose a month" required options={birthdayMonths.map((label, index) => ({ value: String(index + 1), label }))} /></div>
+              <div><label htmlFor="birthday-day">Day</label><Select id="birthday-day" value={day} onChange={setDay} placeholder="Day" menuLabel="Choose a day" required disabled={!month} options={Array.from({ length: daysInBirthdayMonth(Number(month)) }, (_, i) => ({ value: String(i + 1), label: String(i + 1) }))} /></div>
             </div>
             <div className={birthdayStyles.photoField}><label htmlFor="birthday-photo">{anniversary ? 'Celebration photo' : 'Portrait photo'} <span>{editing ? '(choose a file to replace)' : '(required)'}</span></label><input ref={fileInput} id="birthday-photo" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => choosePhoto(event.target.files?.[0])} required={!photo.photoUrl} /><p className={styles.uploadNote}>JPG, PNG, or WebP, up to 10 MB. {anniversary ? 'A photo with both faces near the centre works well for couples.' : 'A clear portrait with the face near the centre works best.'}</p></div>
             <div><label htmlFor="birthday-message">{anniversary ? 'Anniversary blessing' : 'Birthday blessing'} <span>(optional)</span></label><textarea id="birthday-message" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={240} placeholder={`Leave blank to use our family ${kind} blessing.`} rows={3} /></div>
@@ -191,7 +195,10 @@ export default function BirthdaysAdmin({ initialBirthdays, initialError, cloudin
     </section>
     <section className={styles.library} aria-labelledby="birthday-library-heading">
       <div className={styles.libraryHeading}><div><span className={styles.eyebrow}>OUR FAMILY CALENDAR</span><h2 id="birthday-library-heading">Family <em>celebrations.</em></h2></div><button type="button" className={styles.secondaryButton} onClick={refresh} disabled={Boolean(busy) || !cloudinaryReady}><RefreshCw size={15} aria-hidden="true" /> Refresh list</button></div>
-      <div className={birthdayStyles.filter}><label htmlFor="birthday-filter">Show celebrations</label><select id="birthday-filter" value={filter} onChange={(event) => setFilter(event.target.value)}><option value="all">All months ({birthdays.length})</option>{birthdayMonths.map((label, index) => <option key={label} value={index + 1}>{label} ({birthdays.filter((item) => item.month === index + 1).length})</option>)}</select></div>
+      <div className={birthdayStyles.filter}><label htmlFor="birthday-filter">Show celebrations</label><Select id="birthday-filter" value={filter} onChange={setFilter} menuLabel="Our family calendar" options={[
+        { value: 'all', label: `All months (${birthdays.length})` },
+        ...birthdayMonths.map((label, index) => ({ value: String(index + 1), label: `${label} (${birthdays.filter((item) => item.month === index + 1).length})` })),
+      ]} /></div>
       {!filtered.length ? <div className={styles.empty}><CakeSlice size={30} strokeWidth={1.2} aria-hidden="true" /><h3>{calendarUnavailable ? 'Calendar could not be loaded.' : birthdays.length ? 'No celebrations in this month yet.' : 'Make someone’s month.'}</h3><p>{calendarUnavailable ? 'Restore the Cloudinary connection and refresh the list to see saved celebrations.' : 'Add a name, birthday or anniversary date, and photo above to start celebrating our church family.'}</p></div> : <div className={styles.groupList}>{filtered.map((birthday) => <article key={birthday.id} className={styles.groupRow}>
         <Image src={birthday.photoUrl} alt={birthday.name} width={52} height={62} unoptimized className={birthdayStyles.thumbnail} />
         <div className={styles.groupRowCopy}><h3>{birthday.name}</h3><p>{celebrationKind(birthday) === 'anniversary' ? 'Anniversary' : 'Birthday'} · {birthday.day} {birthdayMonths[birthday.month - 1]} · Celebrated every year</p></div>

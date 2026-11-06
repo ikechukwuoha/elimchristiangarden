@@ -1,5 +1,6 @@
 'use client'
 
+import type { MouseEventHandler } from 'react'
 import Image from 'next/image'
 import { CakeSlice, ChevronLeft, ChevronRight, Heart, Leaf, Pause, Play, X } from 'lucide-react'
 import { anniversaryBlessing, birthdayBlessing, celebrationKind, type Birthday } from '@/lib/birthdays'
@@ -14,8 +15,8 @@ export default function BirthdayCard({
   today?: number
   paused: boolean
   allowAutoplay?: boolean
-  onPrevious: () => void
-  onNext: () => void
+  onPrevious: MouseEventHandler<HTMLButtonElement>
+  onNext: MouseEventHandler<HTMLButtonElement>
   onPause: () => void
   onClose?: () => void
 }) {
@@ -34,6 +35,7 @@ export default function BirthdayCard({
         <h2>{anniversary ? <>A beautiful <em>milestone.</em></> : <>Celebrating <em>you.</em></>}</h2>
         <span>{monthLabel} · {anniversary ? 'Anniversary' : 'Birthday'}</span>
       </div>
+      <div className={styles.slideViewport}>
       <div className={styles.slide} key={`${birthday.id}-${birthday.kind ?? 'birthday'}`} role="group" aria-live={paused ? 'polite' : 'off'} aria-atomic="true" aria-roledescription="slide" aria-label={`${index + 1} of ${birthdays.length}`}>
         <div className={styles.portrait}>
           <Image src={birthday.photoUrl} alt={`Portrait of ${birthday.name}`} fill unoptimized sizes="180px" />
@@ -45,6 +47,7 @@ export default function BirthdayCard({
           <h3>{birthday.name}</h3>
           <p className={styles.blessing}>{birthday.message || (anniversary ? anniversaryBlessing : birthdayBlessing)}</p>
         </div>
+      </div>
       </div>
       <footer className={styles.footer}>
         <span className={styles.withLove}><Heart size={12} strokeWidth={1.5} aria-hidden="true" /> With love, your Elim family</span>

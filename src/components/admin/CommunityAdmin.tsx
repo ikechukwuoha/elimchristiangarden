@@ -240,11 +240,13 @@ export default function CommunityAdmin({
                 </label>
                 <Select
                   id="group-kind"
+                  menuLabel="A place to belong or serve"
+                  required
                   value={kind}
                   onChange={(next) => setKind(next as GroupKind)}
                   options={[
-                    { value: 'fellowship', label: 'Fellowship' },
-                    { value: 'unit', label: 'Unit' },
+                    { value: 'fellowship', label: 'Fellowship', description: 'Gather around a shared season of life.' },
+                    { value: 'unit', label: 'Unit', description: 'Serve the church family together.' },
                   ]}
                 />
                 <p className={styles.fieldHint}>

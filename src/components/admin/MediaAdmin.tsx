@@ -591,6 +591,8 @@ export default function MediaAdmin({
                   </label>
                   <Select
                     id="media-group"
+                    menuLabel="Find their community"
+                    required
                     value={group}
                     onChange={setGroup}
                     placeholder="Choose where this file belongs…"

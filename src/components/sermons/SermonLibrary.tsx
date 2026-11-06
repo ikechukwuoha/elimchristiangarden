@@ -13,6 +13,7 @@ import type { Sermon } from '@/lib/messages'
 import MessageCard from './MessageCard'
 import useSavedMessages from './useSavedMessages'
 import styles from './sermons.module.css'
+import Select from '@/components/ui/Select'
 
 const pageSize = 6
 const sortOptions = ['newest', 'oldest', 'title-asc', 'title-desc']
@@ -185,45 +186,46 @@ export default function SermonLibrary({ sermons, unavailable = false }: { sermon
           <SlidersHorizontal size={16} aria-hidden="true" />
           Refine by
         </span>
-        {seriesOptions.length > 0 && <label>
-          <span className="sr-only">Series</span>
-          <select
+        {seriesOptions.length > 0 && <div className={styles.filterSelect}>
+          <Select
+            id="message-series"
             aria-label="Series"
             value={series}
-            onChange={(event) => update({ series: event.target.value })}
-          >
-            <option value="">All series</option>
-            {seriesOptions.map((value) => (
-              <option key={value}>{value}</option>
-            ))}
-          </select>
-        </label>}
-        {speakerOptions.length > 0 && <label>
-          <span className="sr-only">Speaker</span>
-          <select
+            menuLabel="Explore a message series"
+            size="compact"
+            onChange={(value) => update({ series: value })}
+            options={[{ value: '', label: 'All series' }, ...seriesOptions.map((value) => ({ value, label: value }))]}
+          />
+        </div>}
+        {speakerOptions.length > 0 && <div className={styles.filterSelect}>
+          <Select
+            id="message-speaker"
             aria-label="Speaker"
             value={speaker}
-            onChange={(event) => update({ speaker: event.target.value })}
-          >
-            <option value="">All speakers</option>
-            {speakerOptions.map((value) => (
-              <option key={value}>{value}</option>
-            ))}
-          </select>
-        </label>}
-        <label className={styles.sortLabel}>
-          <span>Sort by</span>
-          <select
+            menuLabel="Find a familiar voice"
+            size="compact"
+            onChange={(value) => update({ speaker: value })}
+            options={[{ value: '', label: 'All speakers' }, ...speakerOptions.map((value) => ({ value, label: value }))]}
+          />
+        </div>}
+        <div className={styles.sortLabel}>
+          <label htmlFor="message-sort">Sort by</label>
+          <Select
+            id="message-sort"
+            className={styles.sortControl}
             aria-label="Sort messages"
             value={sort}
-            onChange={(event) => update({ sort: event.target.value })}
-          >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="title-asc">Title: A–Z</option>
-            <option value="title-desc">Title: Z–A</option>
-          </select>
-        </label>
+            menuLabel="Your listening order"
+            size="compact"
+            onChange={(value) => update({ sort: value })}
+            options={[
+              { value: 'newest', label: 'Newest first', description: 'Start with the most recent recordings.' },
+              { value: 'oldest', label: 'Oldest first', description: 'Begin with earlier messages.' },
+              { value: 'title-asc', label: 'Title: A–Z' },
+              { value: 'title-desc', label: 'Title: Z–A' },
+            ]}
+          />
+        </div>
       </div>
       <div className={styles.resultsRow}>
         <p role="status" aria-live="polite">

@@ -269,77 +269,6 @@
   text-decoration: underline;
   text-underline-offset: 4px;
 }
-.select {
-  position: relative;
-}
-.selectButton {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  background: #fffef9;
-  border: 1px solid #ccd4c4;
-  border-radius: 4px;
-  padding: 13px 14px;
-  font-size: 14px;
-  color: var(--ink);
-  text-align: left;
-}
-.selectButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-.selectPlaceholder {
-  color: #85907b;
-}
-.selectChevron {
-  flex-shrink: 0;
-  color: #748367;
-  transition: transform 0.2s;
-}
-.selectChevronOpen {
-  transform: rotate(180deg);
-}
-.selectList {
-  position: absolute;
-  z-index: 30;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
-  background: #fffef9;
-  border: 1px solid #ccd4c4;
-  border-radius: 4px;
-  box-shadow: 0 14px 34px #243a3026;
-  max-height: 262px;
-  overflow: auto;
-}
-.selectOption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 12px;
-  border-radius: 3px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ink);
-  cursor: pointer;
-}
-.selectOption > span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.selectOption svg {
-  flex-shrink: 0;
-  color: #42583e;
-}
-.selectOptionActive {
-  background: #e9edde;
-}
 .accessBadge {
   display: flex;
   align-items: center;
@@ -830,8 +759,7 @@
     gap: 8px;
   }
   /* 16px keeps iOS Safari from zooming into fields on focus. */
-  .admin :is(input:not([type='file']), textarea),
-  .selectButton {
+  .admin :is(input:not([type='file']), textarea) {
     font-size: 16px;
   }
   .groupList {

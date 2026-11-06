@@ -182,7 +182,10 @@ to `api.cloudinary.com` and `res.cloudinary.com` before retrying.
 
 Visitors can pause, move between celebrants, close the card, or reopen it from
 the small birthday button. Automatic opening happens once per month per tab
-session. Hover, keyboard focus, and hidden tabs pause rotation. Reduced-motion
+session. Opening or reopening the card starts automatic rotation; hovering and
+using the arrows keep it running. The pause button, keyboard focus, and hidden
+tabs pause rotation. The play button resumes it. With one current-month entry,
+the single card stays visible; rotation needs at least two entries. Reduced-motion
 preferences disable automatic rotation and transitions while keeping the
 previous/next controls available. The calendar refreshes every minute while
 the homepage is visible, including after a month changes. Published changes
