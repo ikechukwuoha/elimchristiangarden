@@ -31,7 +31,8 @@ html {
 }
 
 @media (max-width: 760px) {
-  body { padding-bottom: calc(var(--conference-countdown-space, 0px) + env(safe-area-inset-bottom, 0px)); }
+  body:has([data-announcement-dock]:not(:empty)) { padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  body:has([data-announcement-dock] [data-mobile-countdown]) { padding-bottom: calc(106px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

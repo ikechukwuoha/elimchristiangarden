@@ -20,9 +20,10 @@ function subscribeMotion(callback: () => void) {
   return () => media.removeEventListener('change', callback)
 }
 
-export default function BirthdayCelebration() {
+export default function BirthdayCelebration({ compact, open, onOpenChange }: {
+  compact: boolean; open: boolean; onOpenChange: (open: boolean) => void
+}) {
   const { data } = useAnnouncements()
-  const [open, setOpen] = useState(true)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const [keyboardFocused, setKeyboardFocused] = useState(false)
@@ -59,7 +60,7 @@ export default function BirthdayCelebration() {
 
   function close() {
     restoreFocus.current = Boolean(panel.current?.contains(document.activeElement))
-    setOpen(false)
+    onOpenChange(false)
     setKeyboardFocused(false)
   }
 
@@ -67,10 +68,13 @@ export default function BirthdayCelebration() {
   const hasProgrammes = (data.events?.length ?? 0) > 0
   const LauncherIcon = hasProgrammes ? CalendarDays : CakeSlice
   const summary = hasProgrammes ? data.birthdays.length ? 'Celebrations & programmes' : 'Upcoming programmes' : `${data.period.label} · ${celebrationSummary(data.birthdays)}`
-  return <aside className={styles.widget} aria-label="Church announcements">
-    <button ref={launcher} type="button" className={styles.launcher} hidden={open} aria-expanded={open} aria-controls="birthday-celebration" onClick={() => { focusOnOpen.current = true; setOpen(true); setPaused(false); setKeyboardFocused(false); setIndex(0) }}>
+  return <aside className={`${styles.widget} ${styles.publicWidget}`} aria-label="Church announcements">
+    <button ref={launcher} type="button" className={styles.launcher} hidden={open && !compact} aria-expanded={open} aria-controls="birthday-celebration" onClick={() => {
+      if (open) { close(); return }
+      focusOnOpen.current = true; onOpenChange(true); setPaused(false); setKeyboardFocused(false); setIndex(0)
+    }}>
       <span><LauncherIcon size={19} strokeWidth={1.5} aria-hidden="true" /></span>
-      <span>{hasProgrammes ? 'Life at Elim' : 'Celebrate with us'}<small>{summary}</small></span>
+      <span className={styles.launcherLabel}>{compact || hasProgrammes ? 'Life at Elim' : 'Celebrate with us'}<small>{summary}</small></span>
       <span className={styles.launcherCount}>{count}</span>
     </button>
     {open && <div id="birthday-celebration" ref={panel} className={styles.popup}

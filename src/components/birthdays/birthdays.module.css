@@ -141,6 +141,18 @@
 }
 
 @media (max-width: 760px) {
-  .widget { bottom: calc(max(12px, env(safe-area-inset-bottom)) + var(--conference-countdown-space, 0px)); }
-  .card { max-height: calc(100dvh - var(--site-header-height, 113px) - 32px - var(--conference-countdown-space, 0px)); }
+  .publicWidget { position: static; flex: 1; min-width: 0; }
+  .publicWidget .popup { position: absolute; right: 0; bottom: calc(100% + 10px); width: min(354px, calc(100vw - 24px)); }
+  .publicWidget .card { max-height: calc(100dvh - var(--site-header-height, 113px) - max(12px, env(safe-area-inset-bottom)) - var(--announcement-dock-height, 52px) - 24px); overscroll-behavior: contain; }
+  .launcher { width: 100%; height: 100%; min-height: 52px; padding: 8px 10px; gap: 8px; border-radius: 6px 6px 17px 6px; font-size: 11px; }
+  .launcher > span:first-child { flex-shrink: 0; width: 26px; height: 26px; }
+  .launcherLabel { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .launcher small { overflow: hidden; text-overflow: ellipsis; margin-top: 2px; font-size: 9px; }
+  .launcherCount { margin-left: auto; }
+  .publicWidget .header button, .publicWidget .controls button { min-width: 44px; min-height: 44px; }
+  .publicWidget:has(+ [data-mobile-countdown]) { flex: 0 0 78px; }
+  .publicWidget:has(+ [data-mobile-countdown]) .launcher { flex-direction: column; justify-content: center; gap: 4px; padding: 8px 6px; font-size: 9px; }
+  .publicWidget:has(+ [data-mobile-countdown]) .launcherLabel { text-align: center; }
+  .publicWidget:has(+ [data-mobile-countdown]) .launcher small,
+  .publicWidget:has(+ [data-mobile-countdown]) .launcherCount { display: none; }
 }

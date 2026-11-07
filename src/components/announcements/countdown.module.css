@@ -25,6 +25,7 @@
 .started { margin-top: 14px; color: #f0d9a6; font-size: 11px; letter-spacing: .12em; }
 .minimized { width: auto; padding: 0; border-radius: 6px; }
 .expand { display: flex; align-items: center; gap: 10px; padding: 12px 14px; min-height: 44px; font-size: 11px; border-radius: inherit; }
+.expand[hidden] { display: none; }
 .expand > span > span { color: #e7cc95; }
 .expand > span { min-width: 0; max-width: min(220px, calc(100vw - 120px)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .messageScreen { position: relative; margin: -8px -12px 22px; padding: 14px 14px 17px; border: 6px solid #141b18; border-bottom-width: 28px; border-radius: 8px; background: radial-gradient(ellipse at 25% 0, #315b4b80, transparent 75%), linear-gradient(135deg, #061711, #102e23); color: #faf5e8; box-shadow: 0 0 0 1px #637167, 0 5px 12px #0004, inset 0 0 18px #0005; }
@@ -48,7 +49,8 @@
 @keyframes messageArrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 760px) {
-  .countdown { left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: auto; padding: 12px 40px 12px 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px; border-radius: 6px 6px 17px 6px; }
+  .countdown { left: 12px; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); width: auto; padding: 12px 40px 12px 14px; border-radius: 6px 6px 17px 6px; }
+  .details { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 10px; }
   .heading { min-width: 0; }
   .heading > span { display: none; }
   .heading > strong { font-size: 16px; margin: 0; padding: 0; }
@@ -63,6 +65,14 @@
   .messageScreen { grid-column: 1 / -1; margin: -4px -32px 20px -6px; padding: 12px 14px; }
   .message p { font-size: 15px; line-height: 1.45; }
   .message p time { font-size: 13px; }
+  .mobileCountdown { order: -1; flex: 1; min-width: 0; min-height: 82px; padding: 10px 12px; border: 1px solid #bda574; border-radius: 6px 6px 17px 6px; background: #244c3b; color: #faf5e8; box-shadow: 0 5px 24px #183d3020; }
+  .mobileTitle { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 600; line-height: 16px; }
+  .mobileCountdown .clock { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+  .mobileCountdown .clock > span:not(:first-child) { min-width: 0; }
+  .mobileCountdown .clock > span.seconds { display: grid; }
+  .mobileCountdown .clock strong { font-size: 22px; }
+  .mobileCountdown .clock small { font-size: 7px; letter-spacing: .02em; }
+  .mobileCountdown .started { margin-top: 8px; max-width: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
