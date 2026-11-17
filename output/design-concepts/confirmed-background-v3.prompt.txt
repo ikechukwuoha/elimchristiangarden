@@ -1,0 +1,11 @@
+Created with the built-in imagegen tool.
+Saved artwork: public/images/flyer/confirmed-background-v3.webp
+
+Use case: precise-object-edit. Make a taller reusable background layer based on the supplied approved church flyer artwork. Change the CANVAS ASPECT RATIO to portrait 2:3, equivalent to 1080 pixels wide by 1620 pixels high. Keep the same warm ivory centre, amber gold atmospheric edges, flowing gold satin ornament at top left and bottom right, the same large rust-brown distressed CONFIRMED circular rubber stamp with diagonal central ribbon, and the blank skewed gold theme banner with double inward chevrons.
+Required precise changes:
+REMOVE THE TRUMPETS ENTIRELY. Leave clean warm ivory at the top; the real church logo will be added later by application code. Do not invent a logo.
+REMOVE BOTH OLD DATE AND TIME BADGES entirely, reconstructing the background underneath; wider clearer date and time badges will be drawn later by code. No red rectangle and no brown time circle should remain.
+Create substantially more vertical breathing room by using the taller 2:3 page. The top 34% of the canvas must be open warm ivory background for a logo, two headline lines, and attendance statement. NO lettering, logo, trumpet, drawing or stamp in that top area.
+Keep the large complete distressed CONFIRMED stamp centred behind the future portrait. On a 1080x1620 canvas it should occupy approximately x150–930, y570–1300. Preserve the brown rusty distressed ink, circular rings and correctly spelled CONFIRMED lettering on top and bottom circular arcs and diagonal centre ribbon. Its top starts below 550 pixels, leaving clear separation from the attendance message.
+Place the EMPTY gold skewed theme banner at approximately x200–880, y1320–1435, with matching double chevrons outside both ends, on top of any bottom edge of stamp. Leave footer below y1450 totally empty soft ivory for text later. Keep gold edge ornaments flowing naturally over the full taller canvas.
+The ONLY text in the image is the stamp's existing CONFIRMED lettering. No person, silhouette, date, time, headline, attendance message, church name or other text. Preserve the established colours and styling, just remove the specified objects and expand the canvas vertically with this spacious layout.

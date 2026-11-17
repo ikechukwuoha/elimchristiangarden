@@ -5,11 +5,13 @@ import type { NextConfig } from "next";
 // direct browser uploads, plus YouTube thumbnails and player frames. 'unsafe-inline' is
 // required by Next.js' inline bootstrap scripts; 'unsafe-eval' is added only
 // outside production so the dev overlay keeps working.
+// 'wasm-unsafe-eval' permits the self-hosted CPU portrait matting runtime;
+// production still disallows JavaScript eval and third-party script hosts.
 const isProduction = process.env.NODE_ENV === "production";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isProduction ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com https://i.ytimg.com",
   "media-src 'self' https://res.cloudinary.com",

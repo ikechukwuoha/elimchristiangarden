@@ -1,0 +1,24 @@
+Generated with the built-in image_gen tool.
+Concept only: the reference title and theme are sample copy; Sundays at 8:30 AM and the address come from the website. This does not establish a new church event.
+
+Use case: ads-marketing.
+Create one exceptional finished church worship flyer, portrait 4:5 aspect ratio, high resolution, full bleed flat artwork (not a mockup), masterful professional photo compositing and typography.
+Input image roles in order:
+1. Reference flyer: inspiration for the worship atmosphere and integrated layering of headline, central portrait and lower theme. Redesign it with substantially better craft; do not copy its red/gold palette, CONFIRMED stamp, woman, date, address, decorations or time.
+2. Supporting subject photo: Elim pastor, a Black man praying into a microphone wearing magenta traditional clothing. Extract ONLY this exact man from this image, preserve recognizable facial identity, closed eyes, hairstyle, clothing, pose, hand holding microphone. Crop at waist; remove the entire stage, podium, floor, bottom watermark and Easter text. Do not invent a new person. Natural photographic skin, careful hair edges.
+3. Supporting branding: existing circular Elim church logo, use faithfully and small at the top, do not redesign.
+Brand direction: match the Elim website: deep forest #173c30 and #244c3b, warm ivory #f9f8f3, restrained champagne gold #d9bd8b, muted sage. Elegant Georgia-like editorial serif mixed with precise clean modern sans. Rich depth, warmth, sacred worship atmosphere, real photographic detail. A refined luminous ivory upper field merging into deep green lower corners and gently blurred gold light; subtle palm shadows along outer edges inspired by garden branding; very fine restrained gold outlines. Avoid stock template effect, excessive particles, gaudy CGI, shiny 3D text, flames, crowns, stamps, clutter.
+Composition: generous purposeful margins; small logo and church name centered at top. Large striking two-line editorial headline 'WORSHIP' and 'ENCOUNTER' occupies upper third, forest green serif with beautiful contrast, optically tight letter spacing. Center pastor large in middle, backlit warm gold rim lighting and diffuse organic halo glow behind him; his silhouette slightly overlaps bottom headline for intentional layered depth, never covering the readability. Seamless atmospheric compositing: natural hair edges, soft light wrap, subtly color-matched skin, magenta remains tasteful rich magenta; waist fades into forest-green lower atmosphere with no rectangular photo boundary. In lower third a spectacular large ivory italic-serif theme 'In His' / 'Presence' in two lines overlaps the portrait's lower torso IN FRONT of his clothing, visually linking man and theme like the source. Theme is central and highly legible, with a fine gold underline / subtle integrated gold band rather than a heavy pasted rectangle. Caption underneath in tiny spaced gold sans. Below theme a quiet elegant horizontal event information row separated with fine rules. Footer compact beautiful church address in ivory. All text readable at phone size and correctly spelled. Sophisticated hierarchy, fewer decorative elements, balanced whitespace. Keep face and microphone uncovered.
+Exact text to typeset, no extra invented words:
+'ELIM CHRISTIAN GARDEN'
+'INTERNATIONAL'
+'WORSHIP'
+'ENCOUNTER'
+'In His'
+'Presence'
+'EXODUS 33:14 · PSALM 16:11'
+'SUNDAYS'
+'8:30 AM'
+'ELIM GARDEN · BWARI, ABUJA'
+'Kilometer 2, Kuduru Express Way'
+Use Sundays and 8:30 AM as one concise bottom row; no numerical date or host name. The church brand must be visible at top and address visible at bottom. Make it feel like an outstanding bespoke church conference campaign, warm and reverent, not a website screenshot.

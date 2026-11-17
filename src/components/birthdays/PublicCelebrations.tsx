@@ -27,7 +27,7 @@ function AnnouncementWidgets({ compact }: { compact: boolean }) {
 export default function PublicCelebrations() {
   const pathname = usePathname()
   const compact = useSyncExternalStore(subscribeViewport, compactSnapshot, serverCompactSnapshot)
-  if (!pathname || pathname === '/admin' || pathname.startsWith('/admin/')) return null
+  if (!pathname || pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/worship-encounter') return null
 
   // Mobile visits and viewport changes start with celebrations collapsed.
   // Query/filter changes on the same page preserve a visitor's choices.

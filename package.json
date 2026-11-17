@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "postinstall": "node scripts/copy-pdf-assets.mjs",
-    "predev": "node scripts/copy-pdf-assets.mjs",
+    "postinstall": "node scripts/copy-pdf-assets.mjs && node scripts/copy-portrait-assets.mjs",
+    "predev": "node scripts/copy-pdf-assets.mjs && node scripts/copy-portrait-assets.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-pdf-assets.mjs",
+    "prebuild": "node scripts/copy-pdf-assets.mjs && node scripts/copy-portrait-assets.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src next.config.ts eslint.config.mjs postcss.config.js tailwind.config.js",
@@ -20,7 +20,9 @@
     "test:event-storage": "node --conditions=react-server --import tsx tests/event-storage.test.ts",
     "test:countdown": "node --conditions=react-server --import tsx tests/countdown.test.ts",
     "admin:totp": "node scripts/generate-totp.mjs",
-    "test:bulletins": "node --conditions=react-server --import tsx --test tests/bulletins.test.ts"
+    "test:bulletins": "node --conditions=react-server --import tsx --test tests/bulletins.test.ts",
+    "test:flyer": "node --import tsx --test tests/portrait-mask.test.ts tests/portrait-inference.test.ts tests/portrait-framing.test.ts tests/flyer-sponsor.test.ts",
+    "test:flyer-browser": "node --experimental-websocket scripts/test-flyer-without-webgl.mjs"
   },
   "dependencies": {
     "@fontsource/geist": "^5.2.5",
@@ -33,6 +35,7 @@
     "jose": "^6.2.12",
     "lucide-react": "^0.503.0",
     "next": "16.3.7",
+    "onnxruntime-web": "1.31.1",
     "pdfjs-dist": "^5.4.624",
     "react": "19.3.0",
     "react-dom": "19.3.0",
