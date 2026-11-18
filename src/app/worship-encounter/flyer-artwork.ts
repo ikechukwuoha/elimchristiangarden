@@ -112,22 +112,34 @@ function headline(ctx: CanvasRenderingContext2D) {
 }
 
 function drawPortrait(ctx: CanvasRenderingContext2D, portrait: HTMLCanvasElement, framing: PortraitFraming) {
-  // The subject is already transparent. A circular crop cannot produce this effect.
+  // Match the target resolution: previews need much less memory than PNG exports.
+  const scale = ctx.canvas.width / FLYER_WIDTH
   const layer = document.createElement('canvas')
-  layer.width = PORTRAIT.width * FLYER_SCALE
-  layer.height = PORTRAIT.height * FLYER_SCALE
-  const pctx = layer.getContext('2d')
-  if (!pctx) throw new Error('Your browser could not prepare the portrait.')
-  pctx.scale(FLYER_SCALE, FLYER_SCALE)
-  drawPortraitCrop(pctx, portrait, PORTRAIT.width, PORTRAIT.height, framing)
-  // Only the very bottom fades; hair and shoulders retain their natural outline.
-  const fade = pctx.createLinearGradient(0, PORTRAIT.height - 58, 0, PORTRAIT.height)
-  fade.addColorStop(0, '#000')
-  fade.addColorStop(1, 'transparent')
-  pctx.globalCompositeOperation = 'destination-in'
-  pctx.fillStyle = fade
-  pctx.fillRect(0, 0, PORTRAIT.width, PORTRAIT.height)
-  ctx.drawImage(layer, PORTRAIT.x, PORTRAIT.y, PORTRAIT.width, PORTRAIT.height)
+  try {
+    layer.width = Math.round(PORTRAIT.width * scale)
+    layer.height = Math.round(PORTRAIT.height * scale)
+    const pctx = layer.getContext('2d')
+    if (!pctx) throw new Error('Portrait buffer unavailable.')
+    pctx.scale(scale, scale)
+    drawPortraitCrop(pctx, portrait, PORTRAIT.width, PORTRAIT.height, framing)
+    const fade = pctx.createLinearGradient(0, PORTRAIT.height - 58, 0, PORTRAIT.height)
+    fade.addColorStop(0, '#000')
+    fade.addColorStop(1, 'transparent')
+    pctx.globalCompositeOperation = 'destination-in'
+    pctx.fillStyle = fade
+    pctx.fillRect(0, 0, PORTRAIT.width, PORTRAIT.height)
+    if (pctx.isContextLost?.()) throw new Error('Portrait buffer lost.')
+    ctx.drawImage(layer, PORTRAIT.x, PORTRAIT.y, PORTRAIT.width, PORTRAIT.height)
+  } catch {
+    // A phone can refuse a temporary canvas while its existing preview still works.
+    ctx.save()
+    try {
+      ctx.translate(PORTRAIT.x, PORTRAIT.y)
+      drawPortraitCrop(ctx, portrait, PORTRAIT.width, PORTRAIT.height, framing)
+    } finally { ctx.restore() }
+  } finally {
+    layer.width = layer.height = 0
+  }
 }
 
 function drawName(ctx: CanvasRenderingContext2D, name: string) {
@@ -168,16 +180,7 @@ function drawName(ctx: CanvasRenderingContext2D, name: string) {
   ctx.restore()
 }
 
-function drawConfirmed(ctx: CanvasRenderingContext2D) {
-  // Distress a separate ink layer so its worn spots reveal, rather than erase, the photo.
-  const size = 350
-  const layer = document.createElement('canvas')
-  layer.width = layer.height = size * FLYER_SCALE
-  const ink = layer.getContext('2d')
-  if (!ink) throw new Error('Your browser could not prepare the attendance stamp.')
-  ink.scale(FLYER_SCALE, FLYER_SCALE)
-  ink.translate(size / 2, size / 2)
-  ink.rotate(-Math.PI / 6) // CONFIRMED rises 30° toward two o'clock.
+function paintStamp(ink: CanvasRenderingContext2D, distress: boolean) {
   ink.textAlign = 'center'
   ink.textBaseline = 'alphabetic'
 
@@ -240,7 +243,8 @@ function drawConfirmed(ctx: CanvasRenderingContext2D) {
   diamond(ink, -91, 76, 6)
   diamond(ink, 91, 76, 6)
 
-  // Fixed-seed ink wear keeps the live preview and downloaded PNG identical.
+  if (!distress) return
+  // Only erase ink on a temporary layer; never erase pixels from the photo itself.
   let seed = 2026
   const random = () => {
     seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0
@@ -252,10 +256,32 @@ function drawConfirmed(ctx: CanvasRenderingContext2D) {
     ink.fillRect(random() * 320 - 160, random() * 320 - 160, 0.8 + random() * 3, 0.7 + random() * 1.5)
   }
 
-  // The lower outer edge overlaps the portrait, below the face and outside the name.
+}
+
+function drawConfirmed(ctx: CanvasRenderingContext2D) {
+  const size = 350
+  const scale = ctx.canvas.width / FLYER_WIDTH
   const x = PORTRAIT.x + PORTRAIT.width + 10
   const y = PORTRAIT.y + PORTRAIT.height - 180
-  ctx.drawImage(layer, x - size / 2, y - size / 2, size, size)
+  const layer = document.createElement('canvas')
+  try {
+    layer.width = layer.height = Math.round(size * scale)
+    const ink = layer.getContext('2d')
+    if (!ink) {
+      ctx.save()
+      try {
+        ctx.translate(x, y)
+        ctx.rotate(-Math.PI / 6)
+        paintStamp(ctx, false)
+      } finally { ctx.restore() }
+      return
+    }
+    ink.scale(scale, scale)
+    ink.translate(size / 2, size / 2)
+    ink.rotate(-Math.PI / 6) // CONFIRMED rises toward two o'clock.
+    paintStamp(ink, true)
+    ctx.drawImage(layer, x - size / 2, y - size / 2, size, size)
+  } finally { layer.width = layer.height = 0 }
 }
 
 function drawDateAndTime(ctx: CanvasRenderingContext2D) {

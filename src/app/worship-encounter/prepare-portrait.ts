@@ -82,28 +82,36 @@ export async function preparePortrait(file: File, removeBackground: boolean, onP
   validatePortrait(file)
   onProgress('Opening your photo…')
   const source = await openPhoto(file)
-  const pixels = source.ctx.getImageData(0, 0, source.canvas.width, source.canvas.height)
-  // Preserve a supplied cutout exactly; do not segment its hair or clothing again.
-  if (!removeBackground || hasTransparentBorder(pixels.data, source.canvas.width, source.canvas.height)) {
+  const temporary = [source.canvas]
+  try {
+    const pixels = source.ctx.getImageData(0, 0, source.canvas.width, source.canvas.height)
+    // Preserve a supplied cutout exactly; do not segment its hair or clothing again.
+    if (!removeBackground || hasTransparentBorder(pixels.data, source.canvas.width, source.canvas.height)) {
+      return trimPortrait(source.canvas, source.ctx)
+    }
+    onProgress('Removing the background… The first photo may take a moment.')
+    // Only plain pixels go to the CPU runtime; no WebGL context or texture is used.
+    const size = portraitInputSize(source.canvas.width, source.canvas.height)
+    const analysis = canvas(size.width, size.height)
+    temporary.push(analysis.canvas)
+    analysis.ctx.drawImage(source.canvas, 0, 0, analysis.canvas.width, analysis.canvas.height)
+    const matte = await inferPortrait(analysis.ctx.getImageData(0, 0, size.width, size.height), () => {
+      onProgress('Blending your portrait into the flyer…')
+    })
+    const region = subjectRegion(matte.background, matte.width, matte.height)
+    const mask = canvas(matte.width, matte.height)
+    temporary.push(mask.canvas)
+    const alpha = mask.ctx.createImageData(matte.width, matte.height)
+    for (let i = 0; i < matte.background.length; i++) {
+      alpha.data[i * 4 + 3] = region[i] ? Math.round((1 - matte.background[i]) * 255) : 0
+    }
+    mask.ctx.putImageData(alpha, 0, 0)
+    source.ctx.globalCompositeOperation = 'destination-in'
+    source.ctx.drawImage(mask.canvas, 0, 0, source.canvas.width, source.canvas.height)
+    source.ctx.globalCompositeOperation = 'source-over'
     return trimPortrait(source.canvas, source.ctx)
+  } finally {
+    // Safari can retain detached canvas buffers until they are explicitly released.
+    for (const surface of temporary) surface.width = surface.height = 0
   }
-  onProgress('Removing the background… The first photo may take a moment.')
-  // Only plain pixels go to the CPU runtime; no WebGL context or texture is used.
-  const size = portraitInputSize(source.canvas.width, source.canvas.height)
-  const analysis = canvas(size.width, size.height)
-  analysis.ctx.drawImage(source.canvas, 0, 0, analysis.canvas.width, analysis.canvas.height)
-  const matte = await inferPortrait(analysis.ctx.getImageData(0, 0, size.width, size.height), () => {
-    onProgress('Blending your portrait into the flyer…')
-  })
-  const region = subjectRegion(matte.background, matte.width, matte.height)
-  const mask = canvas(matte.width, matte.height)
-  const alpha = mask.ctx.createImageData(matte.width, matte.height)
-  for (let i = 0; i < matte.background.length; i++) {
-    alpha.data[i * 4 + 3] = region[i] ? Math.round((1 - matte.background[i]) * 255) : 0
-  }
-  mask.ctx.putImageData(alpha, 0, 0)
-  source.ctx.globalCompositeOperation = 'destination-in'
-  source.ctx.drawImage(mask.canvas, 0, 0, source.canvas.width, source.canvas.height)
-  source.ctx.globalCompositeOperation = 'source-over'
-  return trimPortrait(source.canvas, source.ctx)
 }

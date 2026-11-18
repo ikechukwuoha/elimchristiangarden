@@ -17,6 +17,18 @@ export function portraitPlacement(imageWidth: number, imageHeight: number, frame
   }
 }
 
+// Keep the point between the user's fingers fixed while zooming and moving it.
+export function pinchPortrait(imageWidth: number, imageHeight: number, frameWidth: number, frameHeight: number, start: PortraitFraming, anchor: { x: number; y: number }, movement: { x: number; y: number }, factor: number): PortraitFraming {
+  const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
+  const zoom = clamp(start.zoom * factor, 0.5, 3)
+  const before = portraitPlacement(imageWidth, imageHeight, frameWidth, frameHeight, start)
+  const after = portraitPlacement(imageWidth, imageHeight, frameWidth, frameHeight, { ...start, zoom })
+  const ratio = zoom / start.zoom
+  const left = anchor.x - (anchor.x - before.left) * ratio + movement.x
+  const top = anchor.y - (anchor.y - before.top) * ratio + movement.y
+  return { ...start, zoom, x: clamp(50 + (left - (frameWidth - after.width) / 2) / frameWidth * 100, -50, 150), y: clamp(top / frameHeight * 100, -100, 100) }
+}
+
 // Shared by the crop editor and exported flyer so every edit has the same result.
 export function drawPortraitCrop(ctx: CanvasRenderingContext2D, portrait: HTMLCanvasElement, width: number, height: number, framing: PortraitFraming) {
   const placement = portraitPlacement(portrait.width, portrait.height, width, height, framing)
