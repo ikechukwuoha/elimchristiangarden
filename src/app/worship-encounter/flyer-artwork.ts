@@ -3,9 +3,9 @@ import { flyerSponsor } from './flyer-sponsor'
 export { defaultFraming, type PortraitFraming } from './portrait-framing'
 
 export const FLYER_WIDTH = 1080
-export const FLYER_HEIGHT = 1620
+export const FLYER_HEIGHT = 1740
 export const FLYER_SCALE = 2
-export const FLYER_BACKGROUND = '/images/flyer/confirmed-background-v3.webp'
+export const FLYER_BACKGROUND = '/images/flyer/forest-worship-background-v7.webp'
 export const FLYER_LOGO = '/images/logo-removebg-preview.png'
 
 // Event information is fixed. Visitors supply a name, portrait and optional affiliation.
@@ -25,12 +25,14 @@ export const flyerEvent = {
   minister: 'REV. EMMANUEL O. OLOWONONI',
 }
 
-const RED = '#a90000'
+// The same forest, leaf, champagne and ivory palette used on the home page.
+const FOREST = '#173c30'
+const LEAF = '#244c3b'
+const GOLD = '#d9bd8b'
+const IVORY = '#f9f8f3'
 const SANS = '"Open Sans", sans-serif'
-const SERIF = '"Times New Roman", Georgia, serif'
-const DATE_SERIF = 'Merriweather, Georgia, serif'
+const DISPLAY = 'Merriweather, Georgia, serif'
 const PORTRAIT = PORTRAIT_FRAME
-const FOREGROUND_Y = 1295
 
 function fittedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, width: number, size: number, weight = '800', family = SANS) {
   ctx.font = `${weight} ${size}px ${family}`
@@ -40,54 +42,72 @@ function fittedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: n
   ctx.fillText(text, x, y)
 }
 
-function flame(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+function trackedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, width: number, size: number, tracking: number, weight = '700') {
   ctx.save()
-  ctx.translate(x, y)
-  ctx.scale(size / 100, size / 100)
-  ctx.fillStyle = '#ff3018'
-  ctx.beginPath()
-  ctx.moveTo(0, -100)
-  ctx.bezierCurveTo(30, -76, 39, -42, 36, -21)
-  ctx.bezierCurveTo(32, 14, -31, 14, -36, -15)
-  ctx.bezierCurveTo(-40, -40, -22, -55, -17, -71)
-  ctx.lineTo(-8, -55)
-  ctx.bezierCurveTo(1, -67, 2, -85, 0, -100)
-  ctx.fill()
-  ctx.fillStyle = '#fff237'
-  ctx.beginPath()
-  ctx.moveTo(0, -53)
-  ctx.bezierCurveTo(7, -33, 24, -19, 16, -4)
-  ctx.bezierCurveTo(6, 10, -18, 5, -18, -8)
-  ctx.bezierCurveTo(-18, -24, -5, -31, 0, -53)
-  ctx.fill()
+  const letters = Array.from(text)
+  const measure = () => letters.reduce((sum, letter) => sum + ctx.measureText(letter).width, 0) + Math.max(0, letters.length - 1) * tracking
+  ctx.font = `${weight} ${size}px ${SANS}`
+  while (measure() > width && size > 12) ctx.font = `${weight} ${--size}px ${SANS}`
+  let cursor = x - measure() / 2
+  ctx.textAlign = 'left'
+  for (const letter of letters) {
+    ctx.fillText(letter, cursor, y)
+    cursor += ctx.measureText(letter).width + tracking
+  }
   ctx.restore()
 }
 
+function diamond(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+  ctx.beginPath()
+  ctx.moveTo(x, y - size)
+  ctx.lineTo(x + size, y)
+  ctx.lineTo(x, y + size)
+  ctx.lineTo(x - size, y)
+  ctx.closePath()
+  ctx.fill()
+}
+
+function forestInk(ctx: CanvasRenderingContext2D, y: number, height: number) {
+  const ink = ctx.createLinearGradient(0, y, 1080, y + height)
+  ink.addColorStop(0, FOREST)
+  ink.addColorStop(0.55, '#32614a')
+  ink.addColorStop(1, FOREST)
+  return ink
+}
+
+function goldInk(ctx: CanvasRenderingContext2D) {
+  const ink = ctx.createLinearGradient(100, 0, 980, 0)
+  ink.addColorStop(0, '#b18c4a')
+  ink.addColorStop(0.45, '#f6e3b6')
+  ink.addColorStop(1, '#c8a665')
+  return ink
+}
+
 function headline(ctx: CanvasRenderingContext2D) {
-  ctx.fillStyle = RED
-  fittedText(ctx, flyerEvent.title, 540, 306, 720, 132, '400', SERIF)
-  // Three crisp side bars, in the same arrangement as the reference.
-  for (const left of [true, false]) {
-    const x = left ? 125 : 870
-    ctx.fillRect(x, 245, 57, 6)
-    ctx.fillRect(left ? x - 27 : x, 262, 84, 6)
-    ctx.fillRect(x, 279, 57, 6)
-  }
-  // Replace the O with a flame while measuring the complete second line.
-  ctx.font = `400 100px ${SERIF}`
-  const prefix = 'C'
-  const suffix = flyerEvent.subtitle.slice(2)
-  const flameWidth = 73
-  const width = ctx.measureText(prefix).width + flameWidth + ctx.measureText(suffix).width
   ctx.save()
-  ctx.translate(540, 0)
-  ctx.scale(Math.min(1, 980 / width), 1)
-  ctx.textAlign = 'left'
-  ctx.fillText(prefix, -width / 2, 421)
-  const prefixWidth = ctx.measureText(prefix).width
-  flame(ctx, -width / 2 + prefixWidth + flameWidth / 2, 417, 86)
-  ctx.fillStyle = RED
-  ctx.fillText(suffix, -width / 2 + prefixWidth + flameWidth, 421)
+  ctx.fillStyle = FOREST
+  trackedText(ctx, flyerEvent.churchName, 540, 225, 850, 17, 2, '700')
+  ctx.fillStyle = forestInk(ctx, 260, 110)
+  ctx.shadowColor = '#d9bd8b80'
+  ctx.shadowOffsetY = 2
+  fittedText(ctx, flyerEvent.title, 540, 362, 890, 136, '700', DISPLAY)
+  ctx.shadowColor = 'transparent'
+  ctx.fillStyle = GOLD
+  diamond(ctx, 70, 311, 8)
+  diamond(ctx, 1010, 311, 8)
+
+  const conference = flyerEvent.subtitle.replace(/\s+\d{4}$/, '')
+  ctx.font = `700 39px ${SANS}`
+  const conferenceWidth = Array.from(conference).reduce((sum, letter) => sum + ctx.measureText(letter).width, 0) + (conference.length - 1) * 7
+  const left = 540 - (conferenceWidth + 28 + 140) / 2
+  ctx.fillStyle = FOREST
+  trackedText(ctx, conference, left + conferenceWidth / 2, 421, conferenceWidth, 39, 7)
+  ctx.fillStyle = goldInk(ctx)
+  ctx.beginPath()
+  ctx.roundRect(left + conferenceWidth + 28, 383, 140, 52, 14)
+  ctx.fill()
+  ctx.fillStyle = FOREST
+  fittedText(ctx, flyerEvent.year, left + conferenceWidth + 98, 421, 116, 33)
   ctx.restore()
 }
 
@@ -110,100 +130,184 @@ function drawPortrait(ctx: CanvasRenderingContext2D, portrait: HTMLCanvasElement
   ctx.drawImage(layer, PORTRAIT.x, PORTRAIT.y, PORTRAIT.width, PORTRAIT.height)
 }
 
-function drawName(ctx: CanvasRenderingContext2D, name: string, sponsor: string) {
+function drawName(ctx: CanvasRenderingContext2D, name: string) {
   ctx.save()
-  ctx.translate(0, sponsor ? 181 : 217)
   const label = (name.trim() || 'YOUR NAME').toLocaleUpperCase()
   let size = 34
-  ctx.font = `800 ${size}px ${SANS}`
-  while (ctx.measureText(label).width > 515 && size > 14) ctx.font = `800 ${--size}px ${SANS}`
+  ctx.font = `700 ${size}px ${SANS}`
+  while (ctx.measureText(label).width > 515 && size > 14) ctx.font = `700 ${--size}px ${SANS}`
   const nameWidth = ctx.measureText(label).width
-  const nameFont = ctx.font
-  ctx.font = `700 21px ${SANS}`
-  const width = sponsor ? Math.min(760, Math.max(nameWidth + 96, ctx.measureText(sponsor).width + 48)) : Math.min(620, nameWidth + 96)
-  ctx.font = nameFont
+  const width = Math.min(620, nameWidth + 96)
   const left = 540 - width / 2
-  const nameDisplayWidth = Math.min(nameWidth, width - 96)
-  const rowLeft = sponsor ? 540 - (nameDisplayWidth + 45) / 2 - 18 : left
-  ctx.fillStyle = 'rgba(255, 250, 239, 0.95)'
+  ctx.fillStyle = IVORY
+  ctx.shadowColor = '#173c3026'
+  ctx.shadowBlur = 18
+  ctx.shadowOffsetY = 4
   ctx.beginPath()
-  ctx.roundRect(left, 1009, width, sponsor ? 94 : 58, 8)
+  ctx.roundRect(left, 1346, width, 58, 12)
   ctx.fill()
-  ctx.strokeStyle = '#d9412b'
-  ctx.lineWidth = 4
+  ctx.shadowColor = 'transparent'
+  ctx.strokeStyle = '#d9bd8b99'
+  ctx.lineWidth = 1.5
+  ctx.stroke()
+  ctx.fillStyle = FOREST
+  ctx.beginPath()
+  ctx.arc(left + 32, 1375, 16, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.strokeStyle = GOLD
+  ctx.lineWidth = 3
   ctx.lineJoin = 'round'
   ctx.beginPath()
-  ctx.roundRect(rowLeft + 18, 1024, 28, 28, 4)
+  ctx.moveTo(left + 24, 1374)
+  ctx.lineTo(left + 30, 1381)
+  ctx.lineTo(left + 42, 1368)
   ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(rowLeft + 23, 1036)
-  ctx.lineTo(rowLeft + 32, 1045)
-  ctx.lineTo(rowLeft + 49, 1024)
-  ctx.stroke()
-  ctx.fillStyle = '#15120d'
+  ctx.fillStyle = FOREST
   ctx.textAlign = 'left'
-  ctx.fillText(label, rowLeft + 63, 1050, sponsor ? nameDisplayWidth : width - 81)
-  ctx.textAlign = 'center'
-  if (sponsor) {
-    ctx.strokeStyle = '#b7823540'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(left + 24, 1067)
-    ctx.lineTo(left + width - 24, 1067)
-    ctx.stroke()
-    ctx.fillStyle = '#79451d'
-    fittedText(ctx, sponsor, 540, 1090, width - 44, 21, '700')
-  }
+  ctx.fillText(label, left + 63, 1387, width - 81)
   ctx.restore()
 }
 
+function drawConfirmed(ctx: CanvasRenderingContext2D) {
+  // Distress a separate ink layer so its worn spots reveal, rather than erase, the photo.
+  const size = 350
+  const layer = document.createElement('canvas')
+  layer.width = layer.height = size * FLYER_SCALE
+  const ink = layer.getContext('2d')
+  if (!ink) throw new Error('Your browser could not prepare the attendance stamp.')
+  ink.scale(FLYER_SCALE, FLYER_SCALE)
+  ink.translate(size / 2, size / 2)
+  ink.rotate(-Math.PI / 6) // CONFIRMED rises 30° toward two o'clock.
+  ink.textAlign = 'center'
+  ink.textBaseline = 'alphabetic'
+
+  // A translucent ground leaves the clothing visible through the circular seal.
+  ink.fillStyle = 'rgba(249, 248, 243, 0.3)'
+  ink.beginPath()
+  ink.arc(0, 0, 140, 0, Math.PI * 2)
+  ink.fill()
+  ink.strokeStyle = FOREST
+  for (const [radius, width] of [[140, 7], [131, 2], [102, 2]]) {
+    ink.lineWidth = width
+    ink.beginPath()
+    ink.arc(0, 0, radius, 0, Math.PI * 2)
+    ink.stroke()
+  }
+  ink.strokeStyle = GOLD
+  ink.lineWidth = 1.5
+  ink.beginPath()
+  ink.arc(0, 0, 146, 0, Math.PI * 2)
+  ink.stroke()
+
+  // Curved event lettering makes the seal part of this conference's artwork.
+  const label = Array.from(`${flyerEvent.title} ${flyerEvent.subtitle.replace(/\s+\d{4}$/, '')}`)
+  const radius = 116
+  ink.font = `800 17px ${SANS}`
+  const widths = label.map((letter) => ink.measureText(letter).width + 2)
+  let angle = -Math.PI / 2 - widths.reduce((sum, width) => sum + width, 0) / radius / 2
+  ink.fillStyle = FOREST
+  for (let i = 0; i < label.length; i++) {
+    const step = widths[i] / radius
+    const middle = angle + step / 2
+    ink.save()
+    ink.translate(Math.cos(middle) * radius, Math.sin(middle) * radius)
+    ink.rotate(middle + Math.PI / 2)
+    ink.textBaseline = 'middle'
+    ink.fillText(label[i], 0, 0)
+    ink.restore()
+    angle += step
+  }
+
+  ink.strokeStyle = FOREST
+  ink.lineWidth = 7
+  ink.lineCap = 'round'
+  ink.lineJoin = 'round'
+  ink.beginPath()
+  ink.moveTo(-17, -56)
+  ink.lineTo(-3, -42)
+  ink.lineTo(24, -72)
+  ink.stroke()
+  ink.fillStyle = 'rgba(249, 248, 243, 0.92)'
+  ink.beginPath()
+  ink.roundRect(-157, -22, 314, 62, 5)
+  ink.fill()
+  ink.strokeStyle = FOREST
+  ink.lineWidth = 4
+  ink.stroke()
+  ink.fillStyle = FOREST
+  fittedText(ink, 'CONFIRMED', 0, 24, 294, 43)
+  fittedText(ink, flyerEvent.year, 0, 127, 100, 22, '700', DISPLAY)
+  diamond(ink, -91, 76, 6)
+  diamond(ink, 91, 76, 6)
+
+  // Fixed-seed ink wear keeps the live preview and downloaded PNG identical.
+  let seed = 2026
+  const random = () => {
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0
+    return seed / 4294967296
+  }
+  ink.globalCompositeOperation = 'destination-out'
+  ink.fillStyle = 'rgba(0, 0, 0, 0.7)'
+  for (let i = 0; i < 260; i++) {
+    ink.fillRect(random() * 320 - 160, random() * 320 - 160, 0.8 + random() * 3, 0.7 + random() * 1.5)
+  }
+
+  // The lower outer edge overlaps the portrait, below the face and outside the name.
+  const x = PORTRAIT.x + PORTRAIT.width + 10
+  const y = PORTRAIT.y + PORTRAIT.height - 180
+  ctx.drawImage(layer, x - size / 2, y - size / 2, size, size)
+}
+
 function drawDateAndTime(ctx: CanvasRenderingContext2D) {
-  const x = 30, y = 448, width = 210, height = 300
+  const x = 32, y = 462, width = 200, height = 274
   ctx.save()
-  ctx.shadowColor = '#713b2026'
+  ctx.shadowColor = '#173c3026'
   ctx.shadowBlur = 14
   ctx.shadowOffsetY = 5
-  ctx.fillStyle = '#fff2d7'
-  ctx.strokeStyle = '#b37a30'
+  ctx.fillStyle = IVORY
+  ctx.strokeStyle = GOLD
   ctx.lineWidth = 2
   ctx.beginPath()
-  ctx.roundRect(x, y, width, height, 12)
+  ctx.roundRect(x, y, width, height, 18)
   ctx.fill()
   ctx.stroke()
   ctx.shadowColor = 'transparent'
-  const red = ctx.createLinearGradient(x, y, x, y + 238)
-  red.addColorStop(0, '#b5080b')
-  red.addColorStop(1, '#790007')
-  ctx.fillStyle = red
+  ctx.fillStyle = forestInk(ctx, y, 212)
   ctx.beginPath()
-  ctx.roundRect(x + 5, y + 5, width - 10, 228, [8, 8, 0, 0])
+  ctx.roundRect(x + 5, y + 5, width - 10, 210, [13, 13, 0, 0])
   ctx.fill()
   ctx.fillStyle = '#fff9eb'
-  fittedText(ctx, flyerEvent.weekday, x + width / 2, y + 49, width - 26, 29, '800')
-  ctx.strokeStyle = '#f1d7a4'
+  fittedText(ctx, flyerEvent.weekday, x + width / 2, y + 45, width - 24, 26, '800')
+  ctx.strokeStyle = GOLD
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(x + 34, y + 72)
-  ctx.lineTo(x + width - 34, y + 72)
+  ctx.moveTo(x + 30, y + 65)
+  ctx.lineTo(x + width - 30, y + 65)
   ctx.stroke()
   const days = flyerEvent.day.replace(/(\d+)(ST|ND|RD|TH)/g, '$1').replace(/\s*–\s*/, '–')
-  fittedText(ctx, days, x + width / 2, y + 153, width - 30, 65, '700', DATE_SERIF)
-  fittedText(ctx, 'DECEMBER', x + width / 2, y + 203, width - 28, 24, '700', DATE_SERIF)
-  ctx.fillStyle = RED
-  fittedText(ctx, flyerEvent.year, x + width / 2, y + 288, width - 30, 42, '700', DATE_SERIF)
+  fittedText(ctx, days, x + width / 2, y + 143, width - 24, 65, '700', DISPLAY)
+  ctx.fillStyle = GOLD
+  fittedText(ctx, 'DECEMBER', x + width / 2, y + 189, width - 24, 22, '700', DISPLAY)
+  ctx.fillStyle = FOREST
+  fittedText(ctx, flyerEvent.year, x + width / 2, y + 257, width - 30, 36, '700', DISPLAY)
 
-  const cx = 950, cy = 540
-  ctx.fillStyle = '#fff5dfd9'
+  const cx = 950, cy = 550
+  ctx.fillStyle = IVORY
   ctx.beginPath()
-  ctx.arc(cx, cy, 96, 0, Math.PI * 2)
+  ctx.arc(cx, cy, 88, 0, Math.PI * 2)
   ctx.fill()
-  ctx.fillStyle = '#a45508'
+  ctx.fillStyle = GOLD
   ctx.beginPath()
-  ctx.arc(cx, cy, 77, 0, Math.PI * 2)
+  ctx.arc(cx, cy, 79, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = FOREST
+  ctx.beginPath()
+  ctx.arc(cx, cy, 75, 0, Math.PI * 2)
   ctx.fill()
   ctx.fillStyle = '#fff9e9'
-  fittedText(ctx, flyerEvent.time, cx, cy - 3, 132, 48)
-  fittedText(ctx, flyerEvent.period, cx, cy + 46, 118, 36)
+  fittedText(ctx, flyerEvent.time, cx, cy - 2, 132, 44)
+  ctx.fillStyle = GOLD
+  fittedText(ctx, flyerEvent.period, cx, cy + 38, 118, 28)
   ctx.restore()
 }
 
@@ -214,43 +318,85 @@ export function drawFlyer(ctx: CanvasRenderingContext2D, background: HTMLImageEl
   ctx.textAlign = 'center'
   ctx.textBaseline = 'alphabetic'
   ctx.drawImage(background, 0, 0, FLYER_WIDTH, FLYER_HEIGHT)
-  ctx.drawImage(logo, 466, 28, 148, 148)
+  ctx.fillStyle = IVORY
+  ctx.strokeStyle = GOLD
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.arc(540, 114, 82, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.stroke()
+  ctx.drawImage(logo, 466, 40, 148, 148)
   headline(ctx)
 
   // Attendance statement stays above the portrait and remains visible for every crop.
-  ctx.fillStyle = '#fff8e9'
-  ctx.strokeStyle = '#c7964d'
+  ctx.fillStyle = forestInk(ctx, 510, 60)
+  ctx.strokeStyle = GOLD
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.roundRect(280, 463, 520, 60, 30)
+  ctx.roundRect(300, 514, 480, 56, 28)
   ctx.fill()
   ctx.stroke()
-  ctx.fillStyle = RED
-  fittedText(ctx, 'I WILL BE THERE', 540, 505, 466, 33, '700', DATE_SERIF)
+  ctx.fillStyle = GOLD
+  diamond(ctx, 326, 542, 5)
+  diamond(ctx, 754, 542, 5)
+  ctx.fillStyle = '#fff9ec'
+  trackedText(ctx, 'I WILL BE THERE', 540, 552, 382, 25, 3, '800')
 
-  // Layer order matters: stamp (in artwork), person, then name and theme.
+  // Only one CONFIRMED badge remains, across the lower part of the portrait.
   if (portrait) drawPortrait(ctx, portrait, framing)
   else {
-    ctx.fillStyle = '#694b28'
-    fittedText(ctx, 'YOUR PORTRAIT WILL APPEAR HERE', 540, 1150, 590, 23, '600')
+    ctx.fillStyle = LEAF
+    fittedText(ctx, 'YOUR PORTRAIT WILL APPEAR HERE', 540, PORTRAIT.y + PORTRAIT.height / 2, 590, 23, '600')
   }
 
-  // Restore the lower artwork in front of the photo, including its skewed banner.
-  const sourceY = background.naturalHeight * FOREGROUND_Y / FLYER_HEIGHT
-  ctx.drawImage(background, 0, sourceY, background.naturalWidth, background.naturalHeight - sourceY, 0, FOREGROUND_Y, FLYER_WIDTH, FLYER_HEIGHT - FOREGROUND_Y)
-  drawName(ctx, name, flyerSponsor(unitFellowship))
+  drawConfirmed(ctx)
+  drawName(ctx, name)
 
   // Side information stays legible even with a wide uploaded portrait.
   drawDateAndTime(ctx)
 
-  ctx.fillStyle = '#fff2ce'
-  fittedText(ctx, flyerEvent.theme[0], 540, 1342, 610, 44, 'italic 800')
-  fittedText(ctx, flyerEvent.theme[1], 540, 1387, 610, 39, 'italic 800')
-  ctx.fillStyle = '#17120c'
-  fittedText(ctx, flyerEvent.churchName, 540, 1456, 930, 28)
-  fittedText(ctx, flyerEvent.address, 540, 1493, 930, 19, '600')
-  fittedText(ctx, `MINISTERING: ${flyerEvent.minister}`, 540, 1533, 930, 22, '700')
-  ctx.fillStyle = '#795126'
-  fittedText(ctx, '›'.repeat(80), 540, 1574, 930, 18, '600')
+  // Theme lettering is live canvas text, so both lines stay crisp in the export.
+  ctx.save()
+  ctx.fillStyle = forestInk(ctx, 1422, 120)
+  ctx.shadowColor = '#173c3033'
+  ctx.shadowBlur = 22
+  ctx.shadowOffsetY = 8
+  ctx.beginPath()
+  ctx.roundRect(85, 1422, 910, 126, 20)
+  ctx.fill()
+  ctx.shadowColor = 'transparent'
+  ctx.strokeStyle = GOLD
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.roundRect(93, 1430, 894, 110, 14)
+  ctx.stroke()
+  ctx.fillStyle = goldInk(ctx)
+  fittedText(ctx, flyerEvent.theme[0], 540, 1476, 835, 43, 'italic 700', DISPLAY)
+  ctx.fillStyle = '#fff9ec'
+  trackedText(ctx, flyerEvent.theme[1], 540, 1518, 830, 26, 3)
+  ctx.restore()
+
+  const sponsor = flyerSponsor(unitFellowship)
+  ctx.fillStyle = 'rgba(249, 248, 243, 0.94)'
+  ctx.beginPath()
+  ctx.roundRect(65, 1565, 950, sponsor ? 169 : 139, 20)
+  ctx.fill()
+  ctx.fillStyle = FOREST
+  fittedText(ctx, flyerEvent.churchName, 540, 1599, 902, 25)
+  ctx.fillStyle = LEAF
+  fittedText(ctx, flyerEvent.address, 540, 1630, 898, 17, '600')
+  fittedText(ctx, `MINISTERING: ${flyerEvent.minister}`, 540, 1661, 898, 20, '700')
+  ctx.strokeStyle = '#b3915699'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(140, 1684)
+  ctx.lineTo(519, 1684)
+  ctx.moveTo(561, 1684)
+  ctx.lineTo(940, 1684)
+  ctx.stroke()
+  ctx.fillStyle = GOLD
+  diamond(ctx, 540, 1684, 6)
+  ctx.fillStyle = FOREST
+  if (sponsor) fittedText(ctx, sponsor, 540, 1720, 898, 22, '700')
   ctx.restore()
 }

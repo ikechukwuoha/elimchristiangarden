@@ -4,7 +4,7 @@
 .heading { max-width: 640px; text-align: center; margin: 0 auto 30px; }
 .eyebrow { font-size: 11px; letter-spacing: .18em; font-weight: 750; color: #8b682f; }
 .heading h1 { font: 400 clamp(40px, 7vw, 64px)/1.15 Georgia, serif; letter-spacing: -.04em; margin: 12px 0 16px; }
-.heading h1 em { color: #a90000; }
+.heading h1 em { color: #244c3b; }
 .heading > p:last-child { color: #70766e; line-height: 1.75; font-size: 15px; }
 .setup { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; max-width: 1140px; margin: 0 auto 30px; align-items: start; }
 .workspace { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 600px); gap: 40px; max-width: 1080px; margin: auto; align-items: start; }
@@ -37,7 +37,7 @@
 .cropFrame { position: relative; overflow: hidden; border: 2px solid #b69b6e; border-radius: 6px; background-color: #eeeade; background-image: conic-gradient(#e2dece 25%, transparent 0 50%, #e2dece 0 75%, transparent 0); background-size: 20px 20px; }
 .cropFrame canvas { display: block; width: 100%; height: auto; cursor: grab; touch-action: none; }
 .cropFrame[data-dragging=true] canvas { cursor: grabbing; }
-.cropFrame canvas:focus-visible { outline: 3px solid #a90000; outline-offset: -4px; }
+.cropFrame canvas:focus-visible { outline: 3px solid #244c3b; outline-offset: -4px; }
 .cropGuides { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 0 1px #ffffff90; }
 .cropGuides::before, .cropGuides::after { content: ''; position: absolute; border-color: #ffffff85; border-style: solid; }
 .cropGuides::before { top: 0; bottom: 0; left: 33.333%; width: 33.333%; border-width: 0 1px; }
@@ -47,7 +47,7 @@
 .cropTools button:hover, .cropTools button[aria-pressed=true] { background: #e9dfc8; border-color: #af955e; }
 .cropSlider { display: block; font-size: 12px; font-weight: 600; color: #4c5750; margin-top: 12px; }
 .cropSlider > span { float: right; font-weight: 400; color: #807565; }
-.cropSlider input { display: block; width: 100%; min-height: 44px; margin-top: 4px; accent-color: #a90000; }
+.cropSlider input { display: block; width: 100%; min-height: 44px; margin-top: 4px; accent-color: #244c3b; }
 .cropPositions { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
 .panel .cropNote { margin: 16px 0 0; color: #807565; font-size: 11px; }
 .nameLabel { display: block; font-size: 12px; font-weight: 650; margin: 20px 0 8px; }
@@ -56,11 +56,11 @@
 .nameInput { width: 100%; min-height: 48px; padding: 12px; border: 1px solid #d8d9ce; border-radius: 6px; background: white; color: #243a30; font-size: 16px; margin-bottom: 12px; }
 .nameInput:focus { outline: 2px solid #a78b51; outline-offset: 2px; }
 .preview { position: sticky; top: calc(var(--site-header-height, 112px) + 20px); min-width: 0; }
-.canvasFrame { position: relative; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 4px; background: #f5e6c7; box-shadow: 0 12px 40px #4d361b18; }
+.canvasFrame { position: relative; aspect-ratio: 18 / 29; overflow: hidden; border-radius: 4px; background: #e9edde; box-shadow: 0 12px 40px #173c3020; }
 .canvasFrame canvas { display: block; width: 100%; height: auto; }
-.loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; background: #f5eddb; }
-.download { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; min-height: 54px; border-radius: 6px; margin-top: 22px; padding: 14px 18px; color: #fff; background: #a90000; font-weight: 700; font-size: 14px; transition: background .2s; }
-.download:hover:not(:disabled) { background: #850000; }
+.loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 13px; background: #eef0e7; }
+.download { display: flex; justify-content: center; align-items: center; gap: 10px; width: 100%; min-height: 54px; border-radius: 6px; margin-top: 22px; padding: 14px 18px; color: #fff; background: #244c3b; font-weight: 700; font-size: 14px; transition: background .2s; }
+.download:hover:not(:disabled) { background: #173c30; }
 .download:disabled { background: #c6bda8; color: #fffefa; cursor: not-allowed; }
 .downloadNote { text-align: center; font-size: 11px; line-height: 1.7; color: #70766e; margin-top: 12px; }
 .spinner { flex-shrink: 0; animation: spin 1s linear infinite; }
@@ -93,7 +93,7 @@
 @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } .download { transition: none; } }
 @media (max-height: 600px) and (orientation: landscape) {
   .preview { top: calc(var(--site-header-height, 112px) + 8px); }
-  .canvasFrame { width: min(100%, calc((100svh - var(--site-header-height, 112px) - 108px) * 2 / 3)); margin-inline: auto; }
+  .canvasFrame { width: min(100%, calc((100svh - var(--site-header-height, 112px) - 108px) * 18 / 29)); margin-inline: auto; }
   .download { margin-top: 8px; min-height: 44px; padding: 10px; font-size: 12px; }
   .downloadNote { margin-top: 6px; font-size: 10px; }
 }

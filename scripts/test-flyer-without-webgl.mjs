@@ -187,7 +187,7 @@ try {
     assert.equal(files.length > 0, true, 'A PNG should actually be downloaded.')
     const png = await readFile(join(output, files[0]))
     assert.equal(png.readUInt32BE(16), 2160)
-    assert.equal(png.readUInt32BE(20), 3240)
+    assert.equal(png.readUInt32BE(20), 3480)
     const preview = Buffer.from(exportPreview.split(',')[1], 'base64')
     const [previewPixels, downloadedPixels] = await Promise.all([sharp(preview).ensureAlpha().raw().toBuffer(), sharp(png).ensureAlpha().raw().toBuffer()])
     assert.deepEqual(downloadedPixels, previewPixels)

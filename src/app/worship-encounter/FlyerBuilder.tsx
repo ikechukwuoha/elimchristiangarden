@@ -3,8 +3,8 @@
 import '@fontsource/open-sans/600.css'
 import '@fontsource/open-sans/700.css'
 import '@fontsource/open-sans/800.css'
-import '@fontsource/open-sans/800-italic.css'
 import '@fontsource/merriweather/latin-700.css'
+import '@fontsource/merriweather/latin-700-italic.css'
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
 import { Check, Download, ImagePlus, LoaderCircle, RefreshCw } from 'lucide-react'
@@ -47,7 +47,7 @@ export default function FlyerBuilder() {
 
   useEffect(() => {
     let cancelled = false
-    const fonts = ['600 24px "Open Sans"', '700 24px "Open Sans"', '800 34px "Open Sans"', 'italic 800 44px "Open Sans"', '700 43px Merriweather']
+    const fonts = ['600 24px "Open Sans"', '700 24px "Open Sans"', '800 34px "Open Sans"', '700 136px Merriweather', 'italic 700 43px Merriweather']
     Promise.all([loadArtwork(FLYER_BACKGROUND), loadArtwork(FLYER_LOGO), ...fonts.map((font) => document.fonts.load(font))])
       .then(([image, churchLogo]) => { if (!cancelled) { setBackground(image); setLogo(churchLogo) } })
       .catch(() => { if (!cancelled) setAssetError('The flyer design could not load. Please check your connection and try again.') })

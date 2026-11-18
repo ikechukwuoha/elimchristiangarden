@@ -1,6 +1,6 @@
 export type PortraitFraming = { zoom: number; x: number; y: number; rotation: number; flipped: boolean }
 export const defaultFraming: PortraitFraming = { zoom: 1, x: 50, y: 0, rotation: 0, flipped: false }
-export const PORTRAIT_FRAME = { x: 205, y: 720, width: 670, height: 600 }
+export const PORTRAIT_FRAME = { x: 205, y: 600, width: 670, height: 780 }
 
 export function portraitPlacement(imageWidth: number, imageHeight: number, frameWidth: number, frameHeight: number, framing: PortraitFraming) {
   const rotation = ((framing.rotation ?? 0) % 360 + 360) % 360
